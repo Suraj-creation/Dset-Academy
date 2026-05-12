@@ -1,0 +1,127 @@
+[
+  {
+    "topic": "company_overview",
+    "keywords": ["dset", "company", "what is", "kya hai", "about", "kaun ho", "who are", "tell me about", "introduction", "intro", "deeptech", "consulting"],
+    "content": "DSeT (DSeT Consulting Private Limited) is a deeptech AI platform company that builds proprietary vertical AI platforms for operationally complex and regulated industries. DSeT is not a generic consulting firm — it ships working software. Vision: To become the defining vertical AI platform company for operationally complex and regulated industries globally. DSeT is DPIIT Recognised Startup, STPI Registered, IN-SPACe Empanelled, and a Microsoft ISV Partner."
+  },
+  {
+    "topic": "leadership",
+    "keywords": ["ceo", "founder", "chinmaya", "mishra", "leadership", "who founded", "kisne banaya", "head", "director", "management", "team"],
+    "content": "DSeT was founded by Chinmaya Mishra, who serves as Founder & CEO of DSeT Consulting Private Limited. He has deep experience in industrial operations, enterprise technology, and AI platform architecture. LinkedIn: https://www.linkedin.com/in/chinmaya-mishra"
+  },
+  {
+    "topic": "orebill",
+    "keywords": ["orebill", "ore", "mining", "mineral", "weighbridge", "billing", "dispatch", "invoice", "grade reconciliation", "erp", "logistics"],
+    "content": "OreBill AI™ is DSeT's platform for Mining & Mineral Logistics. Tagline: Dispatch to Invoice. Automated. It automates ore billing and weighbridge intelligence, enables real-time grade reconciliation, ERP synchronization, and eliminates manual data entry and dispute cycles across the logistics chain. It extracts intelligence from PDF-driven government systems and legacy ERP without API dependency. Results: Billing reconciliation time reduced 60% (5 days to under 2 days), ₹1.2 Cr annually recovered through automated dispute detection, weighbridge data discrepancy reduced from 12% to under 1.5%."
+  },
+  {
+    "topic": "edgebay",
+    "keywords": ["edgebay", "edge", "industrial", "ot", "it", "scada", "plc", "sensor", "iot", "manufacturing", "plant", "factory", "predictive", "maintenance", "air-gapped", "low connectivity"],
+    "content": "EdgeBay Intelligence is DSeT's platform for Industrial & OT Edge AI. Tagline: AI at the Edge of Your Business. It bridges SCADA, PLC, and sensor data with enterprise IT systems. Operates in low-connectivity and air-gapped environments. Provides a unified intelligence layer for plant managers and C-suite. EdgeBay acts — it doesn't just alert. Agentic execution that takes action, not just shows dashboards."
+  },
+  {
+    "topic": "securecloud",
+    "keywords": ["securecloud", "secure", "cloud", "compliance", "pci", "pci-dss", "gdpr", "hipaa", "iso", "bfsi", "bank", "finance", "audit", "posture", "security", "certifi"],
+    "content": "SecureCloud is DSeT's platform for Compliance-first Cloud Security. Tagline: Cloud Security, Simplified. It provides continuous cloud posture management, automated policy enforcement, real-time compliance scoring, and prioritized remediation workflows across multi-cloud infrastructure. Designed for PCI-DSS, GDPR, HIPAA regulated environments. Results: Compliance audit prep time reduced 70% (6 weeks to 10 days), critical misconfiguration incidents reduced 84% within 60 days, PCI-DSS Level 1 readiness achieved within one quarter."
+  },
+  {
+    "topic": "revops",
+    "keywords": ["revops", "ipas", "ipass", "i-pas", "revenue", "crm", "sales", "ar", "invoice", "forecast", "pipeline", "churn", "microsoft marketplace", "b2b", "saas", "deal", "revenue operations"],
+    "content": "iPAS RevOps is DSeT's Revenue Operations Automation platform. Tagline: Revenue Operations at Scale. It unifies pipeline data from multiple CRMs, automates AR follow-up sequences, provides real-time revenue forecasting, deal velocity analytics, and churn risk scoring. Live on Microsoft Marketplace. Microsoft ISV Partner certified. Results: AR overdue rate reduced from 23% to 8% within 90 days, 340+ manual follow-up hours recovered per month, revenue forecast accuracy improved from ±31% to ±9% QoQ."
+  },
+  {
+    "topic": "medicsiq",
+    "keywords": ["medicsiq", "medical", "healthcare", "health", "hospital", "clinic", "dermatology", "wellness", "pharma", "nabh", "clinical", "doctor"],
+    "content": "MedicsIQ is DSeT's AI Dermatology & Wellness Platform. Tagline: Clinical-grade skin intelligence — delivered at consumer scale. It combines AI-driven skin analysis with personalised product mapping — built for dermatology clinics, D2C wellness brands, and beauty-tech retailers. Key capabilities: AI skin analysis across 12 biomarkers in under 3 seconds, trained on 500K+ dermatology images, Natura Sparsh product catalogue integration with SKU-level mapping, clinical intake automation reducing admin overhead by 70%, multi-channel deployment (SaaS, clinic kiosk, white-label API), GDPR/PDPA compliant. Results: 12-biomarker analysis in <3 seconds, 70% reduction in clinical intake overhead, 30-40% reduction in per-patient consultation time."
+  },
+  {
+    "topic": "products_all",
+    "keywords": ["products", "platforms", "solutions", "what do you offer", "kya offer", "all products", "saare products", "list", "platforms list"],
+    "content": "DSeT has 5 vertical AI platforms: 1) OreBill AI™ — Mining & Mineral Logistics (automated ore billing, weighbridge intelligence). 2) EdgeBay Intelligence — Industrial OT Edge AI (SCADA, PLC, sensor data intelligence). 3) SecureCloud — Cloud Security & Compliance (PCI-DSS, GDPR, HIPAA). 4) iPAS RevOps — Revenue Operations Automation (CRM unification, AR automation, forecasting). 5) MedicsIQ — Healthcare & Wellness AI (clinical workflow, HIPAA/NABH compliance)."
+  },
+  {
+    "topic": "services",
+    "keywords": ["services", "service", "offer", "provide", "help", "kya karte", "what do you do", "capabilities", "what can you do"],
+    "content": "DSeT offers 5 services under the ARC Framework (Activate → Reimagine → Co-create): 1) Platform Deployment — cloud, on-premise, or hybrid deployment with full go-live support. 2) AI Integration & Data Modernisation — connect to existing ERP, SCADA, cloud infrastructure without ripping out legacy systems. 3) Managed Intelligence Services — ongoing model management, 24/7 monitoring, SLA-backed uptime. 4) Platform Adoption Engineering — readiness assessments, architecture blueprints, change management. 5) Custom AI Engineering — bespoke model development for industry-specific problems."
+  },
+  {
+    "topic": "industries",
+    "keywords": ["industry", "industries", "sector", "vertical", "which industry", "kaun sa sector", "for whom", "kis ke liye"],
+    "content": "DSeT serves 4 primary industries: 1) Mining & Mineral Logistics — ore billing, weighbridge reconciliation, environments processing ₹100 Cr+ monthly flows. 2) Industrial Operations / OT Edge — SCADA, PLC, DCS plant environments. 3) Healthcare & Pharma — dermatology, wellness, clinical operations. 4) Secure Enterprise / BFSI — cloud security, compliance automation for banks and financial institutions. 5) Revenue Operations / B2B SaaS — CRM, AR automation, revenue forecasting."
+  },
+  {
+    "topic": "differentiators",
+    "keywords": ["different", "unique", "why dset", "why choose", "better than", "advantage", "special", "kyu choose", "kyun", "usp", "best"],
+    "content": "DSeT's key differentiators: 1) Deeptech, Not Consulting — builds proprietary AI platforms, not POCs or slide decks. Every engagement ships working software. 2) Agentic Execution — OreBill generates invoices (doesn't just show data), EdgeBay acts (doesn't just alert). 3) Edge & Non-API Ready — operates in air-gapped, low-connectivity environments. Models run inside client infrastructure, data never leaves. 4) Regulated-First Architecture — GST, CERT-In, PCI-DSS, GDPR, HIPAA compliance baked in from day one. 5) Microsoft ISV Partner — iPAS RevOps live on Microsoft Marketplace."
+  },
+  {
+    "topic": "deployment",
+    "keywords": ["deploy", "deployment", "cloud", "on-premise", "onpremise", "hybrid", "infrastructure", "hosting", "where", "kahan deploy", "install"],
+    "content": "DSeT platforms support flexible deployment: Cloud (AWS, Azure, GCP), On-Premise (inside client infrastructure), and Hybrid. Models run inside client infrastructure — data never leaves the client's environment. Also operates in air-gapped and low-connectivity environments for industrial use cases."
+  },
+  {
+    "topic": "pricing",
+    "keywords": ["price", "pricing", "cost", "how much", "kitna", "rate", "plan", "budget", "affordable", "expensive", "fees", "charges"],
+    "content": "DSeT follows a Platform + Deployment model with subscription-based pricing. Exact pricing is customized based on the platform, deployment type, and scale of operations. iPAS RevOps is available through Microsoft Marketplace for standardized procurement. For pricing details, our team provides a tailored proposal after a strategic demo session."
+  },
+  {
+    "topic": "demo",
+    "keywords": ["demo", "demonstration", "book", "schedule", "meeting", "call", "try", "dekha", "dikhao", "show me", "interested", "contact sales"],
+    "content": "DSeT offers a 30-minute Strategic Demo — not a generic slideshow, but a session that maps your operational environment to the right DSeT platform and shows outcomes on your own data context. To book a demo, visit the Contact page or email infodsetc@gmail.com. Phone: +91 732 5948-111."
+  },
+  {
+    "topic": "contact",
+    "keywords": ["contact", "reach", "email", "phone", "address", "office", "location", "kahan", "connect", "talk", "speak", "call", "helpline"],
+    "content": "DSeT Contact Details: Email: infodsetc@gmail.com | Phone: +91 732 5948-111 (Monday–Friday, 9 AM – 6 PM IST) | Office: DSeT Consulting Private Limited, Yuvaka Sangha, Yuvapatha 4, 31st Cross, 11th Main Rd, 4th Block, Jayanagar, Bengaluru, Karnataka 560011, India. Response within 24 hours."
+  },
+  {
+    "topic": "partnerships",
+    "keywords": ["partner", "partnership", "microsoft", "certified", "recognition", "award", "dpiit", "stpi", "inspace", "startup india", "government"],
+    "content": "DSeT's official recognitions and partnerships: Microsoft ISV Partner (iPAS RevOps live on Microsoft Marketplace), DPIIT Recognised Startup, STPI Registered (Software Technology Parks of India), IN-SPACe Empanelled (Indian National Space Promotion and Authorisation Centre), ISO Aligned, SOC 2 Compliance Ready."
+  },
+  {
+    "topic": "case_studies",
+    "keywords": ["case study", "case studies", "results", "success", "client", "customer", "outcome", "achievement", "proof", "example", "real", "worked", "kaam kiya", "kopl", "pharma", "sports", "university", "lms", "learning"],
+    "content": "DSeT case studies: 1) KOPL Intelligence (Manufacturing IT-OT) — Eliminated manual data reconciliation, AI flags bottlenecks in real time, voice interface for floor managers. 2) OreBill AI (Mining) — 60% reduction in billing reconciliation time, ₹1.2 Cr annual revenue leakage recovered, weighbridge discrepancy reduced from 12% to 1.5%. 3) SecureCloud (BFSI) — 70% reduction in compliance audit prep time, 84% reduction in critical misconfigurations, PCI-DSS Level 1 readiness in one quarter. 4) iPAS RevOps (SaaS) — AR overdue rate dropped from 23% to 8%, 340+ manual hours recovered monthly, forecast accuracy improved from ±31% to ±9%. 5) Pharma Intelligence (MedicsIQ) — RAG-based market audit system unifying pharma market data and insider intelligence. 6) Digital Operations for Sports/Universities — AI platform for athlete analytics and institutional workflow management. 7) Learning Management System — AI-driven personalised learning paths and future-skill recommendations for enterprises."
+  },
+  {
+    "topic": "social_links",
+    "keywords": ["linkedin", "twitter", "facebook", "social", "follow", "website", "online", "internet"],
+    "content": "DSeT online presence: Website: https://dsetconsulting.com | LinkedIn: https://www.linkedin.com/company/dset-consulting | Twitter/X: https://x.com/cmdset10x | Facebook: https://www.facebook.com/DSeTConsulting/"
+  },
+  {
+    "topic": "problem_billing_mining",
+    "keywords": ["billing slow", "billing late", "invoice delay", "manual billing", "billing error", "discrepancy", "weighbridge wrong", "ore billing", "mineral billing", "dispatch problem", "reconciliation", "billing time", "billing issue", "billing problem", "grade mismatch", "erp sync", "pdf invoice", "government portal", "billing leti", "invoice galat", "data entry"],
+    "content": "If your mining or mineral logistics operation suffers from slow billing cycles, weighbridge discrepancies, or manual data entry errors, OreBill AI™ directly solves this. It automates the full dispatch-to-invoice cycle, reads PDF-based government portals without API dependency, syncs with your ERP in real time, and flags disputes before they become revenue leakage. Real result: billing reconciliation time cut from 5 days to under 2 days, ₹1.2 Cr annual leakage recovered, weighbridge discrepancy reduced from 12% to 1.5%. No ripping out existing systems — it integrates on top."
+  },
+  {
+    "topic": "problem_plant_factory",
+    "keywords": ["plant data", "factory data", "scada problem", "sensor data", "machine data", "production data", "manual report", "floor manager", "ot it gap", "plc data", "industrial data", "maintenance issue", "predictive maintenance", "downtime", "production loss", "alert flood", "dashboard useless", "no connectivity", "air gap", "manufacturing problem", "operations problem", "data silos", "scattered data"],
+    "content": "If your plant or factory struggles with siloed SCADA/PLC data, alert floods with no action, manual Excel reports, or IT-OT disconnect, EdgeBay Intelligence fixes this. It bridges your sensor, SCADA, and PLC data with enterprise systems — even in air-gapped or low-connectivity environments. It doesn't just show dashboards — it takes agentic action: flags bottlenecks, triggers alerts, and gives floor managers a conversational voice interface to query operations in real time. Built for industrial environments where connectivity and legacy hardware are constraints."
+  },
+  {
+    "topic": "problem_compliance_audit",
+    "keywords": ["compliance problem", "audit fail", "audit slow", "cloud misconfiguration", "security gap", "pci dss", "gdpr issue", "hipaa", "iso audit", "cloud security", "misconfiguration", "compliance cost", "audit prep", "certifi problem", "bank compliance", "bfsi compliance", "finance compliance", "security posture", "cloud risk", "penalty", "regulatory", "compliance time", "weeks for audit"],
+    "content": "If your team spends weeks preparing for compliance audits, keeps finding cloud misconfigurations, or struggles to maintain PCI-DSS, GDPR, or HIPAA posture continuously, SecureCloud solves this. It gives continuous automated cloud posture management — real-time compliance scoring, policy enforcement, and prioritized remediation so your team fixes the right things first. Real result: audit prep time reduced 70% (6 weeks to 10 days), critical misconfigurations reduced 84% within 60 days, PCI-DSS Level 1 readiness in one quarter. Works across multi-cloud environments."
+  },
+  {
+    "topic": "problem_revenue_sales",
+    "keywords": ["forecast wrong", "sales forecast", "revenue forecast", "ar overdue", "invoice overdue", "collection problem", "crm scattered", "multiple crm", "pipeline visibility", "deal tracking", "churn risk", "manual followup", "sales ops", "revenue ops", "b2b collections", "revenue leakage", "sales team problem", "forecast accuracy", "pipeline problem", "revenue problem", "follow up manual", "ar problem"],
+    "content": "If your revenue team deals with inaccurate sales forecasts, overdue AR, manual follow-up on hundreds of invoices, or fragmented CRM data across tools, iPAS RevOps fixes this. It unifies pipeline data from multiple CRMs, automates AR follow-up sequences, and gives real-time deal velocity and churn risk scoring. Live on Microsoft Marketplace. Real result: AR overdue dropped from 23% to 8% in 90 days, 340+ manual follow-up hours recovered per month, forecast accuracy improved from ±31% to ±9% quarter-over-quarter."
+  },
+  {
+    "topic": "problem_healthcare_clinic",
+    "keywords": ["skin analysis", "dermatology", "clinic problem", "patient intake", "clinical admin", "wellness platform", "beauty tech", "skin care", "hospital admin", "clinical workflow", "pharma data", "health data", "skin condition", "consultation time", "nabh", "patient data", "healthcare ai", "medical ai", "clinic automation", "health platform"],
+    "content": "If your dermatology clinic, wellness brand, or healthcare operation struggles with slow patient intake, manual skin assessments, or disconnected product recommendations, MedicsIQ solves this. It delivers AI-driven skin analysis across 12 biomarkers in under 3 seconds (trained on 500K+ images), automates clinical intake, and maps results to product SKUs for personalised recommendations. Deployable as SaaS, clinic kiosk, or white-label API. GDPR/PDPA compliant. Real result: 70% reduction in clinical intake overhead, 30–40% reduction in per-patient consultation time."
+  },
+  {
+    "topic": "consulting_approach",
+    "keywords": ["how do you work", "kaise kaam karte", "engagement model", "process", "how to start", "onboarding", "implementation", "how long", "kitna time", "project start", "kaise shuru", "approach", "methodology", "arc framework", "activate reimagine", "custom", "bespoke", "integration", "legacy system"],
+    "content": "DSeT works through the ARC Framework — Activate, Reimagine, Co-create. Step 1 Activate: Platform deployment on cloud, on-premise, or hybrid — full go-live support, connects to your existing ERP, SCADA, or CRM without replacing them. Step 2 Reimagine: AI integration and data modernisation — no rip-and-replace. Models run inside your infrastructure, your data never leaves. Step 3 Co-create: Ongoing managed intelligence, 24/7 monitoring, SLA-backed uptime, and custom AI engineering for problems unique to your operation. Every engagement ships working software — not POCs or slide decks."
+  },
+  {
+    "topic": "problem_general_ai",
+    "keywords": ["ai implement karna hai", "ai chahiye", "ai project", "want ai", "need ai", "ai solution", "automate karna", "automation chahiye", "digital transform", "digitise", "going digital", "manual process", "reduce manual", "reduce cost", "efficiency", "productivity", "scale karna", "grow karna", "data use karna", "data waste", "not using data"],
+    "content": "DSeT helps operationally complex businesses implement AI that works in the real world — not generic tools, but vertical platforms built for your industry's constraints (air-gapped environments, legacy ERP, regulatory compliance, unstructured data). The right starting point depends on your biggest operational pain: billing/logistics, plant operations, compliance, revenue operations, or clinical workflows. Sharing your specific challenge helps identify which DSeT platform delivers the fastest measurable outcome for your situation."
+  }
+]

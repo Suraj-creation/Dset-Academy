@@ -25,9 +25,11 @@
 }
 
 @layer base {
+  html {
+    font-size: 17px;
+  }
   body {
     @apply bg-gray-950 text-gray-100;
-    /* Improve text rendering on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -150,6 +152,33 @@
 
   .mobile-text-3xl {
     @apply text-3xl sm:text-4xl;
+  }
+
+  .product-page-shell {
+    font-family: var(--font-product-page), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .product-page-kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.34em];
+  }
+
+  .product-page-display {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight;
+    letter-spacing: -0.035em;
+  }
+
+  .product-page-section-heading {
+    @apply text-4xl sm:text-5xl font-bold leading-tight;
+    letter-spacing: -0.04em;
+  }
+
+  .product-page-subheading {
+    @apply text-2xl sm:text-3xl font-semibold leading-tight;
+    letter-spacing: -0.03em;
+  }
+
+  .product-page-body {
+    @apply text-base sm:text-lg leading-8;
   }
   
   /* Animated background effects */
@@ -498,14 +527,6 @@
     font-weight: 700;
   }
 
-  /* Hash navigation workaround - show targeted sections immediately */
-  #digital:target,
-  #strategy:target,
-  #execution:target,
-  #transformation:target {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-  }
 }
 
 /* ========== Mobile / small-screen optimizations ========== */
@@ -697,4 +718,21 @@
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
   }
+}
+
+/* DSeT AI widget polish */
+.dset-widget-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.dset-widget-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.dset-widget-input::placeholder {
+  color: rgba(255, 255, 255, 0.34) !important;
+  opacity: 1 !important;
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 
 const SignIn = () => {
@@ -16,7 +17,8 @@ const SignIn = () => {
     try {
       const success = await login(username, password);
       if (success) {
-        router.push('/admin/blog');
+        const from = router.query.from as string || '/admin/events';
+        router.push(from);
       } else {
         setError('Invalid credentials');
       }
@@ -32,7 +34,8 @@ const SignIn = () => {
       </Head>
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-          <div>
+          <div className="flex flex-col items-center">
+            <Image src="/logo8.png" alt="DSeT Consulting" width={56} height={56} className="mb-3 object-contain" />
             <h2 className="text-center text-3xl font-bold text-gray-900">Admin Login</h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

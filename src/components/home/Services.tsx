@@ -1,169 +1,167 @@
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import Section from '../ui/Section';
-import { FiCpu, FiTrendingUp, FiLayers, FiUsers } from 'react-icons/fi';
+
+const BLUE = '#1e90ff';
+const BLUE_SHADOW = 'rgba(30,144,255,0.28)';
+
+const differentiators = [
+  {
+    title: 'Vertical AI, not horizontal tooling',
+    problem: 'Generic AI tools are adapted to your industry. Ours are built for it from day one.',
+    icon: (
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Regulated-first & edge-ready',
+    problem: 'Compliance controls are baked in — not bolted on. Runs on edge, cloud, or air-gapped.',
+    icon: (
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Non-API intelligence — on-premise',
+    problem: 'Your models run inside your infrastructure. Your data never leaves your environment.',
+    icon: (
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+      </svg>
+    ),
+  },
+  {
+    title: 'OT/IT convergence-native',
+    problem: 'We speak SCADA, DCS, and PLC — bridging OT and IT without ripping out existing systems.',
+    icon: (
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Platform + deployment in one model',
+    problem: "You don't buy a licence and figure out the rest. One engagement, one SLA, full delivery.",
+    icon: (
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    ),
+  },
+];
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
+
+const cardVariants = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
+};
 
 const Services = () => {
-  const services = [
-    {
-      icon: <FiCpu className="h-6 w-6 sm:h-8 sm:w-8" />,
-      title: 'AI Strategy',
-      description: 'Develop a comprehensive AI roadmap tailored to your business goals, identifying key opportunities for implementation and growth.',
-      link: '/services',
-    },
-    {
-      icon: <FiTrendingUp className="h-6 w-6 sm:h-8 sm:w-8" />,
-      title: 'Digital Transformation',
-      description: 'Reimagine your business processes through our DSeT ARC framework to drive efficiency, innovation, and competitive advantage.',
-      link: '/services',
-    },
-    {
-      icon: <FiLayers className="h-6 w-6 sm:h-8 sm:w-8" />,
-      title: 'Business Consulting',
-      description: 'Leverage data analytics and market intelligence to make informed decisions and execute strategies for sustainable growth.',
-      link: '/services',
-    },
-    {
-      icon: <FiUsers className="h-6 w-6 sm:h-8 sm:w-8" />,
-      title: 'Leadership Growth',
-      description: 'Empower your leadership team with the skills and mindset needed to navigate the complexities of AI-driven business environments.',
-      link: '/services',
-    },
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-
   return (
-    <Section bgColor="light" id="services">
-      {/* Header Section */}
-      <div className="text-center mb-12 sm:mb-16 px-4 sm:px-6">
-        <motion.span 
-          className="inline-block px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-full mb-6 sm:mb-8 shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          Our Services
-        </motion.span>
-        <motion.h2 
-          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-[#ff851b] leading-tight"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          AI-Powered Solutions for{" "}
-          <span className="bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] bg-clip-text text-transparent">
-            Business Growth
-          </span>
-        </motion.h2>
-        <motion.p 
-          className="text-base sm:text-lg md:text-xl text-[#ffffff] leading-relaxed max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          We help businesses leverage strategic AI technologies to optimize operations, enhance decision-making, 
-          and drive sustainable growth through our comprehensive suite of professional services.
-        </motion.p>
-      </div>
-
-      {/* Services Grid */}
-      <div className="relative bg-gradient-to-br from-[#001f3f] via-[#002b57] to-[#001f3f] rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 mb-12 sm:mb-16 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231e90ff%22%20stroke-width%3D%220.5%22%20stroke-opacity%3D%220.1%22%3E%3Cpath%20d%3D%22M0%2030h60M30%200v60%22/%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        
-        {/* Gradient Overlays */}
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#5e17ea]/20 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-[#1e90ff]/20 to-transparent"></div>
-        
-        <motion.div 
-          className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {services.map((service, index) => (
-            <motion.div 
-              key={index}
-              className="group relative"
-              variants={itemVariants}
-            >
-              <div className="text-center">
-                <motion.div 
-                  className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 sm:mb-6 mx-auto border border-white/20 group-hover:scale-110 transition-transform duration-300"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <div className="text-white text-xl sm:text-2xl">
-                    {service.icon}
-                  </div>
-                </motion.div>
-                
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 leading-tight">{service.title}</h3>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6">
-                  {service.description}
-                </p>
-                
-                <motion.a 
-                  href={service.link} 
-                  className="inline-flex items-center text-[#ff851b] font-semibold hover:text-white transition-colors duration-300 group/link text-sm sm:text-base min-h-[44px]"
-                  whileHover={{ x: 5 }}
-                >
-                  Learn More 
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-4 w-4 sm:h-5 sm:w-5 ml-2 transition-transform group-hover/link:translate-x-1" 
-                    viewBox="0 0 20 20" 
-                    fill="currentColor"
-                  >
-                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </motion.a>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="text-center px-4 sm:px-6">
+    <Section bgColor="light" id="why-dset" spacing="xl">
+      <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          className="relative overflow-hidden rounded-[2rem] border border-[#e8e4dc] bg-[#fbfaf7] px-6 py-10 sm:px-10 sm:py-12 shadow-[0_20px_60px_rgba(15,23,42,0.09)]"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <motion.a 
-            href="/services" 
-            className="relative inline-block px-8 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-xl shadow-lg text-base sm:text-lg overflow-hidden group min-h-[44px] flex items-center justify-center"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          {/* Blue top bar */}
+          <div className="absolute inset-x-0 top-0 h-[6px]" style={{ backgroundColor: BLUE }} />
+
+          {/* Dot grid */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(15,23,42,0.05)_1px,_transparent_1px)] [background-size:22px_22px] opacity-40 pointer-events-none" />
+
+          {/* Header */}
+          <motion.div
+            className="relative z-10 flex items-center gap-3 mb-8"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <span className="relative z-10">Explore All Services</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1e90ff] to-[#5e17ea] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-xl blur-md opacity-0 group-hover:opacity-75 transition-opacity duration-300 -z-10"></div>
-          </motion.a>
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: BLUE, boxShadow: `0 10px 24px ${BLUE_SHADOW}` }}
+            >
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#001f3f] tracking-tight leading-tight">
+              Why operators{' '}
+              <span className="text-[#4f5d73] font-normal">choose DSeT</span>
+            </h2>
+          </motion.div>
+
+          {/* Cards */}
+          <motion.div
+            className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.05 }}
+          >
+            {differentiators.map((d, i) => (
+              <motion.div
+                key={d.title}
+                variants={cardVariants}
+                className={i === 4 ? 'sm:col-span-2 lg:col-span-1' : ''}
+                whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.2, ease: 'easeOut' } }}
+              >
+                <div className="group flex flex-col h-full bg-white rounded-[1.15rem] border border-[#ece8e0] shadow-[0_4px_16px_rgba(15,23,42,0.07)] hover:shadow-[0_12px_28px_rgba(30,144,255,0.15)] transition-shadow duration-300 overflow-hidden">
+                  <div className="h-[5px] w-full flex-shrink-0" style={{ backgroundColor: BLUE }} />
+                  <div className="flex flex-col flex-1 p-5">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 flex-shrink-0"
+                      style={{ backgroundColor: BLUE, boxShadow: `0 6px 16px ${BLUE_SHADOW}` }}
+                    >
+                      {d.icon}
+                    </div>
+                    <h3 className="text-[0.95rem] font-bold text-[#001f3f] mb-2 leading-snug">{d.title}</h3>
+                    <p className="text-sm text-[#5a6a7a] leading-relaxed flex-1">{d.problem}</p>
+                    <Link
+                      href="/services"
+                      className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold hover:gap-2.5 transition-all duration-200"
+                      style={{ color: BLUE }}
+                    >
+                      Explore Solution
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Footer CTA */}
+          <motion.p
+            className="relative z-10 text-center text-sm text-[#9ca3af] mt-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+          >
+            Ready to see it in action?{' '}
+            <Link href="/contact?type=demo" className="font-semibold hover:underline underline-offset-2" style={{ color: BLUE }}>
+              Book a strategic demo.
+            </Link>
+          </motion.p>
         </motion.div>
       </div>
     </Section>

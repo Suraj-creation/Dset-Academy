@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getPublishedPostsServer, getPostBySlugServer } from '@/lib/blog.server';
 import { format } from 'date-fns';
+import sanitizeHtml from 'sanitize-html';
 
 interface BlogPost {
   id: string;
@@ -127,7 +128,10 @@ const BlogPost: NextPage<Props> = ({ post, preview }) => {
           <div className="max-w-3xl mx-auto">
             <div 
               className="tinymce-content"
-              dangerouslySetInnerHTML={{ __html: post.content }} 
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'iframe']),
+                allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, img: ['src', 'alt', 'width', 'height'], iframe: ['src', 'allowfullscreen', 'frameborder'] },
+              }) }} 
             />
           </div>
         </div>

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block admin pages from indexing
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+
+Sitemap: https://dsetconsulting.com/sitemap.xml

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { withAuth } from '@/components/auth/withAuth';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { Editor } from '@tinymce/tinymce-react';
+import dynamic from 'next/dynamic';
 import { createPost } from '@/lib/blog';
+
+const Editor = dynamic(() => import('@tinymce/tinymce-react').then(m => m.Editor), { ssr: false });
 
 interface Tag {
   id: string;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { getAllPosts, deletePost } from '@/lib/blog';
 import { useAuth } from '@/context/AuthContext';
+import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
 
 interface BlogPost {
@@ -25,30 +25,21 @@ interface BlogPost {
 
 const AdminBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
   const [selectedTag, setSelectedTag] = useState<string>('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { isLoggedIn, loading: authLoading, login, logout } = useAuth();
-  const router = useRouter();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    if (isLoggedIn && !authLoading) {
-      fetchPosts();
-    }
-  }, [isLoggedIn, authLoading]);
+    fetchPosts();
+  }, []);
 
   const fetchPosts = async () => {
     try {
       const postsData = await getAllPosts();
       setPosts(postsData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      setLoading(false);
+    } catch {
+      // posts stays empty on error
     }
   };
 
@@ -63,82 +54,10 @@ const AdminBlog = () => {
     }
   };
 
-  if (authLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = await login(username, password);
-    if (success) {
-      setError('');
-    } else {
-      setError('Invalid credentials');
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setPosts([]);
   };
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-          <div>
-            <h2 className="text-center text-3xl font-bold text-gray-900">
-              Blog Admin Login
-            </h2>
-          </div>
-          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            {error && (
-              <div className="text-red-500 text-sm text-center">
-                {error}
-              </div>
-            )}
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="username" className="sr-only">Username</label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  required
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">Password</label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -148,7 +67,15 @@ const AdminBlog = () => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
+            <div className="flex items-center gap-6">
+              <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
+              <nav className="hidden sm:flex items-center gap-1">
+                <Link href="/admin/events"  className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Events</Link>
+                <span className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-100">Blog</span>
+                <Link href="/admin/careers" className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Careers</Link>
+                <Link href="/admin/leads"   className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Leads</Link>
+              </nav>
+            </div>
             <div className="flex items-center gap-4">
               <Link
                 href="/admin/blog/new"
@@ -287,4 +214,4 @@ const AdminBlog = () => {
   );
 };
 
-export default AdminBlog;
+export default withAuth(AdminBlog);

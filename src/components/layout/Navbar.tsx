@@ -1,16 +1,96 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { useRouter } from 'next/router';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
   bannerVisible?: boolean;
 }
 
+const navLinks = [
+  {
+    name: 'Platforms',
+    href: '/product',
+    dropdown: [
+      { name: 'OreBill AI™',          href: '/product/orebill-ai',           section: '' },
+      { name: 'EdgeBay Intelligence',  href: '/product/edgebay-intelligence', section: '' },
+      { name: 'SecureCloud',           href: '/product/securecloud',          section: '' },
+      { name: 'iPaS-RevOps',           href: '/product/ipas-revops',          section: '' },
+      { name: 'MedicsiQ',              href: '/product/medicsiq',             section: '' },
+    ],
+  },
+  { name: 'Industries',    href: '/industries'    },
+  { name: 'Case Studies',  href: '/case-studies'  },
+  {
+    name: 'Resources',
+    href: '/blog',
+    dropdown: [
+      { name: 'Blog',   href: '/blog',   section: '' },
+      { name: 'Events', href: '/events', section: '' },
+    ],
+  },
+  {
+    name: 'Company',
+    href: '/about',
+    dropdown: [
+      { name: 'About DSeT',               href: '/about',        section: '' },
+      { name: 'Leadership',               href: '/about',        section: '' },
+      { name: 'How We Deliver (DSeT ARC)', href: '/services',    section: 'dset-arc' },
+      { name: 'Partners & Ecosystem',     href: '/about',        section: '' },
+      { name: 'Careers',                  href: '/careers',      section: '' },
+    ],
+  },
+  { name: 'Contact', href: '/contact' },
+];
+
+const scrollToSection = (sectionId: string) => {
+  if (!sectionId) return;
+  let attempts = 0;
+  const tryScroll = () => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const navbarHeight = 130;
+      let top = 0;
+      let current: HTMLElement | null = el;
+      while (current) {
+        top += current.offsetTop;
+        current = current.offsetParent as HTMLElement | null;
+      }
+      window.scrollTo({ top: top - navbarHeight, behavior: 'smooth' });
+    } else if (attempts < 10) {
+      attempts++;
+      setTimeout(tryScroll, 150);
+    }
+  };
+  tryScroll();
+};
+
 const Navbar = ({ bannerVisible = true }: NavbarProps) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSectionRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (pendingSectionRef.current) {
+        const section = pendingSectionRef.current;
+        pendingSectionRef.current = null;
+        setTimeout(() => scrollToSection(section), 400);
+        return;
+      }
+      const hash = window.location.hash.replace('#', '');
+      if (hash) setTimeout(() => scrollToSection(hash), 500);
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    handleRouteChange();
+    return () => router.events.off('routeChangeComplete', handleRouteChange);
+  }, [router.asPath]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,186 +101,276 @@ const Navbar = ({ bannerVisible = true }: NavbarProps) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [bannerVisible]);
 
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Services', href: '/services' },
-    { name: 'About', href: '/about' },
-    { name: 'Assessment', href: '/digital-assessment' },
-    { name: 'Case Studies', href: '/case-studies' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
-  ];
+  // ✅ Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  const handleMouseEnter = (name: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setActiveDropdown(name);
+  };
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setActiveDropdown(null), 150);
+  };
+
+  const handleDropdownClick = (e: React.MouseEvent, href: string, section: string) => {
+    e.preventDefault();
+    setActiveDropdown(null);
+    setIsOpen(false);
+    setMobileExpanded(null);
+    const currentPath = router.asPath.split('#')[0];
+    if (currentPath === href) {
+      scrollToSection(section);
+    } else {
+      if (section) pendingSectionRef.current = section;
+      router.push(href);
+    }
+  };
 
   return (
-    <header
-      className={`fixed w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? 'top-0 bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100'
-          : `${bannerVisible ? 'top-16' : 'top-0'} bg-[#5e17eb]`
-      }`}
-    >
-      <div className="container-custom flex items-center justify-between py-4">
-        {/* Brand / Logo */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="min-w-[220px]"
-        >
-          <Link href="/" aria-label="DSeT Consulting home" className="group block focus:outline-none">
-            <div className="flex items-center">
-              {/* Icon tile */}
-              <div
-                className={[
-                  'relative flex items-center justify-center',
-                  'h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16',
-                  'rounded-xl ring-1',
-                  scrolled ? 'ring-gray-200 bg-white' : 'ring-white/20 bg-white/10 backdrop-blur-sm',
-                  'transition-all duration-300 group-hover:scale-[1.03]',
-                ].join(' ')}
-              >
-                <Image
-                  src="/DSeTC logo.png"
-                  alt="DSeT Consulting logo"
-                  fill
-                  sizes="64px"
-                  className="p-2 object-contain"
-                  priority
-                />
-              </div>
-
-              {/* Wordmark */}
-              <div className="ml-3 sm:ml-4 leading-tight">
-                <div
-                  className={[
-                    'hidden md:block font-extrabold tracking-tight',
-                    'text-2xl sm:text-3xl lg:text-[32px] lg:leading-[1.1]',
-                    scrolled ? 'text-[#0B1B3A]' : 'text-white',
-                    'transition-colors duration-300',
-                  ].join(' ')}
-                >
-                  <span className="align-baseline">DSeT</span>
-                  <span className="align-baseline font-semibold">&nbsp;Consulting</span>
-                </div>
-
-                <div className="md:hidden">
-                  <div
-                    className={[
-                      'font-extrabold tracking-tight text-[22px]',
-                      scrolled ? 'text-[#0B1B3A]' : 'text-white',
-                      'transition-colors duration-300',
-                    ].join(' ')}
-                  >
-                    DSeT
-                  </div>
-                  <div
-                    className={[
-                      'mt-0.5 text-[14px] font-medium tracking-wide',
-                      scrolled ? 'text-[#5e17ea]' : 'text-white/90',
-                      'transition-colors duration-300',
-                    ].join(' ')}
-                  >
-                    Consulting
-                  </div>
-                </div>
-
-                <div
-                  className={[
-                    'mt-1 h-[2px] w-8',
-                    'bg-gradient-to-r from-[#5e17ea] to-[#1e90ff]',
-                    'opacity-80 group-hover:opacity-100 transition-opacity duration-300',
-                  ].join(' ')}
-                />
-              </div>
-            </div>
-          </Link>
-        </motion.div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-8">
-          {navLinks.map((link, index) => (
+    <>
+      <header
+        className={`fixed w-full z-50 transition-all duration-500 ${
+          scrolled
+            ? 'top-0 bg-[#0B1B3A]/95 backdrop-blur-lg shadow-lg border-b border-[#1a2f5a]'
+            : `${bannerVisible ? 'top-[56px]' : 'top-0'} bg-[#5e17eb]`
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="flex items-center justify-between py-4 sm:py-5">
             <motion.div
-              key={link.name}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex-shrink-0"
             >
-              <Link
-                href={link.href}
-                className={`relative font-medium text-sm lg:text-base ${
-                  scrolled ? 'text-[#001f3f]' : 'text-white'
-                } hover:text-[#1e90ff] transition-colors duration-300 group px-3 py-2 rounded-lg hover:bg-white/5`}
-              >
-                {link.name}
-                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] group-hover:w-3/4 transition-all duration-300"></span>
+              <Link href="/" className="group flex items-center gap-2 focus:outline-none">
+                <div className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 transition-transform duration-300 group-hover:scale-105">
+                  <Image
+                    src="/logo8.png"
+                    alt="DSeT Consulting logo"
+                    fill
+                    sizes="(max-width: 640px) 36px, (max-width: 1024px) 40px, 44px"
+                    className="object-contain opacity-90"
+                    priority
+                  />
+                </div>
+                <div className="flex flex-col justify-center leading-tight">
+                  <span className="font-semibold tracking-tight text-[18px] sm:text-[22px] lg:text-[24px] text-white">
+                    DSeT <span className="font-normal">Consulting</span>
+                  </span>
+                  <div className="mt-0.5 h-[2px] w-10 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
               </Link>
             </motion.div>
-          ))}
-        </nav>
 
-        {/* Mobile/Tablet Navigation Toggle */}
-        <button
-          className={`lg:hidden p-3 rounded-xl transition-all duration-300 ${
-            scrolled
-              ? 'bg-gray-100 text-[#001f3f] hover:bg-gray-200 border border-gray-200'
-              : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20'
-          }`}
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle navigation"
-        >
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-          </motion.div>
-        </button>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="lg:hidden bg-white/95 backdrop-blur-lg shadow-xl border-t border-gray-100"
-        >
-          <div className="container-custom py-6 flex flex-col space-y-6">
-            {navLinks.map((link, index) => (
-              <motion.div
-                key={link.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  href={link.href}
-                  className="relative font-medium text-base text-[#001f3f] hover:text-[#5e17ea] transition-all duration-300 py-3 border-b border-gray-100 group block"
-                  onClick={() => setIsOpen(false)}
+            {/* Desktop Nav — UNCHANGED */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="relative"
+                  onMouseEnter={() => link.dropdown && handleMouseEnter(link.name)}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  {link.name}
-                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#5e17ea] group-hover:w-full transition-all duration-300" />
-                </Link>
-              </motion.div>
-            ))}
+                  <Link
+                    href={link.href}
+                    className="relative flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 group"
+                  >
+                    {link.name}
+                    {link.dropdown && (
+                      <ChevronDown
+                        size={13}
+                        className="opacity-60 transition-transform duration-200"
+                        style={{ transform: activeDropdown === link.name ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                      />
+                    )}
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] group-hover:w-3/4 transition-all duration-300 rounded-full" />
+                  </Link>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="pt-4"
+                  <AnimatePresence>
+                    {link.dropdown && activeDropdown === link.name && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                        className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 min-w-[210px] rounded-[10px] p-1.5 z-[200]"
+                        style={{
+                          background: 'linear-gradient(160deg, #0f1d3a 0%, #0b1428 100%)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          boxShadow: '0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(94,23,235,0.12)',
+                        }}
+                      >
+                        <div className="absolute top-0 left-[20%] right-[20%] h-[2px] rounded-b bg-gradient-to-r from-[#5e17ea] to-[#1e90ff]" />
+                        {link.dropdown.map((item, i) => (
+                          <motion.button
+                            key={item.name}
+                            initial={{ opacity: 0, x: -6 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.04 }}
+                            onClick={(e) => handleDropdownClick(e, item.href, item.section)}
+                            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-[7px] text-[13.5px] font-medium text-white/70 hover:text-white hover:bg-[rgba(94,23,235,0.18)] transition-all duration-150 text-left whitespace-nowrap cursor-pointer"
+                          >
+                            <span className="w-[5px] h-[5px] rounded-full bg-gradient-to-br from-[#5e17eb] to-[#1e90ff] flex-shrink-0" />
+                            {item.name}
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </nav>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              className="lg:hidden p-2.5 rounded-xl transition-all duration-300 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle navigation"
             >
+              <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                {isOpen ? <X size={22} /> : <Menu size={22} />}
+              </motion.div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ✅ FULL-SCREEN Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="lg:hidden fixed inset-0 z-[60] flex flex-col"
+            style={{ backgroundColor: '#0B1B3A' }}
+          >
+            {/* Top bar inside overlay */}
+            <div
+              className="flex items-center justify-between px-5 py-4 border-b border-white/10"
+              style={{ backgroundColor: '#5e17eb' }}
+            >
+              <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <div className="relative w-8 h-8 flex-shrink-0">
+                  <Image
+                    src="/logo8.png"
+                    alt="DSeT Consulting logo"
+                    fill
+                    sizes="32px"
+                    className="object-contain opacity-90"
+                  />
+                </div>
+                <div className="flex flex-col justify-center leading-tight">
+                  <span className="font-semibold tracking-tight text-[18px] text-white">
+                    DSeT <span className="font-normal">Consulting</span>
+                  </span>
+                </div>
+              </Link>
+
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-xl border border-white/30 text-white bg-white/10 hover:bg-white/20 transition-all"
+                aria-label="Close menu"
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            {/* Nav Items — scrollable middle */}
+            <div className="flex-1 overflow-y-auto px-5 py-4">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border-b border-white/[0.08]"
+                >
+                  {link.dropdown ? (
+                    <>
+                      <button
+                        onClick={() =>
+                          setMobileExpanded(mobileExpanded === link.name ? null : link.name)
+                        }
+                        className="w-full flex items-center justify-between font-semibold text-base text-white/85 hover:text-white transition-colors duration-200 py-4 px-1"
+                      >
+                        {link.name}
+                        <ChevronDown
+                          size={16}
+                          className="opacity-50 transition-transform duration-200"
+                          style={{ transform: mobileExpanded === link.name ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {mobileExpanded === link.name && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pb-3 pl-3 flex flex-col gap-1">
+                              {link.dropdown.map((item) => (
+                                <button
+                                  key={item.name}
+                                  onClick={(e) => handleDropdownClick(e, item.href, item.section)}
+                                  className="flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm text-white/55 hover:text-white hover:bg-white/5 transition-all duration-150 text-left cursor-pointer"
+                                >
+                                  <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#5e17eb] to-[#1e90ff] flex-shrink-0" />
+                                  {item.name}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="block font-semibold text-base text-white/85 hover:text-white transition-colors duration-200 py-4 px-1"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* ✅ "Get Started" CTA pinned at bottom */}
+            <div className="px-5 py-5 border-t border-white/10">
               <Link
                 href="/contact"
-                className="relative inline-block w-full px-8 py-4 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-xl shadow-lg text-lg text-center overflow-hidden group"
                 onClick={() => setIsOpen(false)}
+                className="block w-full text-center font-bold text-white text-base py-4 rounded-2xl transition-all duration-300 active:scale-95"
+                style={{
+                  background: 'linear-gradient(135deg, #5e17eb 0%, #1e90ff 100%)',
+                  boxShadow: '0 8px 24px rgba(94,23,235,0.4)',
+                }}
               >
-                <span className="relative z-10">Get Started</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1e90ff] to-[#5e17ea] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                Book a Demo
               </Link>
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </header>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -1,53 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
-import path from 'path';
 import fs from 'fs/promises';
+import path from 'path';
+import { uploadBlob } from '@/lib/azure-blob';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const config = { api: { bodyParser: false } };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const tmpDir = path.join(process.cwd(), 'tmp');
+  await fs.mkdir(tmpDir, { recursive: true });
+
+  const form = formidable({
+    uploadDir: tmpDir,
+    keepExtensions: true,
+    maxFileSize: 10 * 1024 * 1024,
+    filter: (part) => !!(part.mimetype && part.mimetype.startsWith('image/')),
+  });
 
   try {
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public/images/blog');
-    await fs.mkdir(uploadDir, { recursive: true });
-    const form = formidable({
-      uploadDir: path.join(process.cwd(), 'public/images/blog'),
-      filename: (name, ext, part) => {
-        return `${Date.now()}-${part.originalFilename}`;
-      },
-    });
-
-    const [fields, files] = await new Promise<[formidable.Fields, formidable.Files]>((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        resolve([fields, files]);
-      });
-    });
-
+    const [_fields, files] = await form.parse(req);
+    void _fields;
     const file = Array.isArray(files.image) ? files.image[0] : files.image;
-    if (!file || !file.filepath) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
+    if (!file?.filepath) return res.status(400).json({ error: 'No file uploaded' });
 
-    // Return the public URL for the uploaded image
-    const relativePath = path.relative(
-      path.join(process.cwd(), 'public'),
-      file.filepath
-    );
-    
-    const publicUrl = `/${relativePath.replace(/\\/g, '/')}`;
+    const buffer   = await fs.readFile(file.filepath);
+    const ext      = path.extname(file.originalFilename ?? '.jpg');
+    const blobName = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 7)}${ext}`;
+    const mimeType = file.mimetype ?? 'image/jpeg';
 
-    return res.status(200).json({ url: publicUrl });
-  } catch (error) {
-    console.error('Upload error:', error);
+    const url = await uploadBlob(buffer, blobName, mimeType);
+    await fs.unlink(file.filepath).catch(() => {});
+    return res.status(200).json({ url });
+  } catch (err) {
+    console.error('Upload error:', err);
     return res.status(500).json({ error: 'Error uploading file' });
   }
 }

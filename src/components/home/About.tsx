@@ -4,10 +4,11 @@ import Section from '../ui/Section';
 
 const About = () => {
   const stats = [
-    { value: '100+', label: 'Clients Served' },
-    { value: '12+', label: 'Years Experience' },
-    { value: '85%', label: 'Efficiency Increase' },
-    { value: '3x', label: 'Average ROI' },
+    { value: '5+',      label: 'AI Platforms in Market' },
+    { value: '4',       label: 'Industries Served' },
+    { value: '✓',       label: 'Microsoft ISV Partner' },
+    { value: 'Pilot+',  label: 'Production Deployments' },
+    { value: 'ISO/SOC', label: 'Compliance Ready' },
   ];
 
   return (
@@ -41,16 +42,16 @@ const About = () => {
             
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 leading-tight text-white">
               <span className="bg-gradient-to-r from-[#ff851b] to-[#1e90ff] bg-clip-text text-transparent">
-                Transforming Businesses
+                Vertical AI Platforms
               </span>{" "}
               <br />
-              Through AI Innovation
+              Built for the Real World
             </h2>
-            
+
             <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
-              DSeT Consulting stands as a prominent Global Research and Consulting arm delivering pragmatic 
-              orchestration of enterprise-level digital strategy, tailored consulting services, and sophisticated 
-              analytical services for businesses aiming to thrive in today's fast-paced digital landscape.
+              DSeT builds proprietary AI platforms for industries where failure is not an option — mining,
+              industrial operations, healthcare, and secure enterprise. Purpose-built, edge-ready, and
+              compliance-first — not generic software, not consulting.
             </p>
 
             {/* Vision & Mission */}
@@ -134,12 +135,12 @@ const About = () => {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ duration: 0.3 }}
               >
-                <Image 
-                  src="/DSeT_Logo.png" 
-                  alt="DSeT Logo" 
-                  width={80} 
-                  height={30} 
-                  className="w-auto h-8 sm:h-12"
+                <Image
+                  src="/logo8.png"
+                  alt="DSeT Logo"
+                  width={80}
+                  height={80}
+                  className="w-auto h-12 sm:h-16 object-contain"
                 />
               </motion.div>
               
@@ -175,22 +176,22 @@ const About = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               {stats.map((stat, index) => (
-                <motion.div 
-                  key={index} 
-                  className="text-center group"
+                <motion.div
+                  key={index}
+                  className={`text-center group ${index === 4 ? 'col-span-2 sm:col-span-1' : ''}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.1 * index }}
+                  transition={{ delay: 0.08 * index }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 group-hover:border-[#5e17ea]/50 transition-all duration-300">
-                    <div className="text-2xl sm:text-4xl font-bold text-white mb-1 sm:mb-2 group-hover:text-[#ff851b] transition-colors duration-300">
+                  <div className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-white/10 group-hover:border-[#5e17ea]/50 transition-all duration-300 h-full flex flex-col items-center justify-center">
+                    <div className="text-lg sm:text-2xl font-bold text-white mb-1 group-hover:text-[#ff851b] transition-colors duration-300 leading-tight">
                       {stat.value}
                     </div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-300 leading-tight">{stat.label}</div>
+                    <div className="text-[0.65rem] sm:text-xs font-medium text-gray-300 leading-tight">{stat.label}</div>
                   </div>
                 </motion.div>
               ))}

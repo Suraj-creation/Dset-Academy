@@ -4,15 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/layout/Layout';
 import Section from '../components/ui/Section';
 import assessmentData from '../data/assessment.json';
-import { 
-  FiCheckCircle, 
-  FiChevronLeft, 
-  FiChevronRight, 
-  FiBarChart2,
-  FiTarget,
-  FiTrendingUp,
-  FiAward
-} from 'react-icons/fi';
+import { CheckCircle, ChevronLeft, ChevronRight, BarChart2, Target, TrendingUp, Award } from 'lucide-react';
 
 interface Answer {
   questionId: string;
@@ -146,7 +138,7 @@ const DigitalAssessmentPage = () => {
             >
               <div className="flex justify-center mb-6">
                 <div className="w-20 h-20 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-full flex items-center justify-center">
-                  <FiAward className="w-10 h-10 text-white" />
+                  <Award className="w-10 h-10 text-white" />
                 </div>
               </div>
               <h1 className="text-4xl font-bold mb-4 text-[#ff851b]">
@@ -176,7 +168,7 @@ const DigitalAssessmentPage = () => {
                   <div className="text-lg opacity-90">Maturity Level</div>
                 </div>
                 <div className="text-center">
-                  <FiTrendingUp className="w-12 h-12 mx-auto mb-2 text-[#ff851b]" />
+                  <TrendingUp className="w-12 h-12 mx-auto mb-2 text-[#ff851b]" />
                   <div className="text-lg opacity-90">Ready for Growth</div>
                 </div>
               </div>
@@ -190,7 +182,7 @@ const DigitalAssessmentPage = () => {
               className="bg-white rounded-2xl shadow-lg p-8 mb-8"
             >
               <h2 className="text-2xl font-bold mb-6 text-[#001f3f] flex items-center">
-                <FiBarChart2 className="mr-3" />
+                <BarChart2 className="mr-3" />
                 Category Breakdown
               </h2>
               <div className="space-y-6">
@@ -225,13 +217,13 @@ const DigitalAssessmentPage = () => {
                 className="bg-green-50 rounded-2xl p-6"
               >
                 <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
-                  <FiCheckCircle className="mr-2" />
+                  <CheckCircle className="mr-2" />
                   Strengths
                 </h3>
                 <ul className="space-y-3">
                   {results.strengths.map((strength, index) => (
                     <li key={index} className="flex items-start">
-                      <FiCheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
                       <span className="text-green-700">{strength}</span>
                     </li>
                   ))}
@@ -245,13 +237,13 @@ const DigitalAssessmentPage = () => {
                 className="bg-blue-50 rounded-2xl p-6"
               >
                 <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-                  <FiTarget className="mr-2" />
+                  <Target className="mr-2" />
                   Improvement Areas
                 </h3>
                 <ul className="space-y-3">
                   {results.improvements.map((improvement, index) => (
                     <li key={index} className="flex items-start">
-                      <FiTarget className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <Target className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                       <span className="text-blue-700">{improvement}</span>
                     </li>
                   ))}
@@ -295,7 +287,7 @@ const DigitalAssessmentPage = () => {
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-xl shadow-lg text-lg hover:scale-105 transition-transform duration-300"
               >
                 Get Personalized Consulting
-                <FiChevronRight className="ml-2" />
+                <ChevronRight className="ml-2" />
               </Link>
             </motion.div>
           </div>
@@ -406,7 +398,7 @@ const DigitalAssessmentPage = () => {
                     className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white rounded-lg font-semibold shadow"
                   >
                     {contactLoading ? 'Saving...' : 'Start Assessment'}
-                    <FiChevronRight className="ml-2" />
+                    <ChevronRight className="ml-2" />
                   </button>
                 </div>
               </form>
@@ -488,7 +480,7 @@ const DigitalAssessmentPage = () => {
                             ? 'border-[#5e17ea] bg-[#5e17ea]' 
                             : 'border-gray-300'
                         }`}>
-                          {isSelected && <FiCheckCircle className="w-4 h-4 text-white" />}
+                          {isSelected && <CheckCircle className="w-4 h-4 text-white" />}
                         </div>
                       </div>
                     </motion.button>
@@ -505,7 +497,7 @@ const DigitalAssessmentPage = () => {
               disabled={currentCategoryIndex === 0 && currentQuestionIndex === 0}
               className="flex items-center px-6 py-3 text-gray-300 hover:text-[#5e17ea] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
             >
-              <FiChevronLeft className="mr-2" />
+              <ChevronLeft className="mr-2" />
               Previous
             </button>
 

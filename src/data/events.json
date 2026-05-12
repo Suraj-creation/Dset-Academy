@@ -1,0 +1,131 @@
+{
+  "events": [
+    {
+      "id": "1e6927ba-2675-4218-91a5-2cbb22cba7e4",
+      "title": "Bengaluru tech Summit 2025",
+      "date": "2025-11-20",
+      "description": "BTS 2025 was an engaging event where we interacted with investors, enterprise leaders, and students. We discussed our innovations in healthcare AI, edge computing, and enterprise automation. The event helped us explore new collaboration opportunities and strengthened our vision for building impactful deeptech solutions.",
+      "status": "published",
+      "media": [
+        {
+          "id": "dfca3160-7751-43a3-b108-1a2a70712d93",
+          "type": "image",
+          "url": "/uploads/zcjqhdvbf6mqmwokx0ylrpx5h.jpg"
+        },
+        {
+          "id": "df8374df-d1ce-4859-b76f-1364b2e3c551",
+          "type": "image",
+          "url": "/uploads/r2efq0s6j6c1lxpvm3btam7gu.jpg"
+        },
+        {
+          "id": "a7390acf-f777-4878-9e18-4b026983ad29",
+          "type": "image",
+          "url": "/uploads/a5fckwd3sxy8m43u7xjozq9c5.jpeg"
+        },
+        {
+          "id": "9ac3cbec-5392-43d1-962d-7cb8f7f2e0da",
+          "type": "video",
+          "url": "/uploads/s7o3n3o12zjetiolpa8gyhfk0.mp4"
+        },
+        {
+          "id": "6bab218c-11ca-45ac-a274-14005a4138fd",
+          "type": "image",
+          "url": "/uploads/curgaw3i5bmmml8fpxsrxhr66.jpeg"
+        }
+      ],
+      "isFeatured": false,
+      "coverMediaId": "dfca3160-7751-43a3-b108-1a2a70712d93"
+    },
+    {
+      "id": "01c2304d-7dd8-44f2-84aa-9a0faa554edc",
+      "title": "The India Digital Summit (IDS)",
+      "date": "2026-01-29",
+      "description": "At the India Digital Summit (IDS) was truly energising and insightful. DSeT Consulting showcased its edge-first AI Ops architecture designed for regulated, low-connectivity, and mission-critical environments—where AI must perform reliably on the ground, not just in the cloud.We are grateful to STPI for the nomination and the opportunity to exhibit at IDS. The day was filled with meaningful conversations around real operational challenges and the future of sovereign, edge-native AI adoption.\nProud to represent DSeT alongside a strong team and share our vision of connected intelligence from mine to market.",
+      "status": "published",
+      "media": [
+        {
+          "id": "5f6b3b88-ab48-4bc7-9ebb-68a28e2db641",
+          "type": "image",
+          "url": "/uploads/sfr1ve1dutf6pg2odjs7vs62k.jpg"
+        },
+        {
+          "id": "300362c0-c706-45b7-8ee5-4287917aa144",
+          "type": "image",
+          "url": "/uploads/qdhdzol721lt0rprspjd3pxsd.jpg"
+        },
+        {
+          "id": "492a1e46-791b-47cd-b0b3-21a9b74bc509",
+          "type": "image",
+          "url": "/uploads/xtcctjjx30z21o9baqw564xht.jpg"
+        },
+        {
+          "id": "01c94f6e-956a-4f94-b283-41a242e87bdc",
+          "type": "image",
+          "url": "/uploads/q96wuph7w1ba90a2jghuwq31u.jpeg"
+        }
+      ],
+      "isFeatured": false
+    },
+    {
+      "id": "b5bc0b83-1581-4b38-84ce-0c9381214813",
+      "title": "India AI Impact Summit 2026",
+      "date": "2026-02-15",
+      "description": "India AI Impact Summit 2026 is a premier platform bringing together policymakers, industry leaders, and deep-tech innovators to shape India’s AI-driven future. DSeT Consulting will showcase its sovereign-first, enterprise-grade AI Operating System designed for secure, scalable, and real-world deployment across regulated and asset-heavy industries. The summit focuses on advancing discussions around AI governance, infrastructure, and India’s long-term technological capability.",
+      "status": "published",
+      "media": [
+        {
+          "id": "905ad64b-18ce-4489-9d49-c99fc65c0e45",
+          "type": "image",
+          "url": "/uploads/rid7o0w6wme0ndu92c7crbadq.jpg"
+        },
+        {
+          "id": "1e120b1e-52ca-4bb8-b3a7-6cf16c27da01",
+          "type": "image",
+          "url": "/uploads/aicll5goklge3doodzqugk1su.jpeg"
+        },
+        {
+          "id": "a32674b0-e8c5-4d02-9425-fb438d989674",
+          "type": "image",
+          "url": "/uploads/kkvknkwlrcwwusxf310wrzu9a.jpeg"
+        },
+        {
+          "id": "455e3be4-a493-4384-b22c-5b375c1c454f",
+          "type": "image",
+          "url": "/uploads/gb77ic77xml8gndtksc6hewa6.jpg"
+        }
+      ],
+      "isFeatured": true,
+      "coverMediaId": "905ad64b-18ce-4489-9d49-c99fc65c0e45"
+    },
+    {
+      "id": "b772eba9-9cfe-48e9-a451-180ac42f724e",
+      "title": "World Para Athletics Championships",
+      "date": "2025-09-27",
+      "description": "DSeT supported the World Para Athletics Championship 2025 with Secure Cloud solutions, helping scale web traffic significantly and ensuring smooth digital performance. The event hosted participants from 102 countries and highlighted DSeT commitment to innovation, education, and technological growth.",
+      "status": "published",
+      "media": [
+        {
+          "id": "39bb7bec-eb41-4ab9-94fb-6c740a105360",
+          "type": "image",
+          "url": "/uploads/manei1mat79yvmru02bq21ljq.jpeg"
+        },
+        {
+          "id": "e5503aae-9dcf-4385-bffe-3d930e0e8632",
+          "type": "image",
+          "url": "/uploads/jiw6cy2mjyqekys37hs1r82yx.jpeg"
+        },
+        {
+          "id": "af227fe1-9e00-40b0-9bd9-e9e1d553857d",
+          "type": "image",
+          "url": "/uploads/j411m5kus0rivyhv0x21mt7q8.jpeg"
+        },
+        {
+          "id": "7c391aad-9452-4bb1-8ec9-42dbf81bebf8",
+          "type": "image",
+          "url": "/uploads/ebw5ozn9heron17og115c46jh.jpeg"
+        }
+      ],
+      "isFeatured": false
+    }
+  ]
+}

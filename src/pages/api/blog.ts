@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getAllPostsServer, createPostServer, updatePostServer, deletePostServer, getPostBySlugServer } from '@/lib/blog.server';
+import { isAdminRequest } from '@/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -16,10 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json(posts);
 
       case 'POST':
+        if (!isAdminRequest(req.cookies)) return res.status(401).json({ error: 'Unauthorized' });
         const newPost = await createPostServer(req.body);
         return res.status(201).json(newPost);
 
       case 'PUT':
+        if (!isAdminRequest(req.cookies)) return res.status(401).json({ error: 'Unauthorized' });
         const { id: updateId } = req.query;
         const updatedPost = await updatePostServer(updateId as string, req.body);
         if (!updatedPost) {
@@ -28,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json(updatedPost);
 
       case 'DELETE':
+        if (!isAdminRequest(req.cookies)) return res.status(401).json({ error: 'Unauthorized' });
         const { id } = req.query;
         const success = await deletePostServer(id as string);
         return res.status(200).json({ success });

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(az webapp *)",
+      "Bash(curl -s \"https://dsetconsulting2-g6esg7h2cvckepch.scm.southindia-01.azurewebsites.net/api/deployments/latest\")",
+      "Bash(python -c \"import zipfile; z=zipfile.ZipFile\\('deploy_ready.zip'\\); names=z.namelist\\(\\); print\\('\\\\n'.join\\(names[:60]\\)\\)\")",
+      "Bash(powershell -command \"Add-Type -Assembly System.IO.Compression.FileSystem; [IO.Compression.ZipFile]::OpenRead\\('../deploy_ready.zip'\\).Entries | Select-Object -First 60 -ExpandProperty FullName\")",
+      "Bash(python -c \"import zipfile,os; z=zipfile.ZipFile\\(r'd:\\\\DSet\\\\DSeTC_Web_Application\\\\deploy_ready.zip'\\); top=set\\(e.split\\('/'\\)[0] for e in z.namelist\\(\\)\\); print\\('Top-level entries in project deploy_ready.zip:'\\); [print\\(' ',t\\) for t in sorted\\(top\\)]\")",
+      "PowerShell($z = [System.IO.Compression.ZipFile]::OpenRead\\('d:\\\\DSet\\\\deploy_ready.zip'\\); $top = $z.Entries | ForEach-Object { \\($_.FullName -split '/'\\)[0] } | Sort-Object -Unique; $top; $z.Dispose\\(\\))",
+      "PowerShell(Add-Type -Assembly 'System.IO.Compression.FileSystem'; $z = [System.IO.Compression.ZipFile]::OpenRead\\('d:\\\\DSet\\\\deploy_ready.zip'\\); $top = $z.Entries | ForEach-Object { \\($_.FullName -split '/'\\)[0] } | Sort-Object -Unique; Write-Output $top; $z.Dispose\\(\\))",
+      "Bash(az rest *)",
+      "Bash(az --version)",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(e['properties']['message']\\) for e in data['value']]\")"
+    ]
+  }
+}

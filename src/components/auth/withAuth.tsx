@@ -9,7 +9,8 @@ export function withAuth<P extends object>(WrappedComponent: React.ComponentType
 
     useEffect(() => {
       if (!loading && !isLoggedIn) {
-        router.push('/admin/blog');
+        // ?from= mein current page save karo taaki login ke baad wahi wapas jaaye
+        router.push(`/auth/signin?from=${encodeURIComponent(router.asPath)}`);
       }
     }, [loading, isLoggedIn, router]);
 
@@ -17,9 +18,7 @@ export function withAuth<P extends object>(WrappedComponent: React.ComponentType
       return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     }
 
-    if (!isLoggedIn) {
-      return null; // Router will redirect
-    }
+    if (!isLoggedIn) return null;
 
     return <WrappedComponent {...props} />;
   };

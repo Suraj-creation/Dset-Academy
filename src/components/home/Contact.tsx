@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Section from '../ui/Section';
 import Button from '../ui/Button';
-import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 type ApiResponse = {
   success?: boolean;
@@ -70,19 +70,19 @@ const Contact = () => {
 
   const contactInfo = [
     {
-      icon: <FiMail className="h-5 w-5 sm:h-6 sm:w-6" />,
+      icon: <Mail className="h-5 w-5 sm:h-6 sm:w-6" />,
       title: 'Email Us',
-      details: 'contact@dsetconsulting.com',
-      action: 'mailto:contact@dsetconsulting.com',
+      details: 'infodsetc@gmail.com',
+      action: 'mailto:infodsetc@gmail.com',
     },
     {
-      icon: <FiPhone className="h-5 w-5 sm:h-6 sm:w-6" />,
+      icon: <Phone className="h-5 w-5 sm:h-6 sm:w-6" />,
       title: 'Call Us',
       details: '+91 732 5948-111',
       action: 'tel:+917325948111',
     },
     {
-      icon: <FiMapPin className="h-5 w-5 sm:h-6 sm:w-6" />,
+      icon: <MapPin className="h-5 w-5 sm:h-6 sm:w-6" />,
       title: 'Visit Us',
       details: 'Bangalore, India',
       action: 'https://maps.google.com',

@@ -113,7 +113,7 @@ export default async function handler(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': process.env.AZURE_OPENAI_KEY || '',
+          'api-key': process.env.AZURE_OPENAI_API_KEY || '',
         },
         body: JSON.stringify({
           messages: [

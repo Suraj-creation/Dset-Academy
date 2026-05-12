@@ -170,7 +170,7 @@
       "imageUrl": "/images/blog/1756209567988-blog7.png",
       "publishedAt": "2023-11-28T00:00:00.000Z",
       "author": "Admin",
-      "status": "published",
+      "status": "draft",
       "tags": [
         {
           "id": "innovation",
@@ -218,7 +218,7 @@
       "imageUrl": "/images/blog/1756209972556-blue-marketing-strategies-blog-banner-2-1.png",
       "publishedAt": "2023-11-19T00:00:00.000Z",
       "author": "Admin",
-      "status": "published",
+      "status": "draft",
       "tags": [
         {
           "id": "digital-transformation",
@@ -247,7 +247,7 @@
       "imageUrl": "/images/blog/1756210044507-4e8378e5-e5c0-46f4-a135-123379f3f949-1.png",
       "publishedAt": "2023-11-24T00:00:00.000Z",
       "author": "Admin",
-      "status": "published",
+      "status": "draft",
       "tags": [
         {
           "id": "leadership",
@@ -319,7 +319,7 @@
       "imageUrl": "/images/blog/1756210451980-blog3.png",
       "publishedAt": "2024-05-09T00:00:00.000Z",
       "author": "Admin",
-      "status": "published",
+      "status": "draft",
       "tags": [
         {
           "id": "innovation",
@@ -340,6 +340,78 @@
       "metaDescription": "",
       "slug": "unlock-success-with-napoleon-hill-s-wisdom",
       "id": "1756210452005"
+    },
+    {
+      "title": "Bridging the IT-OT Gap in Indian Manufacturing: How KOPL Intelligence Is Changing the Game",
+      "subtitle": "Why the disconnect between shop-floor data and boardroom dashboards is costing Indian manufacturers billions — and how agentic AI is finally closing that gap.",
+      "content": "<p>Walk into most Indian manufacturing facilities today and you'll find two worlds that rarely speak to each other. On one side: SCADA systems, PLCs, and DCS controllers generating terabytes of real-time operational data every day. On the other: ERP dashboards, Excel reports, and weekly review decks that management relies on to make decisions. Between them sits a chasm — the IT-OT gap — and it is costing Indian manufacturers far more than they realise.</p><h2>The Hidden Cost of Disconnected Systems</h2><p>The problem isn't that the data doesn't exist. It does — in abundance. The problem is that it lives in operational technology (OT) systems that were never designed to talk to enterprise IT infrastructure. Production line anomalies that should trigger procurement alerts don't. Maintenance events that should update ERP job cards don't. Shift handover reports that should feed into quality management systems require three people and two hours to compile manually.</p><p>At KOPL, one of India's prominent manufacturing operations, this disconnect manifested as daily reconciliation cycles that stretched across departments, manual data extraction from plant historian systems, and floor managers spending more time compiling reports than managing production. Bottlenecks were discovered reactively — after the damage was done.</p><h2>What KOPL Intelligence Changed</h2><p>DSeT's EdgeBay Intelligence platform, deployed as KOPL Intelligence, approached this differently. Rather than building another dashboard layer on top of disconnected systems, EdgeBay created a unified intelligence layer that bridges SCADA, PLC, and sensor data with enterprise IT — in real time.</p><p>The key architectural decision: run AI models inside the client's infrastructure, not in the cloud. Manufacturing environments often operate in low-connectivity or air-gapped conditions. A cloud-dependent solution would have been a non-starter. EdgeBay was built for the edge from day one.</p><p>Three outcomes stood out immediately after deployment:</p><ul><li><strong>Manual data reconciliation eliminated.</strong> What previously required dedicated staff hours is now automated. Real-time data flows from the plant floor to management dashboards without human intervention in the data pipeline.</li><li><strong>AI-flagged production bottlenecks.</strong> Instead of discovering bottlenecks in the next shift meeting, floor managers now receive intelligent alerts the moment anomalies emerge. The system doesn't just monitor — it interprets.</li><li><strong>Voice interface for floor operations.</strong> Perhaps the most operationally significant feature: floor managers can now query production status, maintenance schedules, and shift performance using a conversational interface. No terminal required. No training barrier.</li></ul><h2>Agentic AI vs. Dashboard AI</h2><p>The distinction that matters here isn't technical — it's philosophical. Most industrial AI deployments result in better dashboards. They show you more data, more clearly. EdgeBay was designed around a different premise: AI should act, not just alert.</p><p>When a sensor reading crosses a threshold, the system doesn't just illuminate a red indicator. It cross-references historical patterns, assesses downstream impact, checks maintenance schedules, and surfaces a prioritised recommendation — all in seconds. This is what agentic execution looks like in an industrial context.</p><h2>What This Means for Indian Manufacturing</h2><p>India's manufacturing sector is at an inflection point. The push toward Industry 4.0, combined with competitive pressure from global supply chains, means the IT-OT integration challenge is no longer a future consideration — it's a present urgency. Operations that continue to run on manual reconciliation and reactive maintenance cycles will find themselves structurally disadvantaged.</p><p>The KOPL Intelligence deployment demonstrates that this transformation doesn't require ripping out legacy systems or multi-year migration programmes. The right platform connects to existing SCADA, PLC, and DCS infrastructure and starts delivering intelligence within weeks.</p><p>The IT-OT gap is a solvable problem. The tools exist. The question is whether your organisation is ready to close it.</p><p><em>DSeT's EdgeBay Intelligence platform is purpose-built for industrial OT environments. To explore how it applies to your operations, book a strategic demo at dsetconsulting.com/contact.</em></p>",
+      "imageUrl": "/images/manufacturing.jpg",
+      "publishedAt": "2026-04-10T00:00:00.000Z",
+      "author": "DSeT Editorial",
+      "status": "published",
+      "tags": [
+        {
+          "id": "industrial-ai",
+          "name": "Industrial AI",
+          "color": "#0a3d62"
+        },
+        {
+          "id": "manufacturing",
+          "name": "Manufacturing",
+          "color": "#1e90ff"
+        }
+      ],
+      "metaDescription": "How DSeT's EdgeBay Intelligence platform bridges the IT-OT gap in Indian manufacturing, enabling real-time plant intelligence and agentic AI execution.",
+      "slug": "bridging-it-ot-gap-indian-manufacturing-kopl-intelligence",
+      "id": "1756300000001"
+    },
+    {
+      "title": "The Ore Billing Problem Nobody Talks About: How AI Is Fixing a ₹1.2Cr Annual Leak",
+      "subtitle": "Manual ore billing processes are silently haemorrhaging revenue across India's mining sector. Here's why it happens — and how automated weighbridge intelligence is changing the equation.",
+      "content": "<p>India's mining sector moves billions of rupees worth of ore every month. And yet, the billing and dispatch process that governs this movement is, in most operations, still largely manual. Weighbridge operators record tonnage by hand. Grade certificates are issued as PDFs by government bodies with no API access. Reconciliation happens at the end of the month — if it happens at all. Dispute cycles between mines, transporters, and buyers stretch for weeks.</p><p>The result: systematic revenue leakage that rarely shows up in any single line item, but compounds into a figure most mine operators would find alarming if they ever calculated it. At one of DSeT's mining clients, the number was ₹1.2 crore per year — quietly leaving the organisation through billing discrepancies that no one had the bandwidth to catch.</p><h2>Why Manual Ore Billing Breaks Down</h2><p>The ore billing chain has several points of failure, each compounding the others.</p><p><strong>Weighbridge data is fragmented.</strong> Multiple weighbridge stations, shift changes, and handwritten logs mean that the same truck can have different recorded weights at different points in the dispatch chain. A 0.5% discrepancy per trip, across hundreds of daily trips, adds up fast.</p><p><strong>Government systems don't have APIs.</strong> Grade certificates, royalty challans, and dispatch permits are issued as PDF documents by government portals. There's no structured data feed. Someone has to manually extract this information and enter it into the ERP — introducing another layer of error and delay.</p><p><strong>Reconciliation is periodic, not continuous.</strong> When billing reconciliation happens at month-end rather than in real time, disputes accumulate and context is lost. The transporter can no longer recall which trips are in dispute. The buyer's accounts team has already closed their books. Resolutions take weeks.</p><h2>What OreBill AI Does Differently</h2><p>DSeT's OreBill AI platform was built specifically for this environment. Not as a generic logistics tool adapted to mining, but as a purpose-built system that understands the specific data flows, regulatory requirements, and operational complexity of ore billing in the Indian mining context.</p><p>Three capabilities define its approach:</p><p><strong>Automated weighbridge intelligence.</strong> OreBill connects to weighbridge systems in real time, normalises data across stations and shifts, and flags discrepancies the moment they occur — not at month-end. The 12% weighbridge discrepancy rate at the client deployment dropped to under 1.5% within the first quarter.</p><p><strong>PDF intelligence extraction.</strong> Government-issued documents don't have APIs. OreBill uses document intelligence to extract structured data from grade certificates, challans, and permits — feeding directly into the ERP without manual re-entry. This eliminates an entire category of transcription error.</p><p><strong>Continuous reconciliation.</strong> Rather than a monthly exercise, reconciliation runs continuously. Discrepancies are flagged as they emerge, with full context intact. Disputes that previously took weeks to resolve now close within a billing cycle.</p><h2>The Numbers That Change the Conversation</h2><p>After deployment, the results at the client site were measurable and significant: billing reconciliation time dropped 60% (from 5 days to under 2 days per cycle), ₹1.2 crore in annual revenue leakage was recovered through automated dispute detection, and the weighbridge discrepancy rate fell from 12% to under 1.5%.</p><p>These aren't projections — they're outcomes from a live deployment.</p><h2>The Broader Implication</h2><p>The ore billing problem is not unique to one mine or one operator. It is structural to how the Indian mining and mineral logistics industry currently operates. Every operation that runs on manual weighbridge logs, PDF-based government documents, and periodic reconciliation is exposed to the same leakage.</p><p>The question for mine operators and CFOs is not whether this leakage exists — it almost certainly does. The question is whether the organisation is equipped to find it and stop it.</p><p>AI-driven billing automation isn't a future capability for the mining sector. It is available, deployable, and delivering measurable returns today.</p><p><em>OreBill AI is DSeT's platform for Mining and Mineral Logistics. To see how it applies to your operation, visit dsetconsulting.com/contact.</em></p>",
+      "imageUrl": "/images/mining.jpg",
+      "publishedAt": "2026-04-15T00:00:00.000Z",
+      "author": "DSeT Editorial",
+      "status": "published",
+      "tags": [
+        {
+          "id": "mining",
+          "name": "Mining & Logistics",
+          "color": "#5e17ea"
+        },
+        {
+          "id": "ai-automation",
+          "name": "AI Automation",
+          "color": "#1e90ff"
+        }
+      ],
+      "metaDescription": "How DSeT's OreBill AI platform automates ore billing, eliminates weighbridge discrepancies, and recovers ₹1.2Cr annual revenue leakage in mining operations.",
+      "slug": "ore-billing-problem-ai-fixing-revenue-leak-orebill",
+      "id": "1756300000002"
+    },
+    {
+      "title": "Why Your CRM Is Lying to You: The Revenue Operations Crisis in B2B SaaS",
+      "subtitle": "Pipeline confidence of 90% masking a forecast miss of 31%. AR overdue at 23% with no automated follow-up. The CRM data problem is bigger than most revenue teams want to admit.",
+      "content": "<p>Most B2B SaaS companies have invested significantly in their CRM. Salesforce, HubSpot, Pipedrive — the tooling is in place. And yet, when the CFO asks for a revenue forecast that she can actually rely on, the head of sales hedges. When the finance team chases overdue AR, someone in sales ops is manually exporting a spreadsheet. When leadership wants to understand why deals are slipping, the answer requires a 48-hour forensic exercise across three systems.</p><p>The CRM isn't lying to you maliciously. It's lying because it was never designed for the way B2B revenue actually works — across multiple tools, multiple teams, with complex deal cycles and AR that doesn't automatically close itself.</p><h2>The Anatomy of a Revenue Data Problem</h2><p>B2B revenue operations typically break down across three dimensions:</p><p><strong>Pipeline visibility is false confidence.</strong> A pipeline showing £2M in Stage 4 deals sounds promising. But if those deals have been sitting in Stage 4 for 45 days longer than your average cycle, they are not the same as deals that just entered Stage 4. Most CRMs don't surface velocity degradation as a first-class signal. Revenue teams operate on nominal pipeline value rather than probability-adjusted, velocity-weighted reality.</p><p><strong>AR follow-up is manual and inconsistent.</strong> In the typical B2B SaaS operation, accounts receivable follow-up depends on a person — someone with other priorities — sending emails at intervals they determine subjectively. When that person is on leave, the follow-up stops. When the portfolio grows, coverage degrades. An AR overdue rate of 23% is not a collections problem. It is a process automation problem.</p><p><strong>Forecast accuracy is structurally limited by data fragmentation.</strong> Forecasting models can only be as accurate as the data they are trained on. When pipeline data lives in CRM, usage data lives in a product analytics tool, renewal signals live in a customer success platform, and AR status lives in finance software, no single system has the full picture. Forecast accuracy of ±31% is not a modelling failure — it is an integration failure.</p><h2>What Revenue Operations Automation Looks Like in Practice</h2><p>DSeT's iPaS-RevOps platform was built to address these structural failures, not to be another reporting layer on top of them.</p><p>The architecture starts with unification: connecting pipeline data from multiple CRMs, AR status from finance systems, and customer signals from success platforms into a single intelligence layer. Not by migrating data into a new database, but by building a live integration layer that maintains context across all source systems.</p><p>On top of this unified view, three automation engines run continuously:</p><p><strong>AR follow-up automation.</strong> Sequence logic that triggers follow-up communications based on invoice age, deal relationship context, and customer tier — without requiring human initiation. At the client deployment, AR overdue rates fell from 23% to 8% within 90 days, and 340+ manual follow-up hours per month were recovered.</p><p><strong>Deal velocity analytics.</strong> Rather than showing static pipeline stages, iPAS tracks how fast deals are moving relative to historical averages and flags stalled opportunities before they become missed quarters. Revenue teams shift from reactive deal reviews to proactive pipeline management.</p><p><strong>Probabilistic revenue forecasting.</strong> With unified data and velocity signals, forecast models can account for deal age, stage transition rates, and churn risk simultaneously. Forecast accuracy improved from ±31% to ±9% quarter-over-quarter at the client deployment — a number the CFO could actually plan around.</p><h2>The Microsoft Marketplace Advantage</h2><p>iPaS-RevOps is live on Microsoft Marketplace, available through the standard Microsoft procurement process. For organisations already in the Microsoft ecosystem, this means simplified procurement, consolidated billing, and Azure credit eligibility — removing the commercial friction that often slows enterprise software adoption.</p><h2>The Larger Point</h2><p>The revenue data problem in B2B SaaS is not a CRM problem — it is a revenue operations architecture problem. Buying another CRM module, adding another dashboard, or hiring more ops analysts does not address the structural fragmentation. The fix requires an integration layer that connects the data, an automation layer that removes manual process dependencies, and an intelligence layer that surfaces signals before they become problems.</p><p>The organisations that build this architecture now will have a structural forecasting and cash collection advantage over those that continue running on spreadsheet exports and manual follow-up.</p><p><em>iPaS-RevOps is available on Microsoft Marketplace. To explore how it applies to your revenue operations, visit dsetconsulting.com/contact.</em></p>",
+      "imageUrl": "/images/revops.png",
+      "publishedAt": "2026-04-20T00:00:00.000Z",
+      "author": "DSeT Editorial",
+      "status": "published",
+      "tags": [
+        {
+          "id": "revenue-operations",
+          "name": "Revenue Operations",
+          "color": "#5e17ea"
+        },
+        {
+          "id": "b2b-saas",
+          "name": "B2B SaaS",
+          "color": "#1e90ff"
+        }
+      ],
+      "metaDescription": "Why CRM data fragmentation causes revenue forecast errors and AR overdue problems in B2B SaaS — and how DSeT's iPaS-RevOps platform fixes it.",
+      "slug": "crm-revenue-operations-crisis-b2b-saas-ipas-revops",
+      "id": "1756300000003"
     }
   ]
 }

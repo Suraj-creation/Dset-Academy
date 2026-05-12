@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { validateCredentials, setAuthToken, clearAuthToken, isAuthenticated } from '@/lib/auth';
+import { setAuthToken, clearAuthToken, isAuthenticated } from '@/lib/auth';
 
 interface AuthContextProps {
   isLoggedIn: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
@@ -24,7 +24,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
-    if (validateCredentials(username, password)) {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    if (res.ok) {
       setAuthToken();
       setIsLoggedIn(true);
       return true;
@@ -32,7 +37,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
     clearAuthToken();
     setIsLoggedIn(false);
   };
