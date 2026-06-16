@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import styles from './Testimonials.module.css';
 
 const partners = [
   { src: '/Partner_Logos/DPIIT.jpg',                                               alt: 'DPIIT',                  label: 'DPIIT' },
@@ -14,7 +14,6 @@ const partners = [
   { src: '/Partner_Logos/Utkarsh-Odisha.jpg',                                       alt: 'Utkarsh Odisha',         label: 'Utkarsh Odisha' },
   { src: '/Partner_Logos/eMudhra.png',                                              alt: 'eMudhra',                label: 'eMudhra' },
   { src: '/Partner_Logos/inspace.png',                                              alt: 'IN-SPACe',               label: 'IN-SPACe' },
-  { src: '/Partner_Logos/iso-certified-golden-label-vector-illustration-51941869.webp', alt: 'ISO Certified',     label: 'ISO Certified' },
 ];
 
 // Duplicate for seamless marquee loop
@@ -49,35 +48,43 @@ export default function TrustedBy() {
           <div className="pointer-events-none absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-[#f4f1eb] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-[#f4f1eb] to-transparent" />
 
-          <motion.div
-            className="flex gap-6 w-max"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{
-              duration: 32,
-              ease: 'linear',
-              repeat: Infinity,
-            }}
-          >
+          <div className={styles.marqueeTrack}>
             {marqueeItems.map((p, i) => (
               <div
                 key={`${p.src}-${i}`}
-                className="flex-shrink-0 flex flex-col items-center justify-center gap-2 px-5 py-4 bg-white border border-[#e8e4dc] rounded-2xl shadow-sm w-[130px] sm:w-[150px]"
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '16px 20px',
+                  backgroundColor: 'white',
+                  border: '1px solid #e8e4dc',
+                  borderRadius: '16px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  width: '140px',
+                  minWidth: '140px',
+                  maxWidth: '140px',
+                  boxSizing: 'border-box',
+                }}
               >
-                <div className="relative w-full h-10 sm:h-12">
-                  <Image
+                <div style={{ width: '100px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={p.src}
                     alt={p.alt}
-                    fill
-                    sizes="140px"
-                    style={{ objectFit: 'contain' }}
+                    loading="lazy"
+                    style={{ maxWidth: '100px', maxHeight: '48px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }}
                   />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-[#5a6a7a] text-center leading-tight">
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#5a6a7a', textAlign: 'center', lineHeight: 1.2 }}>
                   {p.label}
                 </span>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Stats row */}

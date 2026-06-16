@@ -35,7 +35,7 @@ export function useChatVoice(
   const ttsRef     = useRef<TTSProvider | null>(null);
   const pendingRef = useRef('');   // mirrors state without stale-closure risk
 
-  const supported = typeof window !== "undefined";
+  const [supported, setSupported] = useState(typeof window !== 'undefined');
 
   // ── Load providers lazily ────────────────────────────────
   useEffect(() => {
@@ -44,6 +44,7 @@ export function useChatVoice(
       const { getTTSProvider, getSTTProvider } = await import("@/lib/voice/index");
       ttsRef.current = await getTTSProvider();
       sttRef.current = await getSTTProvider();
+      setSupported(sttRef.current.isSupported());
     })();
   }, []);
 
@@ -71,7 +72,10 @@ export function useChatVoice(
       setIsSpeaking(false);
     }
 
-    if (!sttRef.current) return;
+    if (!sttRef.current) {
+      setMicError("Voice is still loading. Please try again in a moment.");
+      return;
+    }
 
     setMicError(null);
 
@@ -81,6 +85,11 @@ export function useChatVoice(
 
     if (!isSecure) {
       setMicError("Voice chat requires a secure connection (HTTPS).");
+      return;
+    }
+
+    if (!sttRef.current.isSupported()) {
+      setMicError("Voice input is not supported in this mobile browser. Please try Chrome on Android or type your message.");
       return;
     }
 
@@ -97,9 +106,13 @@ export function useChatVoice(
         setIsListening(false);
         resetPending();
         if (errorName === "NotAllowedError" || errorName === "PermissionDeniedError") {
-          setMicError("Microphone access denied. Please allow it when your browser asks.");
+          setMicError("Microphone access denied. Please allow it in your browser settings.");
         } else if (errorName === "NotFoundError") {
           setMicError("No microphone found. Please connect one and try again.");
+        } else if (errorName === "NetworkError") {
+          setMicError("Voice needs internet. Check your connection and try again.");
+        } else if (errorName === "language-not-supported") {
+          setMicError("Voice not supported in this browser. Please type your message.");
         } else {
           setMicError("Voice unavailable. You can continue by typing below.");
         }
@@ -109,13 +122,19 @@ export function useChatVoice(
     setIsListening(true);
 
     // Safety-net: sync state if provider stops on its own (e.g. Azure 8-sec limit)
+    let checks = 0;
     const check = setInterval(() => {
       if (!sttRef.current?.isListening) {
+        checks += 1;
+        if (checks < 20 && !pendingRef.current.trim()) return;
         setIsListening(false);
         clearInterval(check);
+        const text = pendingRef.current.trim();
+        resetPending();
+        if (text) onTranscript(text);
       }
     }, 500);
-  }, [resetPending]);
+  }, [onTranscript, resetPending]);
 
   // ✓ Stop recording and send whatever was transcribed
   const confirmTranscript = useCallback(() => {

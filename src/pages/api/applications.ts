@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
 import { z } from 'zod';
 import { addApplication, readApplications, updateApplicationStatus, deleteApplication, ApplicationStatus } from '@/lib/applications.server';
 import { isAdminRequest } from '@/lib/auth';
+import { sendMail } from '@/lib/email';
 import path from 'path';
 import fs from 'fs';
 
@@ -24,13 +24,6 @@ const submitSchema = z.object({
   coverNote: z.string().min(30, 'Cover note must be at least 30 characters'),
   resumeLink: z.string().min(5, 'Please provide a link to your resume'),
   _honeypot: z.string().optional(),
-});
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.office365.com',
-  port: 587,
-  secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -73,9 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: process.env.CONTACT_EMAIL ?? process.env.EMAIL_USER,
+        await sendMail({
+          to: process.env.CONTACT_EMAIL ?? 'contact@dsetconsulting.com',
           subject: `[DSeT Careers] New Application — ${data.jobTitle} — ${data.name}`,
           html: `
             <div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;background:#f8fafc;padding:24px;border-radius:12px;">

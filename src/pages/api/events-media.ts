@@ -110,6 +110,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const updated = await removeMediaFromEvent(eventId as string, mediaId as string);
     if (!updated) return res.status(500).json({ message: "Failed to remove media" });
 
+    try {
+      await res.revalidate("/events");
+      await res.revalidate(`/events/${eventId}`);
+    } catch {}
+
     return res.status(200).json(updated);
   }
 

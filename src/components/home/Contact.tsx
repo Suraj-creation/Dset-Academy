@@ -72,8 +72,8 @@ const Contact = () => {
     {
       icon: <Mail className="h-5 w-5 sm:h-6 sm:w-6" />,
       title: 'Email Us',
-      details: 'infodsetc@gmail.com',
-      action: 'mailto:infodsetc@gmail.com',
+      details: 'contact@dsetconsulting.com',
+      action: 'mailto:contact@dsetconsulting.com',
     },
     {
       icon: <Phone className="h-5 w-5 sm:h-6 sm:w-6" />,

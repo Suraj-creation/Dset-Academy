@@ -33,11 +33,14 @@ export function VoiceWaveform({ transcript, onConfirm, onCancel }: VoiceWaveform
 
     (async () => {
       try {
+        // Android + iOS: SpeechRecognition holds the mic exclusively on mobile.
+        // Opening a second stream causes recognition to receive no audio.
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         if (!aliveRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
 
         streamRef.current = stream;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const AudioCtx = window.AudioContext ?? (window as any).webkitAudioContext as typeof AudioContext;
         const ctx = new AudioCtx();
         audioCtxRef.current = ctx;

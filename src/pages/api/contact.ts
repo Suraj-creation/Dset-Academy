@@ -1,8 +1,35 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
 import { z } from 'zod';
+import { sendMail } from '@/lib/email';
 import { addContact, readContacts, markContactRead, deleteContact } from '@/lib/contacts.server';
 import { isAdminRequest } from '@/lib/auth';
+
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function detectIntent(message: string, service?: string): string {
+  if (service) return service;
+  const m = message.toLowerCase();
+  if (m.includes('demo') || m.includes('trial'))                                          return 'Demo Request';
+  if (m.includes('price') || m.includes('pricing') || m.includes('cost') || m.includes('quote')) return 'Pricing Enquiry';
+  if (m.includes('partner') || m.includes('collaborat'))                                  return 'Partnership';
+  if (m.includes('job') || m.includes('career') || m.includes('hiring'))                  return 'Career';
+  if (m.includes('support') || m.includes('issue') || m.includes('problem'))              return 'Support';
+  return 'General Enquiry';
+}
+
+function recommendedAction(intent: string): string {
+  const map: Record<string, string> = {
+    'Demo Request':      'Schedule a personalized product demo at the earliest convenience.',
+    'Pricing Enquiry':   'Share detailed pricing information and schedule a commercial discussion.',
+    'Partnership':       'Connect the contact with the business development team.',
+    'Career':            'Forward to the HR / talent acquisition team for a follow-up.',
+    'Support':           'Connect with the technical support team to address the issue.',
+    'General Enquiry':   'Respond with relevant product information and offer a discovery call.',
+  };
+  return map[intent] ?? 'Follow up with the contact within 24 hours.';
+}
 
 declare global {
   var lastSubmissions: Map<string, number> | undefined;
@@ -18,18 +45,6 @@ const contactSchema = z.object({
   _honeypot: z.string().optional(),
 });
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-});
-
-transporter.verify(function (error) {
-  if (error) {
-    console.error('❌ SMTP Connection Failed:', error.message);
-  } else {
-    console.log('✅ SMTP Connected Successfully!');
-  }
-});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // ── GET (admin: list all contacts) ──────────────────────────
@@ -86,37 +101,105 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: process.env.CONTACT_EMAIL ?? process.env.EMAIL_USER,
-          subject: `[DSeT] New Contact — ${data.name}${data.company ? ` · ${data.company}` : ''}`,
+        const intent  = detectIntent(data.message, data.service);
+        const action  = recommendedAction(intent);
+        const dateStr = new Date().toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
+          year: 'numeric', hour: '2-digit', minute: '2-digit',
+        }) + ' IST';
+        const preview = data.message.length > 160
+          ? data.message.substring(0, 160) + '…'
+          : data.message;
+        const summary = `${esc(data.name)} reached out via the website contact form with a ${intent.toLowerCase()}. Their message: "${esc(preview)}"`;
+
+        await sendMail({
+          to: process.env.CONTACT_EMAIL ?? 'contact@dsetconsulting.com',
+          subject: `New Contact Received - ${data.name} Enquired About ${intent}`,
           html: `
-            <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#f8fafc;padding:24px;border-radius:12px;">
-              <div style="background:linear-gradient(135deg,#001f3f,#0a3060);padding:28px 24px;border-radius:10px;margin-bottom:20px;">
-                <p style="color:rgba(255,255,255,0.55);font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 6px;">DSeT — New Contact</p>
-                <h1 style="color:#ffffff;margin:0 0 6px;font-size:22px;">${data.name}</h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:14px;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} IST</p>
-              </div>
-              <div style="background:#ffffff;border-radius:10px;padding:24px;margin-bottom:14px;border:1px solid #e2e8f0;">
-                <table style="width:100%;border-collapse:collapse;font-size:14px;">
-                  <tr><td style="padding:5px 0;color:#6b7a90;width:120px;">Name</td><td style="padding:5px 0;color:#001f3f;font-weight:600;">${data.name}</td></tr>
-                  <tr><td style="padding:5px 0;color:#6b7a90;">Email</td><td style="padding:5px 0;"><a href="mailto:${data.email}" style="color:#1e90ff;">${data.email}</a></td></tr>
-                  ${data.phone ? `<tr><td style="padding:5px 0;color:#6b7a90;">Phone</td><td style="padding:5px 0;color:#001f3f;">${data.phone}</td></tr>` : ''}
-                  ${data.company ? `<tr><td style="padding:5px 0;color:#6b7a90;">Company</td><td style="padding:5px 0;color:#001f3f;">${data.company}</td></tr>` : ''}
-                  ${data.service ? `<tr><td style="padding:5px 0;color:#6b7a90;">Service</td><td style="padding:5px 0;color:#001f3f;">${data.service}</td></tr>` : ''}
-                </table>
-              </div>
-              <div style="background:#ffffff;border-radius:10px;padding:24px;border:1px solid #e2e8f0;">
-                <h2 style="color:#001f3f;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #f0f5fc;">Message</h2>
-                <p style="line-height:1.75;color:#334155;font-size:14px;margin:0;">${data.message.replace(/\n/g, '<br>')}</p>
-              </div>
-              <p style="color:#94a3b8;font-size:11px;margin-top:16px;text-align:center;">View all contacts at /admin/contacts</p>
-            </div>
-          `,
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f1f5f9;-webkit-text-size-adjust:100%;">
+<div style="max-width:640px;width:100%;margin:0 auto;padding:20px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#001f3f 0%,#0d3b6e 100%);padding:28px 32px;border-radius:12px 12px 0 0;">
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td><span style="color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">DSeT Consulting</span></td>
+        <td style="text-align:right;"><span style="background:#1d4ed8;color:#ffffff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;letter-spacing:0.08em;">Contact Form</span></td>
+      </tr>
+    </table>
+    <p style="color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin:18px 0 8px;">New Contact</p>
+    <h1 style="color:#ffffff;font-size:26px;font-weight:700;margin:0 0 6px;line-height:1.2;">${esc(data.name)}</h1>
+    <p style="color:rgba(255,255,255,0.55);font-size:13px;margin:0;">${dateStr}</p>
+  </div>
+
+  <!-- Contact Information -->
+  <div style="background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;padding:22px 28px;">
+    <p style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 14px;">Contact Information</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+      <tr>
+        <td style="padding:7px 0;color:#64748b;width:130px;vertical-align:top;">Source</td>
+        <td style="padding:7px 0;color:#1e293b;font-weight:600;">Website Contact Form</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 0;color:#64748b;vertical-align:top;">Date &amp; Time</td>
+        <td style="padding:7px 0;color:#1e293b;">${dateStr}</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 0;color:#64748b;vertical-align:top;">Intent</td>
+        <td style="padding:7px 0;"><span style="background:#eff6ff;color:#1d4ed8;font-weight:700;font-size:12px;padding:3px 10px;border-radius:20px;">${esc(intent)}</span></td>
+      </tr>
+      <tr>
+        <td style="padding:7px 0;color:#64748b;vertical-align:top;">Name</td>
+        <td style="padding:7px 0;color:#1e293b;font-weight:600;">${esc(data.name)}</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 0;color:#64748b;vertical-align:top;">Email</td>
+        <td style="padding:7px 0;"><a href="mailto:${esc(data.email)}" style="color:#1d4ed8;font-weight:600;text-decoration:none;">${esc(data.email)}</a></td>
+      </tr>
+      ${data.phone   ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Phone</td><td style="padding:7px 0;"><a href="tel:${esc(data.phone)}" style="color:#1d4ed8;font-weight:600;text-decoration:none;">${esc(data.phone)}</a></td></tr>` : ''}
+      ${data.company ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Company</td><td style="padding:7px 0;color:#1e293b;">${esc(data.company)}</td></tr>` : ''}
+      ${data.service ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Service</td><td style="padding:7px 0;color:#1e293b;">${esc(data.service)}</td></tr>` : ''}
+    </table>
+  </div>
+
+  <!-- Lead Summary -->
+  <div style="background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;border-top:1px solid #f1f5f9;padding:20px 28px;">
+    <p style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 10px;">Lead Summary</p>
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin:0;">${summary}</p>
+  </div>
+
+  <!-- Recommended Action -->
+  <div style="background:#fffbeb;border-left:4px solid #f59e0b;border-right:1px solid #e2e8f0;padding:18px 28px;">
+    <p style="font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 8px;">&#x1F4A1; Recommended Action</p>
+    <p style="font-size:14px;color:#78350f;line-height:1.65;margin:0;font-weight:500;">${esc(action)}</p>
+  </div>
+
+  <!-- Full Message -->
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-top:1px solid #f1f5f9;padding:22px 28px;border-radius:0 0 12px 12px;">
+    <p style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 14px;">Full Message</p>
+    <div style="padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #94a3b8;border-radius:0 8px 8px 0;font-size:14px;color:#1e293b;line-height:1.75;">
+      ${esc(data.message).replace(/\n/g, '<br>')}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:18px 0 4px;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">DSeT Consulting &nbsp;·&nbsp; <a href="#" style="color:#94a3b8;text-decoration:none;">View all contacts → /admin/contacts</a></p>
+  </div>
+
+</div>
+</body>
+</html>`,
         });
         console.log('✅ Email sent successfully!');
       } catch (emailError: any) {
-        console.error('❌ SMTP Send Error:', emailError.message);
+        console.error('❌ Email Send Error:', emailError.message);
       }
 
       return res.status(200).json({ success: true });

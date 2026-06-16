@@ -96,8 +96,8 @@ export default function TermsOfService() {
                 </nav>
                 <div className="mt-8 p-4 rounded-xl bg-[#5e17ea]/5 border border-[#5e17ea]/15">
                   <p className="text-xs text-white/50 mb-2">Legal queries?</p>
-                  <a href="mailto:infodsetc@gmail.com" className="text-xs text-[#a78bfa] hover:underline font-medium">
-                    infodsetc@gmail.com
+                  <a href="mailto:contact@dsetconsulting.com" className="text-xs text-[#a78bfa] hover:underline font-medium">
+                    contact@dsetconsulting.com
                   </a>
                 </div>
               </div>
@@ -216,8 +216,8 @@ export default function TermsOfService() {
                     <p>📍 Bengaluru, Karnataka, India</p>
                     <p>
                       ✉️{' '}
-                      <a href="mailto:infodsetc@gmail.com" className="text-[#1e90ff] hover:underline">
-                        infodsetc@gmail.com
+                      <a href="mailto:contact@dsetconsulting.com" className="text-[#1e90ff] hover:underline">
+                        contact@dsetconsulting.com
                       </a>
                     </p>
                     <p>

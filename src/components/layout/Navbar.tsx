@@ -27,8 +27,8 @@ const navLinks = [
     name: 'Resources',
     href: '/blog',
     dropdown: [
-      { name: 'Blog',   href: '/blog',   section: '' },
-      { name: 'Events', href: '/events', section: '' },
+      { name: 'Blog',         href: '/blog',         section: '' },
+      { name: 'Events',       href: '/events',       section: '' },
     ],
   },
   {

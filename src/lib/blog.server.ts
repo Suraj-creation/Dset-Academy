@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and, lte } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { db } from './db';
@@ -10,17 +10,17 @@ type Row = typeof blogPosts.$inferSelect;
 
 function toPost(row: Row): BlogPost {
   return {
-    id:              row.id,
-    title:           row.title,
-    subtitle:        row.subtitle  ?? undefined,
-    content:         row.content,
-    imageUrl:        row.imageUrl,
-    publishedAt:     row.publishedAt,
-    author:          row.author,
-    status:          row.status as BlogPost['status'],
-    tags:            (row.tags as BlogPost['tags']) ?? [],
-    metaDescription: row.metaDescription ?? undefined,
-    slug:            row.slug,
+    id:          row.id,
+    title:       row.title,
+    ...(row.subtitle        != null ? { subtitle: row.subtitle }               : {}),
+    content:     row.content,
+    imageUrl:    row.imageUrl,
+    publishedAt: row.publishedAt,
+    author:      row.author,
+    status:      row.status as BlogPost['status'],
+    tags:        (row.tags as BlogPost['tags']) ?? [],
+    ...(row.metaDescription != null ? { metaDescription: row.metaDescription } : {}),
+    slug:        row.slug,
   };
 }
 
@@ -43,20 +43,27 @@ export async function getPostBySlugServer(slug: string): Promise<BlogPost | null
 
 export async function createPostServer(post: Omit<BlogPost, 'id'>): Promise<BlogPost> {
   const id = Date.now().toString();
-  const [row] = await db.insert(blogPosts).values({
-    id,
-    title:           post.title,
-    subtitle:        post.subtitle        ?? null,
-    content:         post.content,
-    imageUrl:        post.imageUrl,
-    publishedAt:     post.publishedAt,
-    author:          post.author,
-    status:          post.status,
-    tags:            post.tags ?? [],
-    metaDescription: post.metaDescription ?? null,
-    slug:            post.slug,
-  }).returning();
-  return toPost(row);
+  try {
+    const [row] = await db.insert(blogPosts).values({
+      id,
+      title:           post.title,
+      subtitle:        post.subtitle || null,
+      content:         post.content,
+      imageUrl:        post.imageUrl || '',
+      publishedAt:     post.publishedAt,
+      author:          post.author,
+      status:          post.status,
+      tags:            post.tags ?? [],
+      metaDescription: post.metaDescription || null,
+      slug:            post.slug,
+    }).returning();
+    return toPost(row);
+  } catch (err: any) {
+    const cause = err?.cause ?? err;
+    const code = cause?.code ?? err?.code;
+    if (code === '23505') throw new Error('A post with this URL slug already exists. Change the slug and try again.');
+    throw new Error(`DB insert failed: ${cause?.message ?? err?.message ?? String(err)} [code: ${code}]`);
+  }
 }
 
 export async function updatePostServer(id: string, postUpdate: Partial<BlogPost>): Promise<BlogPost | null> {
@@ -79,15 +86,25 @@ export async function updatePostServer(id: string, postUpdate: Partial<BlogPost>
   return row ? toPost(row) : null;
 }
 
-export async function deletePostServer(id: string): Promise<boolean> {
-  const rows = await db.delete(blogPosts).where(eq(blogPosts.id, id)).returning({ imageUrl: blogPosts.imageUrl });
-  if (!rows[0]) return false;
-  const imageUrl = rows[0].imageUrl;
+export async function autoPublishDuePostsServer(): Promise<number> {
+  const now = new Date().toISOString();
+  const rows = await db
+    .update(blogPosts)
+    .set({ status: 'published' })
+    .where(and(eq(blogPosts.status, 'scheduled'), lte(blogPosts.publishedAt, now)))
+    .returning({ id: blogPosts.id });
+  return rows.length;
+}
+
+export async function deletePostServer(id: string): Promise<string | null> {
+  const rows = await db.delete(blogPosts).where(eq(blogPosts.id, id)).returning({ imageUrl: blogPosts.imageUrl, slug: blogPosts.slug });
+  if (!rows[0]) return null;
+  const { imageUrl, slug } = rows[0];
   if (imageUrl?.startsWith('https://')) {
     await deleteBlob(imageUrl);
   } else if (imageUrl?.startsWith('/uploads/') || imageUrl?.startsWith('/images/')) {
     const filePath = path.join(process.cwd(), 'public', imageUrl);
     try { await fs.unlink(filePath); } catch {}
   }
-  return true;
+  return slug;
 }

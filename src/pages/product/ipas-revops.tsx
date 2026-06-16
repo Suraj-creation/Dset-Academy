@@ -407,7 +407,7 @@ export default function IpasRevOpsPage() {
                 </div>
                 <div className="flex flex-wrap gap-x-8 gap-y-5">
                   {delivered.map((item) => (
-                    <div key={item} className="text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">
+                    <div key={item} className="product-page-subheading text-white">
                       {item}
                     </div>
                   ))}
@@ -541,6 +541,7 @@ export default function IpasRevOpsPage() {
                       Explore on Microsoft Marketplace <ArrowRight className="h-4 w-4" />
                     </a>
                   </div>
+
                 </div>
               </div>
             </div>

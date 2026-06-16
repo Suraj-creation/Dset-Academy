@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'dsetmediastorage.blob.core.windows.net',
+      },
     ],
     qualities: [75, 100],
     formats: ['image/avif', 'image/webp'],

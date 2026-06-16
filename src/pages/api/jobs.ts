@@ -39,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!id) return res.status(400).json({ error: 'id required' });
     const updated = await updateJob(id, req.body);
     if (!updated) return res.status(404).json({ error: 'Job not found' });
+    try { await res.revalidate('/careers'); } catch {}
     return res.status(200).json(updated);
   }
 
@@ -49,6 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!id) return res.status(400).json({ error: 'id required' });
     const deleted = await deleteJob(id);
     if (!deleted) return res.status(404).json({ error: 'Job not found' });
+    try { await res.revalidate('/careers'); } catch {}
     return res.status(200).json({ success: true });
   }
 

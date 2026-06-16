@@ -334,7 +334,7 @@ export default function MedicsIQPage() {
                 <h3 className="product-page-subheading mb-5 text-white sm:text-4xl">
                   {row.heading}
                 </h3>
-                <p className="text-gray-300 text-lg leading-relaxed">
+                <p className="text-base sm:text-lg leading-8 text-gray-300">
                   {row.body}
                 </p>
               </div>
@@ -623,6 +623,7 @@ export default function MedicsIQPage() {
                 </Link>
               </motion.div>
             </div>
+
           </div>
         </motion.div>
       </Section>

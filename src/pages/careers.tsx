@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import type { GetStaticProps } from 'next';
+import type { GetServerSideProps } from 'next';
 import Layout from '../components/layout/Layout';
 import Section from '../components/ui/Section';
 import { ArrowRight, Briefcase, CheckCircle, Clock, Heart, MapPin, Search, TrendingUp, Users, Zap } from 'lucide-react';
@@ -510,7 +510,7 @@ export default function CareersPage({ jobs }: CareersProps) {
   );
 }
 
-export const getStaticProps: GetStaticProps<CareersProps> = async () => {
+export const getServerSideProps: GetServerSideProps<CareersProps> = async () => {
   const jobs = await getActiveJobs();
-  return { props: { jobs }, revalidate: 60 };
+  return { props: { jobs } };
 };

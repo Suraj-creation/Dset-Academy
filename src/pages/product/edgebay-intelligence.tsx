@@ -370,7 +370,7 @@ export default function EdgeBayIntellifencePage() {
                 </div>
                 <div className="flex flex-wrap gap-x-8 gap-y-5">
                   {valueDelivered.map((item) => (
-                    <div key={item} className="text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">
+                    <div key={item} className="product-page-subheading text-white">
                       {item}
                     </div>
                   ))}
@@ -448,6 +448,7 @@ export default function EdgeBayIntellifencePage() {
                       Request a Demo
                     </Link>
                   </div>
+
                 </div>
               </div>
             </div>

@@ -81,3 +81,31 @@ export const galleryEvents = pgTable('gallery_events', {
   media:        jsonb('media').$type<MediaItem[]>().notNull().default([]),
   isFeatured:   boolean('is_featured').notNull().default(false),
 });
+
+export const whitepapers = pgTable('whitepapers', {
+  id:            text('id').primaryKey(),
+  title:         text('title').notNull(),
+  description:   text('description').notNull(),
+  category:      text('category').notNull(),
+  thumbnailUrl:  text('thumbnail_url').notNull().default(''),
+  pdfUrl:        text('pdf_url').notNull().default(''),
+  isPublished:   boolean('is_published').notNull().default(false),
+  downloadCount: integer('download_count').notNull().default(0),
+  pageCount:     integer('page_count').notNull().default(0),
+  readTime:      text('read_time').notNull().default(''),
+  tags:          jsonb('tags').$type<string[]>().notNull().default([]),
+  createdAt:     timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
+export const whitepaperLeads = pgTable('whitepaper_leads', {
+  id:              text('id').primaryKey(),
+  whitepaperID:    text('whitepaper_id').notNull(),
+  whitepaperTitle: text('whitepaper_title').notNull(),
+  fullName:        text('full_name').notNull(),
+  email:           text('email').notNull(),
+  company:         text('company').notNull(),
+  country:         text('country').notNull(),
+  designation:     text('designation').notNull().default(''),
+  purpose:         text('purpose').notNull(),
+  createdAt:       timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});

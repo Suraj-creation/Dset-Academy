@@ -47,13 +47,11 @@ async function seedIfEmpty(): Promise<void> {
 }
 
 export async function readJobs(): Promise<JobWithStatus[]> {
-  await seedIfEmpty();
   const rows = await db.select().from(jobs).orderBy(asc(jobs.id));
   return rows.map(toJob);
 }
 
 export async function getActiveJobs(): Promise<JobWithStatus[]> {
-  await seedIfEmpty();
   const rows = await db.select().from(jobs).where(eq(jobs.isActive, true)).orderBy(asc(jobs.id));
   return rows.map(toJob);
 }

@@ -6,7 +6,7 @@ export interface BlogPost {
   imageUrl: string;
   publishedAt: string;
   author: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'scheduled';
   tags: Array<{
     id: string;
     name: string;

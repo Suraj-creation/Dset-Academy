@@ -27,7 +27,6 @@ const partnerLogos = [
   { src: '/Partner_Logos/Utkarsh-Odisha.jpg',                                                   alt: 'Utkarsh Odisha',        label: 'Utkarsh Odisha' },
   { src: '/Partner_Logos/eMudhra.png',                                                          alt: 'eMudhra',               label: 'eMudhra' },
   { src: '/Partner_Logos/inspace.png',                                                          alt: 'IN-SPACe',              label: 'IN-SPACe' },
-  { src: '/Partner_Logos/iso-certified-golden-label-vector-illustration-51941869.webp',         alt: 'ISO Certified',         label: 'ISO Certified' },
 ];
 
 const Footer = () => {
@@ -128,8 +127,8 @@ const Footer = () => {
             <div className="space-y-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">Email</p>
-                <a href="mailto:infodsetc@gmail.com" className="text-sm text-white/55 hover:text-white transition-colors duration-200">
-                  infodsetc@gmail.com
+                <a href="mailto:contact@dsetconsulting.com" className="text-sm text-white/55 hover:text-white transition-colors duration-200">
+                  contact@dsetconsulting.com
                 </a>
               </div>
               <div>
@@ -154,13 +153,13 @@ const Footer = () => {
                 key={p.src}
                 className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.05] border border-white/[0.07] hover:bg-white/[0.09] transition-colors duration-200 w-full"
               >
-                <div className="relative w-full h-10">
-                  <Image
+                <div style={{ width: '100%', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={p.src}
                     alt={p.alt}
-                    fill
-                    sizes="120px"
-                    style={{ objectFit: 'contain' }}
+                    loading="lazy"
+                    style={{ maxWidth: '100%', maxHeight: '40px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }}
                   />
                 </div>
                 <span className="text-[9px] sm:text-[10px] text-white/40 text-center font-medium leading-tight hidden sm:block">

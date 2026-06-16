@@ -131,25 +131,42 @@ export const VOICE_CONFIG = {
  * Applied left-to-right on every transcript before it is buffered or sent.
  */
 export const TRANSCRIPT_CORRECTIONS: [RegExp, string][] = [
-  // "DSeT" mishearings  ─────────────────────────────────────────────────
-  [/\bdsert\b/gi,         'DSeT'],   // most common: "Dsert"
+  // ── "DSeT Consulting" compound mishearings (fix these first) ─────────
+  // iOS Safari hears Indian-English "DSeT" as "rset" and compresses
+  // "consulting" to "dc" / "c" when spoken quickly.
+  [/\brset\s+dc\b/gi,                'DSeT Consulting'],  // user-confirmed: "rset dc"
+  [/\br\s+set\s+dc\b/gi,             'DSeT Consulting'],
+  [/\brset\s+consulting\b/gi,        'DSeT Consulting'],
+  [/\br\s+set\s+consulting\b/gi,     'DSeT Consulting'],
+  [/\bdsert\s+consulting\b/gi,       'DSeT Consulting'],
+  [/\bdset\s+consulting\b/gi,        'DSeT Consulting'],
+  [/\bd\s+set\s+consulting\b/gi,     'DSeT Consulting'],
+  [/\bdecent\s+consulting\b/gi,      'DSeT Consulting'],
+  [/\bdeceit\s+consulting\b/gi,      'DSeT Consulting'],
+  // ── "DSeT" standalone mishearings ────────────────────────────────────
+  [/\brset\b/gi,          'DSeT'],   // iOS: Indian-English "D" → "r" + "set"
+  [/\br\s+set\b/gi,       'DSeT'],   // same with space
+  [/\br-set\b/gi,         'DSeT'],   // hyphenated variant
+  [/\bare\s+set\b/gi,     'DSeT'],   // "are set" (slow speech)
+  [/\bdsert\b/gi,         'DSeT'],
   [/\bd-sert\b/gi,        'DSeT'],
   [/\bd\.sert\b/gi,       'DSeT'],
   [/\bdc\s*et\b/gi,       'DSeT'],
-  [/\bd\s*set\b/gi,       'DSeT'],   // "D set"
+  [/\bd\s*set\b/gi,       'DSeT'],
   [/\bd-set\b/gi,         'DSeT'],
   [/\bd\.set\b/gi,        'DSeT'],
-  [/\bdset\b/gi,          'DSeT'],   // lowercase run-together
-  [/\bd\s*s\s*e\s*t\b/gi, 'DSeT'],   // spelled out slowly: "D S E T"
-  [/\bthe\s+set\b/gi,     'DSeT'],   // "the set" (common article mishear)
-  [/\bdissect\b/gi,       'DSeT'],   // phonetic stretch
+  [/\bdset\b/gi,          'DSeT'],
+  [/\bd\s*s\s*e\s*t\b/gi, 'DSeT'],   // spelled out: "D S E T"
+  [/\bthe\s+set\b/gi,     'DSeT'],   // "the set"
+  [/\bdissect\b/gi,       'DSeT'],
   [/\bdeceit\b/gi,        'DSeT'],
-  [/\bdecent\b/gi,        'DSeT'],   // very common mishearing
-  // "DSeTC" variants ───────────────────────────────────────────────────
+  [/\bdecent\b/gi,        'DSeT'],
+  // ── "DSeTC" variants ─────────────────────────────────────────────────
   [/\bdsertc\b/gi,        'DSeTC'],
   [/\bd-sertc\b/gi,       'DSeTC'],
   [/\bdsetc\b/gi,         'DSeTC'],
-  // "Private Limited" — STT always abbreviates when the user says it ───
+  [/\brsetc\b/gi,         'DSeTC'],  // "rsetc" — same iOS pattern for DSeTC
+  // ── "Private Limited" ────────────────────────────────────────────────
   [/\bpvt\.?\s*ltd\.?\b/gi,    'Private Limited'],
   [/\bpvt\s+limited\b/gi,      'Private Limited'],
   [/\bprivate\s+ltd\.?\b/gi,   'Private Limited'],

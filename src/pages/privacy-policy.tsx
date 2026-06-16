@@ -96,8 +96,8 @@ export default function PrivacyPolicy() {
                 </nav>
                 <div className="mt-8 p-4 rounded-xl bg-[#1e90ff]/5 border border-[#1e90ff]/15">
                   <p className="text-xs text-white/50 mb-2">Questions about your data?</p>
-                  <a href="mailto:infodsetc@gmail.com" className="text-xs text-[#1e90ff] hover:underline font-medium">
-                    infodsetc@gmail.com
+                  <a href="mailto:contact@dsetconsulting.com" className="text-xs text-[#1e90ff] hover:underline font-medium">
+                    contact@dsetconsulting.com
                   </a>
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function PrivacyPolicy() {
                 </div>
                 <p className="mt-5 text-sm text-white/55">
                   To exercise any right, email us at{' '}
-                  <a href="mailto:infodsetc@gmail.com" className="text-[#1e90ff] hover:underline">infodsetc@gmail.com</a>.
+                  <a href="mailto:contact@dsetconsulting.com" className="text-[#1e90ff] hover:underline">contact@dsetconsulting.com</a>.
                 </p>
               </Section>
 
@@ -228,8 +228,8 @@ export default function PrivacyPolicy() {
                     <p>📍 Bengaluru, Karnataka, India</p>
                     <p>
                       ✉️{' '}
-                      <a href="mailto:infodsetc@gmail.com" className="text-[#1e90ff] hover:underline">
-                        infodsetc@gmail.com
+                      <a href="mailto:contact@dsetconsulting.com" className="text-[#1e90ff] hover:underline">
+                        contact@dsetconsulting.com
                       </a>
                     </p>
                     <p>

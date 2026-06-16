@@ -20,6 +20,9 @@ interface ChatMessage {
   time:    string;
 }
 
+// Android Chrome blocks async speechSynthesis — use "Tap to Hear" button instead.
+const isAndroidDevice = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+
 // ─── Component ────────────────────────────────────────────────
 export default function ChatWidget() {
   const [isOpen,    setIsOpen]    = useState(false);
@@ -29,14 +32,20 @@ export default function ChatWidget() {
   const [voiceOn,   setVoiceOn]   = useState(false);
   const [showLead,  setShowLead]  = useState(false);
   const [leadForm,  setLeadForm]  = useState({ name: '', email: '', company: '' });
+  const [pendingTTS,       setPendingTTS]       = useState('');
+  const [isAndroidSpeaking, setIsAndroidSpeaking] = useState(false);
 
   const bottomRef     = useRef<HTMLDivElement>(null);
   const inputRef      = useRef<HTMLInputElement>(null);
   const handleSendRef = useRef<((text?: string) => void) | null>(null);
+  // Ref keeps voiceOn current inside async handleSend closures (avoids stale capture).
+  const voiceOnRef    = useRef(false);
+
 
   const { lead, shouldAskDetails, updateFromResponse, saveLeadInfo, markCaptured, incrementMessages } = useLeadCapture();
 
   const onVoiceTranscript = useCallback((transcript: string) => {
+    setPendingTTS('');
     setInput(transcript);
     handleSendRef.current?.(transcript);
   }, []);
@@ -76,6 +85,7 @@ export default function ChatWidget() {
     if (!msg || loading) return;
 
     setInput('');
+    setPendingTTS('');
 
     const userMsg: ChatMessage = {
       id:      `u-${Date.now()}`,
@@ -122,7 +132,13 @@ export default function ChatWidget() {
       incrementMessages();
       updateFromResponse(data.intent, data.score);
 
-      if (voiceOn) speak(data.reply);
+      if (voiceOnRef.current) {
+        if (isAndroidDevice) {
+          setPendingTTS(data.reply);  // show "Tap to Hear" button — Android blocks async TTS
+        } else {
+          speak(data.reply);          // Desktop + iOS: auto-play as usual
+        }
+      }
 
     } catch (err) {
       console.error('[ChatWidget]', err);
@@ -135,7 +151,7 @@ export default function ChatWidget() {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, lead, incrementMessages, updateFromResponse, voiceOn, speak]);
+  }, [input, loading, messages, lead, incrementMessages, updateFromResponse, speak]);
   handleSendRef.current = handleSend;
 
   const handleQuickAction = useCallback((message: string) => {
@@ -155,9 +171,10 @@ export default function ChatWidget() {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
-        message:   `My name is ${leadForm.name}, email is ${leadForm.email}${leadForm.company ? `, I work at ${leadForm.company}` : ''}.`,
-        history:   messages.map((m) => ({ role: m.role, content: m.content })),
-        sessionId: lead.sessionId,
+        message:          `My name is ${leadForm.name}, email is ${leadForm.email}${leadForm.company ? `, I work at ${leadForm.company}` : ''}.`,
+        history:          messages.map((m) => ({ role: m.role, content: m.content })),
+        sessionId:        lead.sessionId,
+        isContactCapture: true,
         leadData: {
           ...lead.info,
           name:      leadForm.name,
@@ -266,7 +283,7 @@ export default function ChatWidget() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 {voiceSupported && (
                   <button
-                    onClick={() => { setVoiceOn((v) => !v); if (isSpeaking) stopSpeaking(); }}
+                    onClick={() => { const next = !voiceOn; voiceOnRef.current = next; setVoiceOn(next); if (isSpeaking) stopSpeaking(); }}
                     className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white hover:bg-white/25 transition-colors"
                     title={voiceOn ? 'Mute AI voice responses' : 'Enable AI voice responses'}
                   >
@@ -494,17 +511,15 @@ export default function ChatWidget() {
                       className="dset-widget-input flex-1 h-8 bg-transparent text-white text-sm focus:outline-none min-w-0"
                     />
 
-                    {/* Mic button */}
-                    {voiceSupported && (
-                      <button
-                        onClick={startListening}
-                        disabled={loading}
-                        className="w-8 h-8 rounded-xl flex items-center justify-center transition-all flex-shrink-0 text-white/42 hover:text-white/75 hover:bg-white/[0.085] disabled:opacity-30"
-                        title="Voice chat — click to speak"
-                      >
-                        <Mic className="w-4 h-4" />
-                      </button>
-                    )}
+                    {/* Mic button — also enables voice replies so the full loop works */}
+                    <button
+                      onClick={() => { if (!voiceOn) { voiceOnRef.current = true; setVoiceOn(true); } startListening(); }}
+                      disabled={loading}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center transition-all flex-shrink-0 text-white/42 hover:text-white/75 hover:bg-white/[0.085] disabled:opacity-30"
+                      title={voiceSupported ? 'Voice chat -- click to speak' : 'Voice input may not be supported in this browser'}
+                    >
+                      <Mic className="w-4 h-4" />
+                    </button>
 
                     {/* Send button */}
                     <button
@@ -519,6 +534,84 @@ export default function ChatWidget() {
                       <Send className="w-4 h-4" />
                     </button>
                   </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Android TTS controls — speak() must be called from a direct native gesture.
+                  motion.div handles animation; plain <button> keeps onClick in the native event stack. */}
+              <AnimatePresence>
+                {isAndroidDevice && voiceOn && !isListening && (
+                  isAndroidSpeaking ? (
+                    /* ── Stop Hearing button ── */
+                    <motion.div
+                      key="stop-hearing"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18 }}
+                      className="mt-1.5"
+                    >
+                      <button
+                        onClick={() => {
+                          window.speechSynthesis?.cancel();
+                          setIsAndroidSpeaking(false);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-white text-xs font-semibold active:scale-95 transition-transform border border-white/20"
+                        style={{ background: 'rgba(255,255,255,0.08)' }}
+                      >
+                        <VolumeX className="w-3.5 h-3.5" />
+                        <span>Stop Hearing</span>
+                      </button>
+                    </motion.div>
+                  ) : pendingTTS ? (
+                    /* ── Tap to Hear button ── */
+                    <motion.div
+                      key="tap-to-hear"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18 }}
+                      className="mt-1.5"
+                    >
+                      <button
+                        onClick={() => {
+                          const text = pendingTTS;
+                          setPendingTTS('');
+                          if (typeof window === 'undefined' || !window.speechSynthesis) return;
+                          const ss = window.speechSynthesis;
+                          // Only cancel if something is already queued/playing —
+                          // calling cancel() on an empty queue can trigger a Chrome Android
+                          // bug where the next speak() is silently dropped.
+                          if (ss.paused) ss.resume();
+                          if (ss.speaking || ss.pending) ss.cancel();
+                          const utt = new SpeechSynthesisUtterance(text);
+                          // Use en-US as the safe default — en-IN can be missing or broken on Android
+                          utt.lang   = 'en-US';
+                          utt.rate   = 1.0;
+                          utt.pitch  = 1.0;
+                          utt.volume = 1.0;
+                          const voices = ss.getVoices();
+                          const voice =
+                            voices.find(v => v.lang === 'en-US') ??
+                            voices.find(v => v.lang.startsWith('en')) ??
+                            null;
+                          if (voice) { utt.voice = voice; utt.lang = voice.lang; }
+                          utt.onstart = () => setIsAndroidSpeaking(true);
+                          utt.onend   = () => setIsAndroidSpeaking(false);
+                          utt.onerror = () => setIsAndroidSpeaking(false);
+                          ss.speak(utt);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-white text-xs font-semibold active:scale-95 transition-transform"
+                        style={{
+                          background: `linear-gradient(135deg, ${WIDGET_CONFIG.color}, ${WIDGET_CONFIG.accentColor})`,
+                          boxShadow: `0 4px 14px ${WIDGET_CONFIG.color}40`,
+                        }}
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Tap to Hear Response</span>
+                      </button>
+                    </motion.div>
+                  ) : null
                 )}
               </AnimatePresence>
 

@@ -82,7 +82,7 @@ const contactInfo = [
   {
     icon: <Mail className="w-5 h-5" />,
     title: 'Email',
-    details: 'infodsetc@gmail.com',
+    details: 'contact@dsetconsulting.com',
     subtitle: 'Response within 24 hours',
     color: '#1e90ff',
   },
@@ -192,7 +192,7 @@ const ContactPage = () => {
         mainEntity: {
           '@type': 'Organization',
           name: 'DSeT Consulting',
-          email: 'infodsetc@gmail.com',
+          email: 'contact@dsetconsulting.com',
           address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressRegion: 'Karnataka', addressCountry: 'IN' },
         },
       }}

@@ -3,15 +3,9 @@ import { withAuth } from '@/components/auth/withAuth';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { createPost } from '@/lib/blog';
+import Link from 'next/link';
 
-const Editor = dynamic(() => import('@tinymce/tinymce-react').then(m => m.Editor), { ssr: false });
-
-interface Tag {
-  id: string;
-  name: string;
-  color: string;
-}
+const BlogEditor = dynamic(() => import('@/components/admin/BlogEditor'), { ssr: false });
 
 const PRESET_TAGS = [
   { id: 'ai', name: 'AI & ML', color: '#2563eb' },
@@ -22,297 +16,288 @@ const PRESET_TAGS = [
   { id: 'innovation', name: 'Innovation', color: '#d97706' },
 ];
 
+function slugify(t: string) {
+  return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
 const NewBlogPost = () => {
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [content, setContent] = useState('');
-  const [publishDate, setPublishDate] = useState(new Date().toISOString().split('T')[0]);
+  const [publishDateTime, setPublishDateTime] = useState(() => {
+    const d = new Date(); d.setSeconds(0, 0);
+    return d.toISOString().slice(0, 16);
+  });
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [metaDescription, setMetaDescription] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugEdited, setSlugEdited] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  // Simple admin check - you might want to implement proper authentication later
-  const isAdmin = true;
+  const handleTitleChange = (val: string) => {
+    setTitle(val);
+    if (!slugEdited) setSlug(slugify(val));
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    setImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const isFuture = new Date(publishDateTime) > new Date();
 
+  const handleSave = async (saveAs: 'draft' | 'published' | 'scheduled') => {
+    if (!title.trim()) { alert('Title is required.'); return; }
+    setLoading(true);
     try {
       let imageUrl = '';
       if (image) {
-        const formData = new FormData();
-        formData.append('image', image);
-
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to upload image');
-        }
-
-        const data = await response.json();
-        imageUrl = data.url;
+        const fd = new FormData();
+        fd.append('image', image);
+        const r = await fetch('/api/upload', { method: 'POST', body: fd });
+        if (!r.ok) throw new Error('Image upload failed');
+        imageUrl = (await r.json()).url;
       }
 
-      const post = {
-        title,
-        subtitle,
-        content,
-        imageUrl,
-        publishedAt: new Date(publishDate).toISOString(),
-        author: 'Admin', // Since we removed auth, hardcoding author
-        status: 'published' as const,
-        tags: selectedTags.map(tagId => PRESET_TAGS.find(tag => tag.id === tagId)),
-        metaDescription,
-        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      };
-
-      // Fix: filter out undefined tags before sending to createPost
-      const filteredPost = {
-        ...post,
-        tags: post.tags.filter((tag): tag is { id: string; name: string; color: string } => tag !== undefined),
-      };
-
-      await createPost(filteredPost);
+      const res = await fetch('/api/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          subtitle: subtitle.trim(),
+          content,
+          imageUrl,
+          publishedAt: new Date(publishDateTime).toISOString(),
+          author: 'DSeT Consulting',
+          status: saveAs,
+          tags: selectedTags.map(id => PRESET_TAGS.find(t => t.id === id)).filter(Boolean),
+          metaDescription: metaDescription.trim(),
+          slug: slug.trim() || slugify(title),
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(`${res.status}: ${err.error || 'Server error'}`);
+      }
       router.push('/admin/blog');
-    } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Error creating post. Please try again.');
+    } catch (err) {
+      console.error(err);
+      alert('Error saving post. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const metaLen = metaDescription.length;
+
   return (
     <>
-      <Head>
-        <title>New Blog Post | DSeT Consulting</title>
-      </Head>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Blog Post</h1>
-            
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
-                      Title <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="title"
-                      required
-                      placeholder="Enter post title"
-                      className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-colors text-black"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </div>
+      <Head><title>New Post — DSeT Admin</title></Head>
+      <div className="min-h-screen bg-[#f9fafb] flex flex-col">
 
-                  <div className="space-y-2">
-                    <label htmlFor="subtitle" className="text-black block text-sm font-semibold">
-                      Subtitle
-                    </label>
-                    <input
-                      type="text"
-                      id="subtitle"
-                      placeholder="Enter post subtitle (optional)"
-                      className="text-black block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-colors text-black"
-                      value={subtitle}
-                      onChange={(e) => setSubtitle(e.target.value)}
-                    />
-                  </div>
-                </div>
+        {/* ── Sticky top bar ─────────────────────────────────────── */}
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-5 py-3 flex items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/admin/blog" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors flex-shrink-0">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <span className="text-sm text-gray-400 hidden sm:block">Blog Posts</span>
+            <span className="text-gray-300 hidden sm:block">/</span>
+            <span className="text-sm font-medium text-gray-700 truncate max-w-[200px]">
+              {title || 'New Post'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => handleSave('draft')}
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            >
+              Save Draft
+            </button>
+            {isFuture ? (
+              <button
+                onClick={() => handleSave('scheduled')}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+              >
+                {loading ? 'Scheduling…' : 'Schedule'}
+              </button>
+            ) : (
+              <button
+                onClick={() => handleSave('published')}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                {loading ? 'Publishing…' : 'Publish Now'}
+              </button>
+            )}
+          </div>
+        </div>
 
-                <div className="mt-6 space-y-2">
-                  <label htmlFor="publishDate" className="block text-sm font-semibold text-black">
-                    Publish Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="publishDate"
-                    required
-                    className="block w-64 px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-colors text-black"
-                    value={publishDate}
-                    onChange={(e) => setPublishDate(e.target.value)}
-                  />
-                </div>
+        {/* ── Main layout ─────────────────────────────────────────── */}
+        <div className="flex flex-1 max-w-7xl mx-auto w-full px-5 py-8 gap-7 items-start">
+
+          {/* Left: writing area */}
+          <div className="flex-1 min-w-0 bg-white rounded-xl border border-gray-200 shadow-sm p-8 space-y-4">
+            <input
+              type="text"
+              placeholder="Post title…"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              className="w-full text-3xl font-bold text-gray-900 placeholder-gray-300 bg-transparent border-0 outline-none focus:ring-0 leading-snug"
+            />
+            <input
+              type="text"
+              placeholder="Subtitle (optional)"
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              className="w-full text-base text-gray-500 placeholder-gray-300 bg-transparent border-0 outline-none focus:ring-0"
+            />
+            <div className="border-t border-gray-100 pt-4">
+              <BlogEditor value={content} onChange={setContent} />
+            </div>
+          </div>
+
+          {/* Right: sidebar */}
+          <div className="w-[268px] flex-shrink-0 space-y-4">
+
+            {/* Status */}
+            <SidebarCard title="Status">
+              <div className="space-y-1">
+                {(['draft', 'published'] as const).map(s => (
+                  <div key={s} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50">
+                    <span className={`w-2 h-2 rounded-full ${s === 'published' ? 'bg-green-500' : 'bg-amber-400'}`} />
+                    <span className="text-sm text-gray-600 capitalize">{s}</span>
+                    <span className="ml-auto text-xs text-gray-400">
+                      {s === 'draft' ? '(Save Draft)' : '(Publish)'}
+                    </span>
+                  </div>
+                ))}
               </div>
+            </SidebarCard>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-900">
-                  Featured Image <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  required
-                  onChange={handleImageChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors"
-                />
-                {imagePreview && (
-                  <div className="mt-4">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="h-48 w-full object-cover rounded-lg shadow-sm"
-                    />
-                  </div>
-                )}
-              </div>
+            {/* Publish Date & Time */}
+            <SidebarCard title="Publish Date & Time">
+              <input
+                type="datetime-local"
+                value={publishDateTime}
+                onChange={(e) => setPublishDateTime(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+              {isFuture && (
+                <p className="mt-2 text-xs text-purple-600 font-medium">Will auto-publish at scheduled time</p>
+              )}
+            </SidebarCard>
 
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-900">
-                  Tags
+            {/* Featured Image */}
+            <SidebarCard title="Featured Image">
+              {imagePreview ? (
+                <div className="relative">
+                  <img src={imagePreview} alt="" className="w-full h-36 object-cover rounded-lg" />
+                  <button
+                    type="button"
+                    onClick={() => { setImage(null); setImagePreview(''); }}
+                    className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                  <svg className="w-6 h-6 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs text-gray-400">Click to upload image</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {PRESET_TAGS.map(tag => (
-                    <div
+              )}
+            </SidebarCard>
+
+            {/* Tags */}
+            <SidebarCard title="Tags">
+              <div className="space-y-1">
+                {PRESET_TAGS.map(tag => {
+                  const active = selectedTags.includes(tag.id);
+                  return (
+                    <button
                       key={tag.id}
-                      className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                        selectedTags.includes(tag.id)
-                          ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
-                          : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
-                      }`}
-                      onClick={() => {
-                        setSelectedTags(prev =>
-                          prev.includes(tag.id)
-                            ? prev.filter(id => id !== tag.id)
-                            : [...prev, tag.id]
-                        );
-                      }}
+                      type="button"
+                      onClick={() => setSelectedTags(prev =>
+                        active ? prev.filter(i => i !== tag.id) : [...prev, tag.id]
+                      )}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-colors text-left ${active ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
                     >
-                      <div
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: tag.color }}
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        {tag.name}
-                      </span>
-                    </div>
-                  ))}
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tag.color }} />
+                      {tag.name}
+                      {active && (
+                        <svg className="w-3.5 h-3.5 ml-auto text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </SidebarCard>
+
+            {/* SEO */}
+            <SidebarCard title="SEO">
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">URL Slug</label>
+                  <div className="text-xs text-gray-400 mb-1 font-mono truncate">/blog/{slug || '…'}</div>
+                  <input
+                    type="text"
+                    value={slug}
+                    onChange={(e) => { setSlug(e.target.value); setSlugEdited(true); }}
+                    placeholder="post-url-slug"
+                    className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 font-mono"
+                  />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-900">
-                  Meta Description
-                </label>
-                <textarea
-                  rows={3}
-                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-colors resize-none text-black"
-                  value={metaDescription}
-                  onChange={(e) => setMetaDescription(e.target.value)}
-                  placeholder="Brief description for SEO (recommended: 150-160 characters)"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-900">
-                  Content <span className="text-red-500">*</span>
-                </label>
-                <div className="rounded-lg border border-gray-300 shadow-sm overflow-hidden">
-                  <Editor
-                    apiKey={process.env.NEXT_PUBLIC_TINY_MCE_API_KEY}
-                    init={{
-                      height: 500,
-                      menubar: true,
-                      plugins: [
-                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                      ],
-                      toolbar: 'undo redo | blocks | ' +
-                        'bold italic forecolor | alignleft aligncenter ' +
-                        'alignright alignjustify | bullist numlist outdent indent | ' +
-                        'removeformat | help',
-                      content_style: `
-                        body { 
-                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-                          font-size: 16px; 
-                          line-height: 1.6; 
-                          padding: 1rem; 
-                          color: #000000; 
-                        } 
-                        p { 
-                          color: #000000; 
-                          margin-bottom: 1.5em;
-                          font-size: 1.125rem;
-                        } 
-                        h1 { font-size: 2.25rem; font-weight: 700; color: #1a202c; margin-bottom: 1em; } 
-                        h2 { font-size: 1.875rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75em; } 
-                        h3 { font-size: 1.5rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75em; } 
-                        h4 { font-size: 1.25rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75em; } 
-                        h5 { font-size: 1.125rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75em; } 
-                        h6 { font-size: 1rem; font-weight: 700; color: #1a202c; margin-bottom: 0.75em; }
-                        ul, ol { 
-                          margin-bottom: 1.5em;
-                          padding-left: 1.25em;
-                        }
-                        li {
-                          margin-bottom: 0.5em;
-                          font-size: 1.125rem;
-                        }
-                        img {
-                          max-width: 100%;
-                          height: auto;
-                          border-radius: 0.5rem;
-                          margin: 1.5em 0;
-                        }
-                        strong { color: #1a202c; }
-                        a { color: #2563eb; text-decoration: underline; }
-                      `,
-                      skin: 'oxide',
-                      toolbar_sticky: true,
-                    }}
-                    value={content}
-                    onEditorChange={setContent}
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-xs text-gray-500">Meta Description</label>
+                    <span className={`text-xs font-medium ${metaLen > 160 ? 'text-red-500' : metaLen > 140 ? 'text-amber-500' : 'text-gray-400'}`}>
+                      {metaLen}/160
+                    </span>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={metaDescription}
+                    onChange={(e) => setMetaDescription(e.target.value)}
+                    placeholder="Brief summary for search engines…"
+                    className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-gray-700"
                   />
                 </div>
               </div>
+            </SidebarCard>
 
-              <div className="flex justify-end space-x-4 pt-8 border-t">
-                <button
-                  type="button"
-                  onClick={() => router.push('/admin/blog')}
-                  className="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-8 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
-                >
-                  {loading ? 'Creating...' : 'Publish Post'}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       </div>
     </>
   );
 };
+
+function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">{title}</p>
+      {children}
+    </div>
+  );
+}
 
 export default withAuth(NewBlogPost);
