@@ -289,16 +289,16 @@ User opens /auth/signin
         ↓
 signin.tsx renders login form
         ↓
-User enters admin / DSeTC@2025 → clicks Login
+User enters admin credentials → clicks Login
         ↓
-signin.tsx → calls login('admin', 'DSeTC@2025') from AuthContext
+signin.tsx → calls login(username, password) from AuthContext
         ↓
 AuthContext → login()
-  calls validateCredentials('admin', 'DSeTC@2025')
+  calls validateCredentials(username, password)
         ↓
 auth.ts → validateCredentials()
-  'admin' === 'admin' && 'DSeTC@2025' === 'DSeTC@2025'
-  returns true
+  compares against ADMIN_USERNAME / ADMIN_PASSWORD env vars
+  returns true if both match
         ↓
 AuthContext → login()
   calls setAuthToken()

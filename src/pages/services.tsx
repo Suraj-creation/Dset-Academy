@@ -56,22 +56,22 @@ const services = [
 const arcPhases = [
   {
     letter: 'A',
-    title: 'Activate',
-    description: 'Assess current capabilities, data maturity, and platform readiness to define the right starting point.',
+    title: 'Assess & Analyze',
+    description: 'Assess current capabilities, data maturity, and compliance posture, then analyze the gaps and opportunities that define the right starting point.',
     color: '#5e17ea',
     icon: <Zap className="w-7 h-7" />,
   },
   {
     letter: 'R',
-    title: 'Reimagine',
-    description: 'Redesign processes, operating models, and integration architecture around the AI platform.',
+    title: 'Reimagine & Recreate',
+    description: 'Reimagine the operating model around the AI platform, then recreate the workflows, integrations, and architecture needed to run it in production.',
     color: '#1e90ff',
     icon: <RefreshCw className="w-7 h-7" />,
   },
   {
     letter: 'C',
-    title: 'Co-create',
-    description: 'Build, deploy, and iterate collaboratively — combining DSeT platform capabilities with your domain knowledge.',
+    title: 'Collaborate & Capitalize',
+    description: 'Collaborate with your teams through go-live, then capitalize on the platform through ongoing monitoring, tuning, and managed operation.',
     color: '#ff851b',
     icon: <Users className="w-7 h-7" />,
   },
@@ -298,8 +298,9 @@ const ServicesPage = () => {
                 </span>
               </h2>
               <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-                Every engagement follows our proven Activate → Reimagine → Co-create framework
-                to ensure platform adoption is structured, de-risked, and measurable.
+                Every engagement follows our proven DSeT ARC™ framework — Assess, Analyze,
+                Reimagine, Recreate, Collaborate, and Capitalize — to ensure platform adoption is
+                structured, de-risked, and measurable.
               </p>
             </motion.div>
 

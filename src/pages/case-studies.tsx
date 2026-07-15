@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../components/layout/Layout';
 import Section from '../components/ui/Section';
@@ -140,14 +139,10 @@ const cardAnim = {
 
 export default function CaseStudiesPage() {
   return (
-    <Layout>
-      <Head>
-        <title>Case Studies | DSeT — AI Platforms in the Field</title>
-        <meta
-          name="description"
-          content="Real-world deployments of DSeT AI platforms — OreBill AI, SecureCloud, and iPaS-RevOps. Measurable outcomes across mining, enterprise security, and revenue operations."
-        />
-      </Head>
+    <Layout
+      title="Case Studies | DSeT — AI Platforms in the Field"
+      description="Real-world deployments of DSeT AI platforms — OreBill AI, SecureCloud, and iPaS-RevOps. Measurable outcomes across mining, enterprise security, and revenue operations."
+    >
 
       {/* ── Hero ── */}
       <Section bgColor="light" spacing="xl">

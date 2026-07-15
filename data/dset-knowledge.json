@@ -2,7 +2,7 @@
   {
     "topic": "company_overview",
     "keywords": ["dset", "company", "what is", "kya hai", "about", "kaun ho", "who are", "tell me about", "introduction", "intro", "deeptech", "consulting"],
-    "content": "DSeT (DSeT Consulting Private Limited) is a deeptech AI platform company that builds proprietary vertical AI platforms for operationally complex and regulated industries. DSeT is not a generic consulting firm — it ships working software. Vision: To become the defining vertical AI platform company for operationally complex and regulated industries globally. DSeT is DPIIT Recognised Startup, STPI Registered, IN-SPACe Empanelled, and a Microsoft ISV Partner."
+    "content": "DSeT (DSeT Consulting Private Limited) is a deeptech AI platform company that builds proprietary vertical AI platforms for operationally complex and regulated industries. DSeT stands for Digital, Strategy, Execution, and Transformation. DSeT is not a generic consulting firm — it ships working software, deployed through the DSeT ARC™ framework. Vision: To become the defining vertical AI platform company for operationally complex and regulated industries globally. DSeT is DPIIT Recognised Startup, STPI Registered, IN-SPACe Empanelled, and a Microsoft ISV Partner."
   },
   {
     "topic": "leadership",
@@ -42,7 +42,7 @@
   {
     "topic": "services",
     "keywords": ["services", "service", "offer", "provide", "help", "kya karte", "what do you do", "capabilities", "what can you do"],
-    "content": "DSeT offers 5 services under the ARC Framework (Activate → Reimagine → Co-create): 1) Platform Deployment — cloud, on-premise, or hybrid deployment with full go-live support. 2) AI Integration & Data Modernisation — connect to existing ERP, SCADA, cloud infrastructure without ripping out legacy systems. 3) Managed Intelligence Services — ongoing model management, 24/7 monitoring, SLA-backed uptime. 4) Platform Adoption Engineering — readiness assessments, architecture blueprints, change management. 5) Custom AI Engineering — bespoke model development for industry-specific problems."
+    "content": "DSeT offers 5 services under the DSeT ARC™ framework (Assess, Analyze, Reimagine, Recreate, Collaborate, Capitalize): 1) Platform Deployment — cloud, on-premise, or hybrid deployment with full go-live support. 2) AI Integration & Data Modernisation — connect to existing ERP, SCADA, cloud infrastructure without ripping out legacy systems. 3) Managed Intelligence Services — ongoing model management, 24/7 monitoring, SLA-backed uptime. 4) Platform Adoption Engineering — readiness assessments, architecture blueprints, change management. 5) Custom AI Engineering — bespoke model development for industry-specific problems."
   },
   {
     "topic": "industries",
@@ -116,8 +116,8 @@
   },
   {
     "topic": "consulting_approach",
-    "keywords": ["how do you work", "kaise kaam karte", "engagement model", "process", "how to start", "onboarding", "implementation", "how long", "kitna time", "project start", "kaise shuru", "approach", "methodology", "arc framework", "activate reimagine", "custom", "bespoke", "integration", "legacy system"],
-    "content": "DSeT works through the ARC Framework — Activate, Reimagine, Co-create. Step 1 Activate: Platform deployment on cloud, on-premise, or hybrid — full go-live support, connects to your existing ERP, SCADA, or CRM without replacing them. Step 2 Reimagine: AI integration and data modernisation — no rip-and-replace. Models run inside your infrastructure, your data never leaves. Step 3 Co-create: Ongoing managed intelligence, 24/7 monitoring, SLA-backed uptime, and custom AI engineering for problems unique to your operation. Every engagement ships working software — not POCs or slide decks."
+    "keywords": ["how do you work", "kaise kaam karte", "engagement model", "process", "how to start", "onboarding", "implementation", "how long", "kitna time", "project start", "kaise shuru", "approach", "methodology", "arc framework", "dset arc", "assess analyze reimagine", "recreate", "collaborate capitalize", "iterative transformation", "custom", "bespoke", "integration", "legacy system"],
+    "content": "DSeT works through the DSeT ARC™ framework — an iterative transformation model of Assess, Analyze, Reimagine, Recreate, Collaborate, and Capitalize. Assess: map current workflows, systems, and data maturity as they actually run. Analyze: quantify data gaps, integration complexity, and readiness to build the business case. Reimagine: redesign the target operating model around the AI platform. Recreate: build the platform on cloud, on-premise, or hybrid infrastructure — connecting to your existing ERP, SCADA, or CRM without replacing them. Collaborate: go live together, with models running inside your infrastructure so your data never leaves. Capitalize: ongoing managed intelligence, 24/7 monitoring, SLA-backed uptime, and custom AI engineering that compounds returns after go-live. Every engagement ships working software — not POCs or slide decks."
   },
   {
     "topic": "problem_general_ai",

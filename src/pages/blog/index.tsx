@@ -78,26 +78,28 @@ const Blog: NextPage<Props> = ({ posts }) => {
 
       {posts.length === 0 ? (
         /* ── Empty State ── */
-        <div className="bg-gray-950 py-24">
+        <div className="bg-gray-950 py-16 sm:py-20">
           <div className="container-custom">
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="relative overflow-hidden rounded-[2rem] border border-gray-800 bg-gray-900 shadow-2xl p-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#5e17ea]/20 to-[#1e90ff]/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-8 h-8 text-[#1e90ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
+            <div className="max-w-5xl mx-auto">
+              <div className="relative overflow-hidden rounded-[2rem] border border-gray-800 bg-gray-900 shadow-2xl px-8 py-12 sm:px-16 sm:py-14 text-center">
+                <div className="max-w-xl mx-auto">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#5e17ea]/20 to-[#1e90ff]/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-8 h-8 text-[#1e90ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-4">Articles Coming Soon</h2>
+                  <p className="text-gray-400 mb-8 leading-relaxed">
+                    The DSeT platform team is preparing in-depth perspectives on industrial AI, revenue operations,
+                    and regulated-industry transformation. Check back shortly.
+                  </p>
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity duration-200 text-sm"
+                  >
+                    Get in Touch
+                  </Link>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-4">Articles Coming Soon</h2>
-                <p className="text-gray-400 mb-8 leading-relaxed">
-                  The DSeT platform team is preparing in-depth perspectives on industrial AI, revenue operations,
-                  and regulated-industry transformation. Check back shortly.
-                </p>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity duration-200 text-sm"
-                >
-                  Get in Touch
-                </Link>
               </div>
             </div>
           </div>
@@ -282,7 +284,7 @@ const Blog: NextPage<Props> = ({ posts }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="max-w-5xl"
+            className="max-w-5xl mx-auto"
           >
             <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#001f3f] via-[#002b57] to-[#001f3f] shadow-2xl px-8 py-12 sm:px-16 sm:py-14 text-center">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231e90ff%22%20stroke-width%3D%220.5%22%20stroke-opacity%3D%220.1%22%3E%3Cpath%20d%3D%22M0%2030h60M30%200v60%22/%3E%3C/g%3E%3C/svg%3E')] opacity-20" />

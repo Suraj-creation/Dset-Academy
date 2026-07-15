@@ -6,20 +6,23 @@ import { useAuth } from '@/context/AuthContext';
 import { withAuth } from '@/components/auth/withAuth';
 
 // ── Types ──────────────────────────────────────────────────────
+type LeadScore = 'hot' | 'warm' | 'cold';
+
 interface Lead {
   id:        string;
   name?:     string;
   email?:    string;
   company?:  string;
   intent:    string;
-  score:     'hot' | 'warm' | 'cold';
+  score:     LeadScore;
   messages:  number;
   createdAt: string;
 }
 
-const SCORE_META = {
-  hot:  { label: 'Hot',  bg: 'bg-red-100',    text: 'text-red-700' },
-  warm: { label: 'Warm', bg: 'bg-orange-100', text: 'text-orange-700' },
+const SCORE_META: Record<LeadScore, { label: string; bg: string; text: string; border: string }> = {
+  hot:  { label: 'Hot',  bg: 'bg-red-100',     text: 'text-red-700',     border: 'border-red-200'     },
+  warm: { label: 'Warm', bg: 'bg-amber-100',   text: 'text-amber-700',   border: 'border-amber-200'   },
+  cold: { label: 'Cold', bg: 'bg-gray-100',    text: 'text-gray-600',    border: 'border-gray-200'    },
 };
 
 function formatDate(iso: string) {
@@ -45,7 +48,7 @@ function AdminLeads() {
   const [leads,   setLeads]   = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
-  const [filter,  setFilter]  = useState<'all' | 'hot' | 'warm'>('all');
+  const [filter,  setFilter]  = useState<'all' | LeadScore>('all');
   const [search,  setSearch]  = useState('');
 
   const fetchLeads = async () => {
@@ -75,10 +78,12 @@ function AdminLeads() {
 
   const handleLogout = () => { logout(); router.replace('/auth/signin'); };
 
-  // Only warm/hot leads with email — actionable for the team
-  const actionable = leads.filter((l) => l.email && (l.score === 'hot' || l.score === 'warm'));
+  const leadsWithEmail = leads.filter((l) => l.email);
+  const hot  = leadsWithEmail.filter((l) => l.score === 'hot').length;
+  const warm = leadsWithEmail.filter((l) => l.score === 'warm').length;
+  const cold = leadsWithEmail.filter((l) => l.score === 'cold').length;
 
-  const filtered = actionable.filter((l) => {
+  const filtered = leadsWithEmail.filter((l) => {
     const matchScore  = filter === 'all' || l.score === filter;
     const q           = search.toLowerCase();
     const matchSearch = !q ||
@@ -88,15 +93,12 @@ function AdminLeads() {
     return matchScore && matchSearch;
   });
 
-  const hot  = actionable.filter((l) => l.score === 'hot').length;
-  const warm = actionable.filter((l) => l.score === 'warm').length;
-
   return (
     <>
       <Head><title>Admin — Chat Leads | DSeT</title></Head>
 
       <div className="min-h-screen bg-gray-50">
-        {/* Header — same pattern as other admin pages */}
+        {/* Header */}
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="mx-auto flex max-w-6xl items-center justify-between">
             <div className="flex items-center gap-6">
@@ -105,9 +107,10 @@ function AdminLeads() {
                 <p className="text-sm text-gray-500">Visitors interested in consulting</p>
               </div>
               <nav className="hidden sm:flex items-center gap-1">
-                <Link href="/admin/events"  className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Events</Link>
-                <Link href="/admin/blog"    className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Blog</Link>
-                <Link href="/admin/careers" className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Careers</Link>
+                <Link href="/admin/contacts"   className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Contacts</Link>
+                <Link href="/admin/events"     className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Events</Link>
+                <Link href="/admin/blog"       className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Blog</Link>
+                <Link href="/admin/careers"    className="rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors">Careers</Link>
                 <span className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-100">Leads</span>
               </nav>
             </div>
@@ -135,13 +138,26 @@ function AdminLeads() {
           ) : (
             <>
               {/* Stats */}
-              <div className="mb-8 grid grid-cols-3 gap-4">
-                <StatCard label="Interested Leads" value={actionable.length} color="#5e17ea" />
-                <StatCard label="Hot Leads"         value={hot}               color="#ef4444" />
-                <StatCard label="Warm Leads"        value={warm}              color="#f97316" />
+              <div className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <p className="text-sm text-gray-500">Total Leads</p>
+                  <p className="mt-1 text-3xl font-bold text-gray-900">{leadsWithEmail.length}</p>
+                </div>
+                <div className="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm">
+                  <p className="text-sm text-red-500">Hot</p>
+                  <p className="mt-1 text-3xl font-bold text-red-700">{hot}</p>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+                  <p className="text-sm text-amber-600">Warm</p>
+                  <p className="mt-1 text-3xl font-bold text-amber-700">{warm}</p>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 shadow-sm">
+                  <p className="text-sm text-gray-500">Cold</p>
+                  <p className="mt-1 text-3xl font-bold text-gray-600">{cold}</p>
+                </div>
               </div>
 
-              {/* Filter bar */}
+              {/* Search + Filter */}
               <div className="mb-5 flex flex-wrap items-center gap-3">
                 <input
                   type="text"
@@ -151,17 +167,22 @@ function AdminLeads() {
                   className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 w-64"
                 />
                 <div className="flex gap-2">
-                  {(['all', 'hot', 'warm'] as const).map((s) => (
+                  {([
+                    { key: 'all',  label: `All (${leadsWithEmail.length})` },
+                    { key: 'hot',  label: `Hot (${hot})` },
+                    { key: 'warm', label: `Warm (${warm})` },
+                    { key: 'cold', label: `Cold (${cold})` },
+                  ] as const).map(({ key, label }) => (
                     <button
-                      key={s}
-                      onClick={() => setFilter(s)}
+                      key={key}
+                      onClick={() => setFilter(key)}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold capitalize transition-colors duration-150 ${
-                        filter === s
+                        filter === key
                           ? 'bg-gray-900 text-white'
                           : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400'
                       }`}
                     >
-                      {s === 'all' ? `All (${actionable.length})` : `${s} (${s === 'hot' ? hot : warm})`}
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -170,14 +191,14 @@ function AdminLeads() {
               {/* Leads list */}
               {filtered.length === 0 ? (
                 <div className="rounded-xl border-2 border-dashed border-gray-200 py-20 text-center text-gray-400">
-                  {actionable.length === 0
-                    ? 'No interested leads yet — they will appear here after chatbot conversations.'
+                  {leadsWithEmail.length === 0
+                    ? 'No chat leads yet — they will appear here after chatbot conversations.'
                     : 'No results match your filter.'}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {filtered.map((lead) => {
-                    const meta = SCORE_META[lead.score as 'hot' | 'warm'];
+                    const meta = SCORE_META[lead.score];
                     return (
                       <div
                         key={lead.id}
@@ -190,8 +211,9 @@ function AdminLeads() {
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="font-semibold text-gray-900">{lead.name ?? 'Unknown'}</span>
-                              <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold ${meta.bg} ${meta.text}`}>
+                              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold border ${meta.bg} ${meta.text} ${meta.border}`}>
                                 {meta.label}
+                                <span className="font-normal opacity-70">· {lead.messages} msg</span>
                               </span>
                             </div>
                             <p className="text-sm text-gray-500">
@@ -199,7 +221,7 @@ function AdminLeads() {
                               {lead.company && <> · {lead.company}</>}
                             </p>
                             <p className="text-xs text-gray-400">
-                              {lead.intent?.replace(/_/g, ' ')} · {lead.messages} messages · {formatDate(lead.createdAt)}
+                              {lead.intent?.replace(/_/g, ' ')} · {formatDate(lead.createdAt)}
                             </p>
                           </div>
                         </div>
@@ -225,7 +247,7 @@ function AdminLeads() {
               )}
 
               <p className="mt-4 text-xs text-gray-400 text-center">
-                {filtered.length} of {actionable.length} leads shown
+                {filtered.length} of {leadsWithEmail.length} leads shown
               </p>
             </>
           )}

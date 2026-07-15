@@ -13,6 +13,8 @@ export const contacts = pgTable('contacts', {
   message:     text('message').notNull(),
   submittedAt: timestamp('submitted_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
   read:        boolean('read').notNull().default(false),
+  leadScore:   integer('lead_score').notNull().default(0),
+  leadStatus:  text('lead_status').notNull().default('valid'),
 });
 
 export const leads = pgTable('leads', {

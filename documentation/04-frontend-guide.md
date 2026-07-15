@@ -298,10 +298,12 @@ To edit the headline or CTAs, look for the `<h1>` and `<Link>` elements in `Hero
 
 ### Services (`pages/services.tsx`)
 
-Introduces the **DSeT ARC Framework**. Each service category has three phases:
+Introduces the **DSeT ARC™ Framework** — an iterative transformation model of six phases, grouped into three letters:
 
 ```
-ASSESS → REINVENT/REIMAGINE → CREATE
+A: Assess → Analyze
+R: Reimagine → Recreate
+C: Collaborate → Capitalize
 ```
 
 The page uses anchor-based navigation — clicking a service in the nav scrolls to `#digital`, `#strategy`, etc. There's a CSS hack for this in `globals.css`:

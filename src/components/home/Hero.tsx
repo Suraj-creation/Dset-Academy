@@ -16,10 +16,10 @@ const itemVariants = {
 };
 
 const platforms = [
-  { name: 'OreBill AI',           description: 'Mining & mineral logistics intelligence',          accent: '#f59e0b', icon: '⛏️', href: '/product' },
-  { name: 'EdgeBay Intelligence', description: 'OT/IT edge AI for industrial ops',                 accent: '#1e90ff', icon: '🏭', href: '/product' },
-  { name: 'SecureCloud',          description: 'Compliance-first cloud security intelligence',     accent: '#5e17ea', icon: '🔐', href: '/product' },
-  { name: 'iPaS-RevOps',          description: 'Revenue and operations automation',                accent: '#10b981', icon: '📊', href: '/product' },
+  { name: 'OreBill AI™',  description: 'Mining billing automation for i3MS-linked workflows',  accent: '#f59e0b', icon: '⛏️', href: '/product/orebill-ai' },
+  { name: 'PharmaAI',     description: 'Pharma commercial intelligence on licensed datasets',   accent: '#10b981', icon: '💊', href: '/product/pharmaai' },
+  { name: 'MedicsIQ',     description: 'AI skin, scalp and wellness assessment platform',       accent: '#a855f7', icon: '🩺', href: '/product/medicsiq' },
+  { name: 'VoiceOps',     description: 'Enterprise voice automation for sales & collections',   accent: '#1e90ff', icon: '🎙️', href: '/product/voiceops' },
 ];
 
 const Hero = () => {
@@ -54,7 +54,7 @@ const Hero = () => {
           {/* Badge */}
           <motion.div variants={itemVariants}>
             <span className="inline-block px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-full mb-4 sm:mb-6 shadow-lg">
-              Deeptech AI Platform Company
+              DPIIT-recognised startup · Vertical AI Platforms™
             </span>
           </motion.div>
 
@@ -63,8 +63,8 @@ const Hero = () => {
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 sm:mb-6"
             variants={itemVariants}
           >
-            <span className="text-white">AI Platforms for</span>{' '}
-            <span className="text-[#ff851b]">Real-World</span>
+            <span className="text-white">Vertical AI Platforms™ for</span>{' '}
+            <span className="text-[#ff851b]">Regulated</span>
             <span className="block bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] bg-clip-text text-transparent">
               Operations
             </span>
@@ -75,8 +75,8 @@ const Hero = () => {
             className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
             variants={itemVariants}
           >
-            DSeT builds vertical AI platforms for mining, industrial, healthcare, and secure
-            revenue intelligence — designed for regulated, edge, and hybrid environments.
+            DSeT builds purpose-built AI platforms for mining, pharma intelligence, healthcare
+            wellness, and enterprise voice operations — India-made, compliance-aware, deployment-ready.
           </motion.p>
 
           {/* CTAs */}
@@ -86,25 +86,35 @@ const Hero = () => {
           >
             {/* Primary */}
             <motion.a
-              href="/product"
+              href="/vertical-ai-platforms"
               className="relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] text-white font-semibold rounded-md shadow-lg text-center overflow-hidden group min-h-[44px] flex items-center justify-center text-sm sm:text-base"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                  (window as any).dataLayer.push({ event: 'cta_click', cta_label: 'explore_platforms', cta_location: 'hero' });
+                }
+              }}
             >
-              <span className="relative z-10">Explore Our Platforms</span>
+              <span className="relative z-10">Explore vertical AI platforms</span>
               <div className="absolute inset-0 bg-gradient-to-r from-[#1e90ff] to-[#5e17ea] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute -inset-1 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-md blur-md opacity-0 group-hover:opacity-75 transition-opacity duration-300 -z-10" />
             </motion.a>
 
             {/* Secondary */}
             <motion.a
-              href="/contact?type=demo"
+              href="/contact"
               className="relative px-6 sm:px-8 py-3 sm:py-4 text-white font-medium rounded-md text-center overflow-hidden group min-h-[44px] flex items-center justify-center text-sm sm:text-base"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                  (window as any).dataLayer.push({ event: 'cta_click', cta_label: 'book_arc_discovery_call', cta_location: 'hero' });
+                }
+              }}
             >
               <span className="absolute inset-0 border-2 border-white/50 rounded-md" />
-              <span className="relative z-10">Book a Strategic Demo</span>
+              <span className="relative z-10">Book a DSeT ARC™ discovery call</span>
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               <div className="absolute -inset-1 bg-white/20 rounded-md blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
             </motion.a>
@@ -149,10 +159,10 @@ const Hero = () => {
 
             {/* Floating platform badges — asymmetric layout like reference design */}
             {[
-              { label: 'OreBill AI',           color: '#f59e0b', pos: 'top-[2%] right-[2%]',    delay: 3   },
-              { label: 'EdgeBay Intelligence', color: '#1e90ff', pos: 'top-[2%] left-[2%]',     delay: 3.6 },
-              { label: 'SecureCloud',          color: '#5e17ea', pos: 'bottom-[2%] right-[2%]', delay: 3.4 },
-              { label: 'iPaS-RevOps',          color: '#10b981', pos: 'bottom-[2%] left-[2%]',  delay: 3.2 },
+              { label: 'OreBill AI™', color: '#f59e0b', pos: 'top-[2%] right-[2%]',    delay: 3   },
+              { label: 'PharmaAI',    color: '#10b981', pos: 'top-[2%] left-[2%]',     delay: 3.6 },
+              { label: 'MedicsIQ',    color: '#a855f7', pos: 'bottom-[2%] right-[2%]', delay: 3.4 },
+              { label: 'VoiceOps',    color: '#1e90ff', pos: 'bottom-[2%] left-[2%]',  delay: 3.2 },
             ].map((badge) => (
               <motion.div
                 key={badge.label}

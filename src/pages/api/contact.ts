@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { sendMail } from '@/lib/email';
 import { addContact, readContacts, markContactRead, deleteContact } from '@/lib/contacts.server';
 import { isAdminRequest } from '@/lib/auth';
+import { validateLead, LeadStatus } from '@/lib/leadValidation';
 
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -31,20 +32,40 @@ function recommendedAction(intent: string): string {
   return map[intent] ?? 'Follow up with the contact within 24 hours.';
 }
 
+function leadQualityHtml(status: LeadStatus, score: number, reasons: string[]): string {
+  const cfg: Record<LeadStatus, { bg: string; border: string; badge: string; label: string; text: string }> = {
+    valid:      { bg: '#f0fdf4', border: '#16a34a', badge: '#16a34a', label: 'VALID',      text: '#15803d' },
+    suspicious: { bg: '#fffbeb', border: '#f59e0b', badge: '#f59e0b', label: 'SUSPICIOUS', text: '#92400e' },
+    rejected:   { bg: '#fef2f2', border: '#dc2626', badge: '#dc2626', label: 'REJECTED',   text: '#991b1b' },
+  };
+  const c = cfg[status];
+  const reasonsHtml = reasons.length > 0
+    ? `<ul style="margin:8px 0 0;padding-left:18px;">${reasons.map(r => `<li style="font-size:12px;color:${c.text};margin:2px 0;">${esc(r)}</li>`).join('')}</ul>`
+    : '';
+  return `
+  <div style="background:${c.bg};border-left:4px solid ${c.border};border-right:1px solid #e2e8f0;padding:18px 28px;">
+    <p style="font-size:10px;font-weight:800;color:${c.text};text-transform:uppercase;letter-spacing:0.12em;margin:0 0 10px;">&#x1F4CA; Lead Quality</p>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+      <span style="background:${c.badge};color:#fff;font-size:11px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:0.06em;">${c.label}</span>
+      <span style="font-size:13px;color:${c.text};font-weight:600;">Score: ${score}</span>
+    </div>
+    ${reasonsHtml}
+  </div>`;
+}
+
 declare global {
   var lastSubmissions: Map<string, number> | undefined;
 }
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().optional(),
+  name:    z.string().min(2, 'Name must be at least 2 characters'),
+  email:   z.email('Invalid email address'),
+  phone:   z.string().optional(),
   company: z.string().optional(),
   service: z.string().optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
   _honeypot: z.string().optional(),
 });
-
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // ── GET (admin: list all contacts) ──────────────────────────
@@ -77,11 +98,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // ── POST (public: submit contact form) ──────────────────────
   if (req.method === 'POST') {
     try {
+      // Layer 1: honeypot — bots fill this hidden field
       if (req.body._honeypot) return res.status(200).json({ success: true });
 
       const data = contactSchema.parse(req.body);
 
-      // Rate limiting: 1 min per IP
+      // Layer 2: rate limiting — 1 per IP per 60 s
       const clientIp = (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) as string;
       const now = Date.now();
       global.lastSubmissions = global.lastSubmissions ?? new Map();
@@ -91,31 +113,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       global.lastSubmissions.set(clientIp, now);
 
-      await addContact({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        company: data.company,
-        service: data.service,
-        message: data.message,
+      // Layer 3: multi-signal lead validation
+      const formStartTime = typeof req.body._formStartTime === 'number' ? req.body._formStartTime as number : undefined;
+      const recaptchaToken = typeof req.body.recaptchaToken === 'string' ? req.body.recaptchaToken as string : undefined;
+
+      const validation = await validateLead({
+        email:          data.email,
+        name:           data.name,
+        message:        data.message,
+        phone:          data.phone,
+        company:        data.company,
+        recaptchaToken,
+        formStartTime,
       });
 
-      try {
-        const intent  = detectIntent(data.message, data.service);
-        const action  = recommendedAction(intent);
-        const dateStr = new Date().toLocaleString('en-IN', {
-          timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
-          year: 'numeric', hour: '2-digit', minute: '2-digit',
-        }) + ' IST';
-        const preview = data.message.length > 160
-          ? data.message.substring(0, 160) + '…'
-          : data.message;
-        const summary = `${esc(data.name)} reached out via the website contact form with a ${intent.toLowerCase()}. Their message: "${esc(preview)}"`;
+      // Always save to DB (rejected leads kept as audit log)
+      await addContact({
+        name:        data.name,
+        email:       data.email,
+        phone:       data.phone,
+        company:     data.company,
+        service:     data.service,
+        message:     data.message,
+        leadScore:   validation.score,
+        leadStatus:  validation.status,
+      });
 
-        await sendMail({
-          to: process.env.CONTACT_EMAIL ?? 'contact@dsetconsulting.com',
-          subject: `New Contact Received - ${data.name} Enquired About ${intent}`,
-          html: `
+      // Only notify admin for valid leads
+      if (validation.status === 'valid') {
+        try {
+          const intent  = detectIntent(data.message, data.service);
+          const action  = recommendedAction(intent);
+          const dateStr = new Date().toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
+            year: 'numeric', hour: '2-digit', minute: '2-digit',
+          }) + ' IST';
+          const preview = data.message.length > 160
+            ? data.message.substring(0, 160) + '…'
+            : data.message;
+          const summary = `${esc(data.name)} reached out via the website contact form with a ${intent.toLowerCase()}. Their message: "${esc(preview)}"`;
+
+          await sendMail({
+            to: process.env.CONTACT_EMAIL ?? 'contact@dsetconsulting.com',
+            subject: `New Contact Received - ${data.name} Enquired About ${intent}`,
+            replyTo: data.email,
+            html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -168,6 +210,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     </table>
   </div>
 
+  <!-- Lead Quality -->
+  ${leadQualityHtml(validation.status, validation.score, validation.reasons)}
+
   <!-- Lead Summary -->
   <div style="background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;border-top:1px solid #f1f5f9;padding:20px 28px;">
     <p style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 10px;">Lead Summary</p>
@@ -196,10 +241,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 </div>
 </body>
 </html>`,
-        });
-        console.log('✅ Email sent successfully!');
-      } catch (emailError: any) {
-        console.error('❌ Email Send Error:', emailError.message);
+          });
+          console.log('✅ Email sent successfully!');
+        } catch (emailError: any) {
+          console.error('❌ Email Send Error:', emailError.message);
+        }
+      } else {
+        console.log(`[contact] Rejected lead from ${data.email} (score: ${validation.score}) — reasons: ${validation.reasons.join(', ')}`);
       }
 
       return res.status(200).json({ success: true });
@@ -207,6 +255,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Validation failed', message: error.issues.map((i) => i.message).join(', ') });
       }
+      console.error('[api/contact] 500 error:', error);
       return res.status(500).json({ error: 'Failed to send message. Please try again later.' });
     }
   }

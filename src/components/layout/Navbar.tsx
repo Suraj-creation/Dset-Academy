@@ -19,6 +19,8 @@ const navLinks = [
       { name: 'SecureCloud',           href: '/product/securecloud',          section: '' },
       { name: 'iPaS-RevOps',           href: '/product/ipas-revops',          section: '' },
       { name: 'MedicsiQ',              href: '/product/medicsiq',             section: '' },
+      { name: 'VoiceOps',              href: '/product/voiceops',             section: '' },
+      { name: 'PharmaAI',             href: '/product/pharmaai',             section: '' },
     ],
   },
   { name: 'Industries',    href: '/industries'    },
@@ -37,7 +39,7 @@ const navLinks = [
     dropdown: [
       { name: 'About DSeT',               href: '/about',        section: '' },
       { name: 'Leadership',               href: '/about',        section: '' },
-      { name: 'How We Deliver (DSeT ARC)', href: '/services',    section: 'dset-arc' },
+      { name: 'How We Deliver (DSeT ARC)', href: '/dset-arc-managed-intelligence-services', section: '' },
       { name: 'Partners & Ecosystem',     href: '/about',        section: '' },
       { name: 'Careers',                  href: '/careers',      section: '' },
     ],

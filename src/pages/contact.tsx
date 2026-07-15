@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '';
 import Layout from '../components/layout/Layout';
 import Section from '../components/ui/Section';
 import { MapPin, Mail, Phone, Clock, Send, Users, ArrowRight, Zap, Shield, Cpu, BarChart2, Globe } from 'lucide-react';
@@ -133,6 +135,26 @@ const ContactPage = () => {
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const formStartRef = useRef<number>(Date.now());
+
+  // Load reCAPTCHA v3 script once
+  useEffect(() => {
+    if (!RECAPTCHA_SITE_KEY) return;
+    if (document.querySelector('script[src*="recaptcha/api.js"]')) return;
+    const s = document.createElement('script');
+    s.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    s.async = true;
+    document.head.appendChild(s);
+  }, []);
+
+  async function getRecaptchaToken(action: string): Promise<string> {
+    if (!RECAPTCHA_SITE_KEY) return '';
+    const gr = (window as any).grecaptcha;
+    if (!gr) return '';
+    return new Promise<string>(resolve => {
+      gr.ready(() => gr.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve).catch(() => resolve('')));
+    });
+  }
 
   const set = (field: keyof FormData, value: string) =>
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -146,16 +168,20 @@ const ContactPage = () => {
     setStatus('loading');
     setErrorMessage('');
     try {
+      const recaptchaToken = await getRecaptchaToken('contact_demo');
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          company: formData.company,
-          designation: formData.designation,
-          service: formData.platform,
-          message: formData.message,
+          name:           `${formData.firstName} ${formData.lastName}`,
+          email:          formData.email,
+          company:        formData.company,
+          designation:    formData.designation,
+          service:        formData.platform,
+          message:        formData.message,
+          _honeypot:      '',
+          _formStartTime: formStartRef.current,
+          recaptchaToken,
         }),
       });
       const data: ApiResponse = await res.json();
@@ -170,6 +196,7 @@ const ContactPage = () => {
         platform: '',
         message: '',
       });
+      formStartRef.current = Date.now();
       setTimeout(() => setStatus('idle'), 5000);
     } catch (err) {
       setStatus('error');
@@ -261,6 +288,11 @@ const ContactPage = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+
+                  {/* Honeypot — hidden from users, visible to bots */}
+                  <div style={{ display: 'none' }} aria-hidden="true">
+                    <input type="text" name="_honeypot" tabIndex={-1} autoComplete="off" />
+                  </div>
 
                   {/* Name row */}
                   <div className="grid grid-cols-2 gap-4">

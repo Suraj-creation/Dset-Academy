@@ -96,8 +96,10 @@ const About = () => {
                   <div>
                     <h4 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2 leading-tight">Our Mission</h4>
                     <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-                      To deliver purpose-built, industry-specific solutions leveraging our DSeT ARC 
-                      (Activate, Reimagine, Co-create) framework to provide flexible and dynamic digital transformations.
+                      To deliver purpose-built, industry-specific solutions through our DSeT ARC™
+                      framework — Assess, Analyze, Reimagine, Recreate, Collaborate, and
+                      Capitalize — providing flexible, dynamic digital transformations that keep
+                      compounding in value after go-live.
                     </p>
                   </div>
                 </div>
@@ -146,7 +148,7 @@ const About = () => {
               
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4 leading-tight">DSeT Consulting</h3>
               <p className="text-gray-300 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
-                Delivering pragmatic orchestration of enterprise-level digital strategy and sophisticated analytical services
+                DSeT stands for Digital, Strategy, Execution, and Transformation — pragmatic orchestration of enterprise-level digital strategy and sophisticated analytical services
               </p>
 
               {/* Technology Focus Areas */}

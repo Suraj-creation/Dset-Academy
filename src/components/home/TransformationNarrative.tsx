@@ -66,7 +66,7 @@ const industries = [
   {
     name: 'Secure Enterprise',
     platform: 'SecureCloud',
-    description: 'Zero-trust AI infrastructure, data sovereignty, and enterprise compliance for organisations operating in high-security environments.',
+    description: 'Compliance-aware AI infrastructure, data residency controls, and enterprise security for organisations operating in regulated environments.',
     icon: (
       <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -77,7 +77,7 @@ const industries = [
         />
       </svg>
     ),
-    tag: 'Zero-Trust | Sovereignty | Compliance',
+    tag: 'Compliance-Aware | Data Residency | Security',
   },
 ];
 

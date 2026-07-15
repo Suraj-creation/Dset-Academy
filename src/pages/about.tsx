@@ -42,7 +42,7 @@ const capabilities = [
   {
     icon: <Shield className="w-6 h-6" />,
     title: 'Regulated-First Architecture',
-    desc: 'Every platform is designed from the ground up for compliance — GST, CERT-In, PCI-DSS, GDPR, HIPAA. Compliance is a feature, not a retrofit.',
+    desc: 'Every platform is designed from the ground up for compliance — GST, PCI-DSS, GDPR and India regulatory requirements. Compliance is a feature, not a retrofit.',
     color: '#5e17ea',
   },
   {

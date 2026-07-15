@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { withAuth } from '@/components/auth/withAuth';
 
+type LeadStatus = 'valid' | 'suspicious' | 'rejected';
+
 interface Contact {
   id: string;
   name: string;
@@ -15,7 +17,15 @@ interface Contact {
   message: string;
   submittedAt: string;
   read: boolean;
+  leadScore: number;
+  leadStatus: LeadStatus;
 }
+
+const STATUS_META: Record<LeadStatus, { label: string; bg: string; text: string; border: string }> = {
+  valid:      { label: 'Valid',      bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+  suspicious: { label: 'Suspicious', bg: 'bg-amber-100',   text: 'text-amber-700',   border: 'border-amber-200'   },
+  rejected:   { label: 'Rejected',   bg: 'bg-red-100',     text: 'text-red-600',     border: 'border-red-200'     },
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-IN', {
@@ -27,11 +37,12 @@ function AdminContacts() {
   const { logout } = useAuth();
   const router = useRouter();
 
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
-  const [search, setSearch]     = useState('');
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [contacts,  setContacts]  = useState<Contact[]>([]);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState<string | null>(null);
+  const [search,    setSearch]    = useState('');
+  const [expanded,  setExpanded]  = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | LeadStatus>('all');
 
   const fetchContacts = async () => {
     setLoading(true);
@@ -71,18 +82,21 @@ function AdminContacts() {
 
   const handleLogout = () => { logout(); router.replace('/auth/signin'); };
 
+  const validCount      = contacts.filter((c) => c.leadStatus === 'valid').length;
+  const suspiciousCount = contacts.filter((c) => c.leadStatus === 'suspicious').length;
+  const rejectedCount   = contacts.filter((c) => c.leadStatus === 'rejected').length;
+  const unread          = contacts.filter((c) => !c.read).length;
+
   const filtered = contacts.filter((c) => {
+    const matchStatus = statusFilter === 'all' || c.leadStatus === statusFilter;
     const q = search.toLowerCase();
-    return (
-      !q ||
+    const matchSearch = !q ||
       c.name?.toLowerCase().includes(q) ||
       c.email?.toLowerCase().includes(q) ||
       c.company?.toLowerCase().includes(q) ||
-      c.service?.toLowerCase().includes(q)
-    );
+      c.service?.toLowerCase().includes(q);
+    return matchStatus && matchSearch;
   });
-
-  const unread = contacts.filter((c) => !c.read).length;
 
   return (
     <>
@@ -127,23 +141,31 @@ function AdminContacts() {
           ) : (
             <>
               {/* Stats */}
-              <div className="mb-8 grid grid-cols-3 gap-4">
+              <div className="mb-8 grid grid-cols-2 sm:grid-cols-5 gap-4">
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                  <p className="text-sm text-gray-500">Total Submissions</p>
-                  <p className="mt-1 text-3xl font-bold" style={{ color: '#10b981' }}>{contacts.length}</p>
+                  <p className="text-sm text-gray-500">Total</p>
+                  <p className="mt-1 text-3xl font-bold text-gray-900">{contacts.length}</p>
                 </div>
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                   <p className="text-sm text-gray-500">Unread</p>
                   <p className="mt-1 text-3xl font-bold" style={{ color: '#ef4444' }}>{unread}</p>
                 </div>
-                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                  <p className="text-sm text-gray-500">Read</p>
-                  <p className="mt-1 text-3xl font-bold text-gray-400">{contacts.length - unread}</p>
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+                  <p className="text-sm text-emerald-600">Valid</p>
+                  <p className="mt-1 text-3xl font-bold text-emerald-700">{validCount}</p>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+                  <p className="text-sm text-amber-600">Suspicious</p>
+                  <p className="mt-1 text-3xl font-bold text-amber-700">{suspiciousCount}</p>
+                </div>
+                <div className="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm">
+                  <p className="text-sm text-red-500">Rejected</p>
+                  <p className="mt-1 text-3xl font-bold text-red-600">{rejectedCount}</p>
                 </div>
               </div>
 
-              {/* Search */}
-              <div className="mb-5">
+              {/* Search + Filter */}
+              <div className="mb-5 flex flex-wrap items-center gap-3">
                 <input
                   type="text"
                   placeholder="Search name, email, company, or service…"
@@ -151,6 +173,26 @@ function AdminContacts() {
                   onChange={(e) => setSearch(e.target.value)}
                   className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 w-72"
                 />
+                <div className="flex gap-2">
+                  {([
+                    { key: 'all',        label: `All (${contacts.length})` },
+                    { key: 'valid',      label: `Valid (${validCount})` },
+                    { key: 'suspicious', label: `Suspicious (${suspiciousCount})` },
+                    { key: 'rejected',   label: `Rejected (${rejectedCount})` },
+                  ] as const).map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setStatusFilter(key)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors duration-150 ${
+                        statusFilter === key
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Contacts list */}
@@ -162,79 +204,87 @@ function AdminContacts() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {filtered.map((contact) => (
-                    <div
-                      key={contact.id}
-                      className={`rounded-xl border bg-white shadow-sm transition-all ${contact.read ? 'border-gray-200' : 'border-[#10b981]/40 bg-emerald-50/30'}`}
-                    >
-                      {/* Row */}
-                      <div className="flex flex-wrap items-center justify-between gap-4 p-5">
-                        <div className="flex items-center gap-4 min-w-0">
-                          <div className="h-10 w-10 flex-shrink-0 rounded-full bg-[#10b981] flex items-center justify-center text-white text-sm font-bold">
-                            {contact.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-gray-900">{contact.name}</span>
-                              {!contact.read && (
-                                <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold bg-emerald-100 text-emerald-700">
-                                  New
-                                </span>
-                              )}
-                              {contact.service && (
-                                <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600">
-                                  {contact.service}
-                                </span>
-                              )}
+                  {filtered.map((contact) => {
+                    const statusMeta = STATUS_META[contact.leadStatus ?? 'valid'];
+                    return (
+                      <div
+                        key={contact.id}
+                        className={`rounded-xl border bg-white shadow-sm transition-all ${contact.read ? 'border-gray-200' : 'border-[#10b981]/40 bg-emerald-50/30'}`}
+                      >
+                        {/* Row */}
+                        <div className="flex flex-wrap items-center justify-between gap-4 p-5">
+                          <div className="flex items-center gap-4 min-w-0">
+                            <div className="h-10 w-10 flex-shrink-0 rounded-full bg-[#10b981] flex items-center justify-center text-white text-sm font-bold">
+                              {contact.name.charAt(0).toUpperCase()}
                             </div>
-                            <p className="text-sm text-gray-500">
-                              <a href={`mailto:${contact.email}`} className="hover:text-[#10b981]">{contact.email}</a>
-                              {contact.company && <> · {contact.company}</>}
-                              {contact.phone && <> · {contact.phone}</>}
-                            </p>
-                            <p className="text-xs text-gray-400">{formatDate(contact.submittedAt)}</p>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-semibold text-gray-900">{contact.name}</span>
+                                {!contact.read && (
+                                  <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold bg-emerald-100 text-emerald-700">
+                                    New
+                                  </span>
+                                )}
+                                {/* Lead status badge */}
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold border ${statusMeta.bg} ${statusMeta.text} ${statusMeta.border}`}>
+                                  {statusMeta.label}
+                                  <span className="font-normal opacity-70">· {contact.leadScore}</span>
+                                </span>
+                                {contact.service && (
+                                  <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600">
+                                    {contact.service}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                <a href={`mailto:${contact.email}`} className="hover:text-[#10b981]">{contact.email}</a>
+                                {contact.company && <> · {contact.company}</>}
+                                {contact.phone && <> · {contact.phone}</>}
+                              </p>
+                              <p className="text-xs text-gray-400">{formatDate(contact.submittedAt)}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setExpanded(expanded === contact.id ? null : contact.id)}
+                              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                            >
+                              {expanded === contact.id ? 'Hide' : 'View Message'}
+                            </button>
+                            <a
+                              href={`mailto:${contact.email}`}
+                              className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                            >
+                              Reply
+                            </a>
+                            {!contact.read && (
+                              <button
+                                onClick={() => handleMarkRead(contact.id)}
+                                className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 transition-colors"
+                              >
+                                Mark Read
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDelete(contact.id)}
+                              className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => setExpanded(expanded === contact.id ? null : contact.id)}
-                            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                          >
-                            {expanded === contact.id ? 'Hide' : 'View Message'}
-                          </button>
-                          <a
-                            href={`mailto:${contact.email}`}
-                            className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
-                          >
-                            Reply
-                          </a>
-                          {!contact.read && (
-                            <button
-                              onClick={() => handleMarkRead(contact.id)}
-                              className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 transition-colors"
-                            >
-                              Mark Read
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleDelete(contact.id)}
-                            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        {/* Expanded message */}
+                        {expanded === contact.id && (
+                          <div className="border-t border-gray-100 px-5 py-4 bg-gray-50 rounded-b-xl">
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Message</p>
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
+                          </div>
+                        )}
                       </div>
-
-                      {/* Expanded message */}
-                      {expanded === contact.id && (
-                        <div className="border-t border-gray-100 px-5 py-4 bg-gray-50 rounded-b-xl">
-                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Message</p>
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{contact.message}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 

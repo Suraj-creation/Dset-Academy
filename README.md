@@ -16,6 +16,11 @@ That's the minimum to get the site running. No database, no API keys needed to s
 
 ---
 
+
+
+
+
+
 ## Documentation Map
 
 All detailed documentation lives in the [`documentation/`](./documentation/) folder. Here's what each file covers and when to read it:

@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '@/components/layout/Layout';
@@ -72,7 +73,7 @@ const technicalStack = [
 const industries = [
   {
     name: 'Mining',
-    image: '/images/mining.jpg',
+    image: '/EdgeBy1.webp',
     alt: 'Mining operations supported by EdgeBay IntelliFence',
     useCases: [
       'Hazard zone detection & geofencing',
@@ -82,7 +83,7 @@ const industries = [
   },
   {
     name: 'Manufacturing',
-    image: '/images/manufacturing.jpg',
+    image: '/EdgeBy2.avif',
     alt: 'Manufacturing operations supported by EdgeBay IntelliFence',
     useCases: [
       'Predictive breakdown alerts for critical assets',
@@ -92,7 +93,7 @@ const industries = [
   },
   {
     name: 'Utilities',
-    image: '/images/utilities.jpg',
+    image: '/EdgeBy3.avif',
     alt: 'Utilities operations supported by EdgeBay IntelliFence',
     useCases: [
       'Grid substation heat & arc detection',
@@ -110,6 +111,33 @@ const valueDelivered = [
   'Offline-first Resilience',
 ];
 
+const faqs = [
+  {
+    q: 'What industries does EdgeBay IntelliFence serve?',
+    a: 'Mining, manufacturing, and utilities — any environment with high OT asset density, safety-critical operations, or continuous regulatory monitoring requirements. The platform is built for harsh environments where generic IoT tools cannot operate reliably.',
+  },
+  {
+    q: 'Can EdgeBay IntelliFence operate without internet connectivity?',
+    a: 'Yes. EdgeBay IntelliFence is offline-first by design. Analytics continuity is maintained locally at the edge node, and when connectivity is restored, data synchronises automatically to cloud or command-centre dashboards — no gaps in the operational record.',
+  },
+  {
+    q: 'How does EdgeBay IntelliFence connect to our existing OT and SCADA systems?',
+    a: 'Through hardened connectors for MODBUS, OPC-UA, MQTT, and REST. No rip-and-replace of existing SCADA or PLC infrastructure is required — EdgeBay IntelliFence integrates alongside your current stack without disrupting live operations.',
+  },
+  {
+    q: 'What is the typical deployment timeline for EdgeBay IntelliFence?',
+    a: 'Pilot deployment timelines depend on site complexity and the number of OT data sources involved. DSeT ARC™ handles the full discovery-to-deployment sequence, including sensor mapping, inference tuning, and operator training, and gives you a firm project timeline before configuration begins.',
+  },
+  {
+    q: 'What hardware does EdgeBay IntelliFence run on?',
+    a: 'EdgeBay IntelliFence runs on ruggedised edge nodes using Intel OpenVINO and NVIDIA CUDA inference pipelines — built for harsh industrial environments that don\'t have dedicated data-centre infrastructure on site.',
+  },
+  {
+    q: 'Is EdgeBay IntelliFence delivered through DSeT ARC™?',
+    a: 'Yes. EdgeBay IntelliFence engagements are structured through DSeT ARC™ — from initial digital assessment and OT data mapping through deployment, tuning, and ongoing managed intelligence. You\'re not handed a product and left to run it alone.',
+  },
+];
+
 const deploymentArchitecture = [
   'Industrial Edge Nodes',
   'AI Inference Pipelines',
@@ -117,11 +145,43 @@ const deploymentArchitecture = [
   'Optional Cloud Sync',
 ];
 
+function FAQItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-t border-white/10 py-6 first:border-t-0 first:pt-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-start justify-between gap-6 text-left"
+      >
+        <span className="text-base font-semibold text-white sm:text-lg">{q}</span>
+        <span className="mt-1 flex-shrink-0 text-[#88dbff]">
+          <svg className="h-5 w-5 transition-transform duration-300" style={{ transform: open ? 'rotate(45deg)' : 'rotate(0deg)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </span>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <p className="mt-4 text-base leading-8 text-slate-300">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function EdgeBayIntellifencePage() {
   return (
     <Layout
-      title="EdgeBay IntelliFence — Industrial Edge AI Platform | DSeT"
-      description="EdgeBay IntelliFence fuses OT-IT sensor, control, and IT telemetry for predictive safety, compliance, and uptime at the industrial edge."
+      title="EdgeBay IntelliFence — Industrial Edge AI for Mining & Manufacturing | DSeT"
+      description="EdgeBay IntelliFence is DSeT's industrial edge AI platform — OT-IT convergence, predictive maintenance, and real-time safety intelligence for mining, manufacturing, and utilities in India."
       ogImage="/images/edgebay.png"
       jsonLd={{
         '@context': 'https://schema.org',
@@ -134,8 +194,13 @@ export default function EdgeBayIntellifencePage() {
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/edgebay-intelligence',
         image: 'https://dsetconsulting.com/images/edgebay.png',
-        keywords: 'industrial AI, edge computing, OT IT convergence, SCADA AI, predictive maintenance, IIoT',
+        keywords: 'industrial edge AI India, IIoT platform India, OT IT convergence India, predictive maintenance AI India, edge computing manufacturing India, industrial AI for mining India, SCADA analytics platform, edge AI for utilities India, EdgeBay IntelliFence, shop floor AI India',
       }}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Platforms', href: '/product' },
+        { name: 'EdgeBay IntelliFence', href: '/product/edgebay-intelligence' },
+      ]}
     >
       <div className={`${productPageFont.variable} product-page-shell relative overflow-hidden bg-[#020816] text-white`}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(79,172,254,0.24),transparent_34%),radial-gradient(circle_at_80%_20%,rgba(0,242,254,0.18),transparent_26%),linear-gradient(180deg,#06101f_0%,#040914_38%,#020611_100%)]" />
@@ -416,6 +481,24 @@ export default function EdgeBayIntellifencePage() {
             </div>
           </section>
 
+          <section className="px-4 py-20 sm:px-6 md:px-10 lg:px-14 xl:px-20">
+            <div className="mx-auto max-w-[1320px]">
+              <div className="grid gap-12 lg:grid-cols-[0.74fr_1.26fr]">
+                <div>
+                  <div className="product-page-kicker text-[#88dbff]">FAQ</div>
+                  <h2 className="product-page-section-heading mt-5 text-white">
+                    Common questions
+                  </h2>
+                </div>
+                <div>
+                  {faqs.map((item) => (
+                    <FAQItem key={item.q} q={item.q} a={item.a} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section className="px-4 pb-24 pt-20 sm:px-6 md:px-10 lg:px-14 xl:px-20">
             <div className="mx-auto max-w-[1320px]">
               <div className="relative overflow-hidden rounded-[36px] border border-white/12 bg-white/[0.05] px-6 py-12 shadow-[0_28px_100px_rgba(8,27,58,0.45)] backdrop-blur-2xl sm:px-8 lg:px-12 lg:py-14">
@@ -446,6 +529,12 @@ export default function EdgeBayIntellifencePage() {
                       className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/14 bg-white/6 px-7 text-sm font-semibold text-white backdrop-blur-xl transition-colors duration-300 hover:bg-white/10"
                     >
                       Request a Demo
+                    </Link>
+                    <Link
+                      href="/dset-arc-managed-intelligence-services"
+                      className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/14 bg-white/6 px-7 text-sm font-semibold text-white/60 backdrop-blur-xl transition-colors duration-300 hover:bg-white/10 hover:text-white"
+                    >
+                      How We Deploy (DSeT ARC™)
                     </Link>
                   </div>
 

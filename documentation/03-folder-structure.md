@@ -178,12 +178,13 @@ clearAuthToken()                         // sessionStorage.removeItem('isAuthent
 isAuthenticated()                        // sessionStorage check, returns boolean
 ```
 
-The actual credentials are hardcoded here:
+Credentials are read from environment variables, never hardcoded:
 ```ts
-const ADMIN_CREDENTIALS = { username: 'admin', password: 'DSeTC@2025' };
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
 ```
 
-**When to edit:** To change admin credentials, or to replace the session storage auth with a proper JWT/cookie system.
+**When to edit:** To change admin credentials, update `ADMIN_USERNAME`/`ADMIN_PASSWORD` in your environment (never commit real values to source or docs), or to replace the session storage auth with a proper JWT/cookie system.
 
 ---
 

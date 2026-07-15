@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { getPublishedPostsServer, getPostBySlugServer } from '@/lib/blog.server';
 import { format } from 'date-fns';
 import sanitizeHtml from 'sanitize-html';
@@ -230,6 +231,9 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
         </div>
       </div>
 
+      {/* ── Lead Capture ── */}
+      <BlogSubscribe slug={post.slug} />
+
       {/* ── Share ── */}
       <div className="bg-gray-950 border-t border-gray-800/60">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
@@ -299,6 +303,84 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
     </Layout>
   );
 };
+
+function BlogSubscribe({ slug }: { slug: string }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setState('loading');
+    try {
+      const res = await fetch('/api/blog-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), slug }),
+      });
+      setState(res.ok ? 'success' : 'error');
+    } catch {
+      setState('error');
+    }
+  };
+
+  return (
+    <div className="bg-gray-950 border-t border-gray-800/60">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        <div className="rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/60 px-8 py-10 text-center">
+          <div className="w-10 h-10 rounded-full bg-[#5e17ea]/20 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-5 h-5 text-[#5e17ea]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold text-white mb-1.5">Stay ahead of the curve</h3>
+          <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
+            Get DSeT Insights delivered to your inbox — strategy, AI, and digital transformation.
+          </p>
+
+          {state === 'success' ? (
+            <div className="flex items-center justify-center gap-2 text-green-400 font-medium text-sm">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              You're subscribed! We'll be in touch.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+              <input
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gray-700/50 border border-gray-600 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#5e17ea] focus:border-transparent"
+              />
+              <input
+                type="email"
+                placeholder="Work email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gray-700/50 border border-gray-600 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#5e17ea] focus:border-transparent"
+              />
+              <button
+                type="submit"
+                disabled={state === 'loading'}
+                className="px-5 py-2.5 bg-[#5e17ea] hover:bg-[#4e0fd8] text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 flex-shrink-0"
+              >
+                {state === 'loading' ? '…' : 'Subscribe'}
+              </button>
+            </form>
+          )}
+
+          {state === 'error' && (
+            <p className="mt-2 text-xs text-red-400">Something went wrong. Please try again.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getPublishedPostsServer();

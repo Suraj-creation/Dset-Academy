@@ -12,57 +12,57 @@ const COLOR_ALT = '#0ea5e9'; // sky blue accent
 const features = [
   {
     num: '01',
-    name: 'AI-Powered Skin Analysis',
-    desc: 'Computer vision model trained on 500K+ dermatology images to detect skin type, conditions, and wellness indicators from a single photo capture.',
+    name: 'AI-Powered Skin & Hair Analysis',
+    desc: 'Camera vision model optimised for India-centric skin tones and hair types — analysing 12+ biomarkers including hydration, sebum, melanin, texture, and scalp health from a single photo capture in under 3 seconds.',
   },
   {
     num: '02',
     name: 'Personalised Product Recommendations',
-    desc: 'Maps each skin analysis result to Natura Sparsh\'s product catalogue — delivering ingredient-level justification for every recommendation.',
+    desc: 'Maps each skin and hair analysis result to any product catalogue — delivering ingredient-level justification for every recommendation across any brand or SKU library.',
   },
   {
     num: '03',
-    name: 'Clinical Intake Automation',
-    desc: 'Digital patient intake with consent management, skin history capture, and CDSCO-aligned documentation — reducing clinic admin overhead by 70%.',
+    name: 'Voice Chat AI Assistant',
+    desc: 'Conversational voice AI with regional language support for intuitive product discovery, consumer onboarding, and personalized routine building — making wellness accessible across language barriers.',
   },
   {
     num: '04',
-    name: 'Wellness Progress Tracking',
-    desc: 'Longitudinal tracking of skin health indicators across sessions. Patients see measurable improvement curves; clinics see treatment efficacy data.',
+    name: 'Overall Wellness Tracker',
+    desc: 'Monitors holistic user wellness metrics across multiple sessions to contextualize product efficacy, track routine improvements, and reveal measurable progress over time.',
   },
   {
     num: '05',
-    name: 'Multi-Channel Deployment',
-    desc: 'Run as an in-clinic kiosk, embedded in a retail app, or as a white-label SaaS API — same intelligence engine across all touchpoints.',
+    name: 'Optimized Edge Deployment',
+    desc: 'AI inference targeted directly on edge devices — maximising privacy, reducing latency, and enabling offline capabilities for kiosk and retail environments without cloud dependency.',
   },
   {
     num: '06',
-    name: 'Explainable AI Outputs',
-    desc: 'Every recommendation surfaces the underlying skin biomarker data — so dermatologists can review, override, or endorse the AI-generated plan.',
+    name: 'Transparent Recommendation Logic',
+    desc: 'Every recommendation surfaces ingredient-level rationale, compatibility matching, and the underlying biomarker evidence — so advisors and consumers understand exactly why each product was suggested.',
   },
 ];
 
 const narrativeRows = [
   {
     label: 'AI Skin Analysis',
-    heading: 'Clinical-grade skin intelligence from a smartphone camera.',
-    body: 'MedicsIQ\'s vision layer analyses facial skin across 12 biomarker dimensions — hydration, sebum production, melanin distribution, texture uniformity, and more. Results are generated in under 3 seconds and presented in a structured skin health report that clinicians can interpret immediately.',
+    heading: 'Precision skin intelligence from a smartphone camera.',
+    body: 'MedicsIQ\'s vision layer analyses facial skin across 12+ skin and scalp biomarkers — hydration, sebum production, melanin distribution, texture uniformity, and more. Results are generated in under 3 seconds and presented in a structured assessment report for brands and consumers.',
     image: '/skin_care.jpg',
     imageAlt: 'AI Skin Analysis',
     flipped: false,
   },
   {
-    label: 'Natura Sparsh Product Mapping',
-    heading: 'Recommendations tied directly to the product catalogue.',
-    body: 'Unlike generic skin analysis tools, MedicsIQ is purpose-built to bridge clinical output with commerce. Each skin report maps to specific Natura Sparsh SKUs — with ingredient-level rationale, contraindication flags, and usage protocols. The result is a recommendation your customer trusts and your team can stand behind.',
+    label: 'Product Mapping & Commerce',
+    heading: 'Recommendations tied directly to any product catalogue.',
+    body: 'MedicsIQ is built to bridge wellness assessment output with commerce. Each skin report maps to your product SKUs — with ingredient-level rationale, ingredient compatibility notes, and usage protocols. The platform is multi-brand ready, supporting white-label deployments across any product ecosystem.',
     image: '/Naural_product.avif',
-    imageAlt: 'Natura Sparsh Products',
+    imageAlt: 'Product Mapping & Commerce',
     flipped: true,
   },
   {
     label: 'Scalable Wellness Intelligence',
     heading: 'Aggregate insights across thousands of sessions.',
-    body: 'At scale, MedicsIQ becomes a population-level wellness intelligence layer. Clinics and retail chains see anonymised aggregate data — which skin conditions are most prevalent, which product protocols yield the best outcomes, and where geographic or demographic patterns emerge. This converts clinical data into brand strategy.',
+    body: 'At scale, MedicsIQ becomes a population-level wellness intelligence layer. Wellness brands and retail chains see anonymised aggregate data — which skin concerns are most prevalent, which product protocols yield the best outcomes, and where geographic or demographic patterns emerge. This converts wellness data into brand strategy.',
     image: '/Ai_face.webp',
     imageAlt: 'AI Wellness Intelligence',
     flipped: false,
@@ -72,64 +72,58 @@ const narrativeRows = [
 const integrationPoints = [
   {
     icon: <Cpu className="w-5 h-5" />,
-    title: 'SKU-Level Mapping Engine',
-    desc: 'Each skin biomarker output is cross-referenced with the full Natura Sparsh product taxonomy in real-time.',
+    title: 'Multi-Brand SKU Mapping Engine',
+    desc: 'Each skin biomarker output is cross-referenced with your full product taxonomy in real-time — supporting any brand catalogue or SKU library.',
   },
   {
     icon: <Layers className="w-5 h-5" />,
     title: 'Ingredient Intelligence Layer',
-    desc: 'AI surfaces active ingredient compatibility and contraindications — supporting both clinician review and consumer explanation.',
+    desc: 'AI surfaces active ingredient compatibility and usage guidance — supporting both wellness advisor review and consumer explanation across any product range.',
   },
   {
     icon: <Activity className="w-5 h-5" />,
     title: 'Protocol-Driven Workflows',
-    desc: 'Branded usage protocols auto-generated per recommendation, ready for print or digital patient handoff.',
+    desc: 'Branded usage protocols auto-generated per recommendation, ready for print or digital consumer handoff — white-label customisable per deployment.',
   },
   {
     icon: <TrendingUp className="w-5 h-5" />,
     title: 'Commerce Analytics Feed',
-    desc: 'Recommendation acceptance rates, product conversion data, and protocol adherence metrics piped into Natura Sparsh\'s BI stack.',
+    desc: 'Recommendation acceptance rates, product conversion data, and protocol adherence metrics piped into your BI stack or analytics platform.',
   },
 ];
 
 const useCases = [
   {
     icon: '👤',
-    title: 'Direct-to-Consumer Skin Wellness',
-    desc: 'Consumers access MedicsIQ via a branded mobile app or web portal — upload a selfie, receive a personalised skin health report and product plan. Drives acquisition, engagement, and repeat purchase for Natura Sparsh\'s DTC channel.',
+    title: 'Consumer Wellness',
+    desc: 'Mobile apps and web portals for consumer self-serve skin and hair scanning, voice-assisted consultations, and instant purchasing — driving acquisition, engagement, and repeat purchase for any D2C wellness brand.',
     color: COLOR,
   },
   {
-    icon: '🏥',
-    title: 'Dermatology Clinics & Aesthetics Centres',
-    desc: 'Clinics deploy MedicsIQ as a patient intake and triage layer. AI analysis precedes the consultation, surfacing structured skin data before the dermatologist enters the room. Reduces per-patient time by 30–40% while improving documentation quality.',
+    icon: '🏪',
+    title: 'Retail & Experience Centers',
+    desc: 'Point-of-sale interaction layer to guide consumers to the right products and reduce buying hesitation. MedicsIQ turns every retail touchpoint into a personalised wellness consultation that converts.',
     color: COLOR_ALT,
   },
   {
     icon: '🛍️',
-    title: 'Beauty-Tech Retail & Phygital Experiences',
-    desc: 'Retailers embed MedicsIQ kiosks or QR-triggered experiences at point of sale. Customers receive personalised recommendations in-store, tied to available inventory — converting browsers into buyers with clinical credibility.',
+    title: 'Beauty-Tech Retail & Edge Kiosks',
+    desc: 'Edge-powered interactive kiosks or QR-triggered experiences that convert browsers into buyers using localized processing. Regional language voice support makes every kiosk interaction feel natural and personal.',
     color: '#a855f7',
   },
 ];
 
 const valueStats = [
-  { value: '500K+', label: 'Training Images', sub: 'Dermatology-grade dataset' },
-  { value: '12', label: 'Skin Biomarkers', sub: 'Analysed per session' },
-  { value: '<3s', label: 'Analysis Time', sub: 'Real-time results' },
-  { value: '70%', label: 'Admin Reduction', sub: 'Clinical intake overhead' },
-];
-
-const techStack = [
-  'Computer Vision (PyTorch)', 'Skin Biomarker Models', 'Next.js Frontend',
-  'FastAPI Backend', 'FHIR-Aligned Data Schema', 'PostgreSQL + Vector DB',
-  'Edge-Deployable Inference', 'REST / GraphQL API', 'WhiteLabel SDK',
+  { value: '<3s', label: 'Assessment Time', sub: 'Real-time results' },
+  { value: '12+', label: 'Skin Biomarkers', sub: 'Skin and scalp analysed per session' },
+  { value: '3', label: 'Deployment Models', sub: 'SaaS, API and kiosk' },
+  { value: '∞', label: 'Brand Support', sub: 'Multi-brand and white-label ready' },
 ];
 
 const compliance = [
   { icon: <Lock className="w-5 h-5" />, label: 'Privacy-First Architecture', sub: 'No biometric data retained without explicit consent' },
   { icon: <Eye className="w-5 h-5" />, label: 'Explainable AI', sub: 'Every output surfaced with supporting biomarker evidence' },
-  { icon: <Shield className="w-5 h-5" />, label: 'Dermatology Validation', sub: 'Model accuracy validated against clinical dermatologist assessments' },
+  { icon: <Shield className="w-5 h-5" />, label: 'Expert Validation', sub: 'Model accuracy benchmarked against skincare and wellness expert assessments' },
   { icon: <Users className="w-5 h-5" />, label: 'User Consent Workflows', sub: 'Built-in digital consent capture aligned with PDPA/GDPR requirements' },
   { icon: <CheckCircle className="w-5 h-5" />, label: 'GDPR / PDPA Compliant', sub: 'Data handling protocols aligned with international privacy regulations' },
 ];
@@ -137,8 +131,8 @@ const compliance = [
 export default function MedicsIQPage() {
   return (
     <Layout
-      title="MedicsIQ — AI Dermatology & Wellness Platform | DSeT"
-      description="MedicsIQ is DSeT's AI-powered skin analysis and wellness intelligence platform — bridging clinical-grade dermatology assessment with personalised product recommendations for clinics, D2C brands, and retail."
+      title="MedicsIQ — AI Skin, Scalp & Wellness Assessment Platform | DSeT"
+      description="MedicsIQ by DSeT is an AI skin, scalp and wellness assessment platform for D2C brands, Ayurveda brands, and wellness retailers. Computer vision, 12+ biomarkers, instant product recommendations."
       ogImage="/Derma_clinic.jpg"
       jsonLd={{
         '@context': 'https://schema.org',
@@ -146,13 +140,18 @@ export default function MedicsIQPage() {
         name: 'MedicsIQ',
         applicationCategory: 'HealthApplication',
         operatingSystem: 'Cloud, Edge',
-        description: 'AI-powered skin analysis and wellness intelligence platform — clinical-grade dermatology assessment with personalised product recommendations for clinics, D2C brands, and retail.',
+        description: 'AI skin, scalp and wellness assessment platform — combining computer vision, biomarker analysis, and multi-brand product recommendation intelligence for D2C, Ayurveda and wellness brands.',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/medicsiq',
         image: 'https://dsetconsulting.com/Derma_clinic.jpg',
-        keywords: 'AI dermatology, skin analysis, wellness platform, HIPAA compliance, clinical AI, D2C skincare',
+        keywords: 'AI skin analysis India, scalp wellness assessment, D2C skincare AI, Ayurveda wellness platform, skin biomarker analysis, white-label wellness AI, multi-brand skincare recommendation, beauty tech platform India',
       }}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Platforms', href: '/product' },
+        { name: 'MedicsIQ', href: '/product/medicsiq' },
+      ]}
     >
       <div className={`${productPageFont.variable} product-page-shell`}>
 
@@ -175,24 +174,26 @@ export default function MedicsIQPage() {
                 className="inline-block mb-5 px-4 py-1.5 text-xs font-bold text-white rounded-full shadow tracking-wider uppercase"
                 style={{ background: 'linear-gradient(90deg, #22c55e, #0ea5e9)' }}
               >
-                AI Dermatology & Wellness Platform
+                AI Skin, Hair & Wellness Platform
               </span>
               <h1 className="product-page-display mb-5 text-white">
                 MedicsIQ
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed font-light">
-                Clinical-grade skin intelligence — delivered at consumer scale.
+                AI-Powered Precision Wellness at Consumer Scale
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
-                MedicsIQ combines AI-driven skin analysis with personalised product mapping — built for
-                dermatology clinics, D2C wellness brands, and beauty-tech retailers who demand clinical
-                credibility at scale.
+                MedicsIQ combines computer vision, skin and scalp assessment, and recommendation intelligence
+                into a single platform — built for D2C brands, Ayurveda brands, wellness retailers,
+                and consumer-facing experiences.
               </p>
               <ul className="space-y-3 mb-10">
                 {[
-                  'Skin analysis across 12 biomarkers in under 3 seconds',
-                  'Natura Sparsh product catalogue integration — SKU-level mapping',
-                  'Deployable as SaaS, clinic kiosk, or white-label API',
+                  '<3 second assessment time',
+                  '12+ skin and scalp biomarkers',
+                  'SaaS, API and kiosk deployment models',
+                  'Product mapping and commerce integration',
+                  'Multi-brand and white-label ready',
                 ].map((pt) => (
                   <li key={pt} className="flex items-start gap-3 text-gray-300 text-sm">
                     <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLOR }} />
@@ -212,10 +213,10 @@ export default function MedicsIQPage() {
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Link
-                    href="/contact?type=clinical&product=medicsiq"
+                    href="/contact?type=demo&product=medicsiq"
                     className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/30 text-white font-semibold rounded-xl text-sm hover:bg-white/10 transition-colors duration-200"
                   >
-                    Talk to Clinical Team
+                    Learn More
                   </Link>
                 </motion.div>
               </div>
@@ -250,7 +251,7 @@ export default function MedicsIQPage() {
                     <Activity className="w-5 h-5" style={{ color: COLOR }} />
                   </div>
                   <div>
-                    <p className="text-xl font-bold text-white">12 Biomarkers</p>
+                    <p className="text-xl font-bold text-white">12+ Biomarkers</p>
                     <p className="text-xs text-gray-400">Analysed in &lt;3 seconds</p>
                   </div>
                 </div>
@@ -356,7 +357,7 @@ export default function MedicsIQPage() {
               Key Features
             </span>
             <h2 className="product-page-section-heading text-white">
-              Built for Clinical Precision.<br />
+              Built for Precision Wellness.<br />
               <span style={{ color: COLOR }}>Designed for Consumer Scale.</span>
             </h2>
           </motion.div>
@@ -387,7 +388,7 @@ export default function MedicsIQPage() {
         </div>
       </Section>
 
-      {/* ── Natura Sparsh Integration ── */}
+      {/* ── Product & Commerce Integration ── */}
       <Section bgColor="light" spacing="xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -396,15 +397,15 @@ export default function MedicsIQPage() {
           className="text-center mb-12"
         >
           <span className="inline-block px-4 py-1.5 text-xs font-bold text-white rounded-full mb-4 uppercase tracking-wider" style={{ background: '#a855f7' }}>
-            Natura Sparsh Integration
+            Product &amp; Commerce Integration
           </span>
           <h2 className="product-page-section-heading text-white">
-            Clinical Intelligence Meets<br />
+            Wellness Intelligence Meets<br />
             <span style={{ color: '#a855f7' }}>Product Commerce</span>
           </h2>
           <p className="text-gray-400 text-lg mt-4 max-w-2xl mx-auto">
-            MedicsIQ is purpose-integrated with Natura Sparsh&apos;s product ecosystem — turning every
-            skin analysis into a conversion-ready product recommendation.
+            MedicsIQ integrates with any product ecosystem — turning every skin analysis into a
+            conversion-ready recommendation across multiple brands and catalogues.
           </p>
         </motion.div>
 
@@ -506,7 +507,7 @@ export default function MedicsIQPage() {
             </span>
             <h2 className="product-page-section-heading text-white">
               Architecture Built for<br />
-              <span style={{ color: COLOR }}>Clinical Deployment</span>
+              <span style={{ color: COLOR }}>Wellness Deployment</span>
             </h2>
           </motion.div>
 
@@ -521,7 +522,7 @@ export default function MedicsIQPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
               {[
                 { step: '1', label: 'Capture', desc: 'Photo input via mobile app, kiosk, or clinic tablet' },
-                { step: '2', label: 'Analyse', desc: '12-biomarker AI model runs on edge or cloud inference' },
+                { step: '2', label: 'Analyse', desc: '12+ biomarker AI model runs on edge or cloud inference' },
                 { step: '3', label: 'Recommend', desc: 'Skin report + SKU mapping delivered in under 3 seconds' },
               ].map((s) => (
                 <div key={s.step} className="flex flex-col items-center">
@@ -598,11 +599,11 @@ export default function MedicsIQPage() {
           <div className="relative z-10">
             <h2 className="product-page-section-heading mb-4 text-white">
               Ready to Transform<br />
-              <span style={{ color: COLOR }}>Skin Health Intelligence?</span>
+              <span style={{ color: COLOR }}>Skin &amp; Wellness Intelligence?</span>
             </h2>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Whether you&apos;re a dermatology clinic, a D2C wellness brand, or a beauty-tech retailer —
-              MedicsIQ gives you clinical-grade AI at consumer scale.
+              Whether you&apos;re a wellness brand, an Ayurveda brand, a D2C company, or a retail
+              platform — MedicsIQ gives you precision wellness AI at consumer scale.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -616,13 +617,19 @@ export default function MedicsIQPage() {
               </motion.div>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link
-                  href="/product"
+                  href="/vertical-ai-platforms"
                   className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl text-base hover:bg-white/10 transition-colors duration-200"
                 >
-                  Explore All Platforms
+                  See All Platforms
                 </Link>
               </motion.div>
             </div>
+            <p className="mt-6 text-sm text-white/40">
+              Deploying for your brand?{' '}
+              <Link href="/dset-arc-managed-intelligence-services" className="text-[#a855f7] hover:text-[#a855f7]/80 underline underline-offset-2 transition-colors">
+                See how DSeT ARC™ takes MedicsIQ from discovery to go-live →
+              </Link>
+            </p>
 
           </div>
         </motion.div>

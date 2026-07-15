@@ -39,7 +39,7 @@ const narrativeRows = [
   {
     label: 'Dispatch Automation',
     heading: 'From permit to invoice — without a single manual step.',
-    body: 'OreBill AI integrates directly with i3MS and government dispatch portals to capture permit data the moment it is issued. The platform validates, enriches, and structures this data against your pricing rules and contractual terms — removing the 3–5 day reconciliation backlog that plagues manual billing cycles.',
+    body: 'OreBill AI processes i3MS-linked documents and government dispatch data to capture permit information the moment it is issued. The platform validates, enriches, and structures this data against your pricing rules and contractual terms — removing the 3–5 day reconciliation backlog that plagues manual billing cycles.',
     image: '',
     imageAlt: '',
     flipped: false,
@@ -48,8 +48,8 @@ const narrativeRows = [
     label: 'Grade Reconciliation',
     heading: 'End grade disputes before they become payment delays.',
     body: "Mineral grade discrepancies between pit-to-plant measurements, third-party lab reports, and buyer assay results are the leading cause of invoice rejections in ore trading. OreBill AI's reconciliation engine cross-validates all three data sources in real time — flagging conflicts and generating audit-ready evidence before the invoice is issued.",
-    image: '/mining.avif',
-    imageAlt: 'Mining operations grade reconciliation',
+    image: '/images/manufacturing.jpg',
+    imageAlt: 'Industrial operations grade reconciliation',
     flipped: true,
   },
   {
@@ -95,7 +95,7 @@ const useCases = [
   {
     icon: '🏗️',
     title: 'Built for Non-API Govt Ecosystems',
-    desc: 'Not ERP. Not automation. Execution. OreBill AI is purpose-built for i3MS-ready, PDF-driven government workflows — with an agentic execution layer that works on live operational data. Proven in environments processing ₹100 Cr+ monthly flows.',
+    desc: 'Not ERP. Not automation. Execution. OreBill AI is purpose-built for i3MS-linked, PDF-driven government workflows — with an agentic execution layer that works on live operational data, built for high-volume mining environments.',
     color: COLOR_ALT,
   },
   {
@@ -199,8 +199,8 @@ function RevenueStatsVisual() {
 export default function OreBillAIPage() {
   return (
     <Layout
-      title="OreBill AI — Mining & Mineral Billing Automation | DSeT"
-      description="OreBill AI is DSeT's vertical AI platform for mining and mineral trading — automating dispatch capture, grade reconciliation, and GST-compliant invoicing from pit to payment."
+      title="OreBill AI™ — Mining Billing Automation Platform | DSeT"
+      description="OreBill AI™ is DSeT's vertical AI platform for mining and mineral trading — automating i3MS document processing, grade reconciliation, and GST-compliant invoicing from dispatch to cash."
       ogImage="/images/mining.jpg"
       jsonLd={{
         '@context': 'https://schema.org',
@@ -208,13 +208,18 @@ export default function OreBillAIPage() {
         name: 'OreBill AI',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Cloud, Edge, Hybrid',
-        description: 'Vertical AI platform for mining and mineral trading — automating dispatch capture, grade reconciliation, and GST-compliant invoicing from pit to payment.',
+        description: 'Vertical AI platform for mining billing automation — i3MS-linked workflows, grade reconciliation, GST-compliant invoicing and AI-driven collections.',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR', priceSpecification: { '@type': 'UnitPriceSpecification', priceType: 'https://schema.org/InvoicePrice' } },
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/orebill-ai',
         image: 'https://dsetconsulting.com/images/mining.jpg',
-        keywords: 'mining AI, ore billing automation, GST invoicing, mineral trading, dispatch automation',
+        keywords: 'mining billing automation India, ore billing software, i3MS billing automation, mineral dispatch invoicing, GST invoicing mining',
       }}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Platforms', href: '/product' },
+        { name: 'OreBill AI™', href: '/product/orebill-ai' },
+      ]}
     >
       <div className={`${productPageFont.variable} product-page-shell`}>
 
@@ -243,7 +248,7 @@ export default function OreBillAIPage() {
                 OreBill AI™
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed font-light">
-                ₹100 Cr flows every month. Cash realisation is still manual.
+                High-volume ore dispatch. Cash realisation still manual.
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
                 OreBill AI deploys four autonomous agents — Extraction, Billing, Compliance, and Revenue —
@@ -252,7 +257,7 @@ export default function OreBillAIPage() {
               </p>
               <ul className="space-y-3 mb-10">
                 {[
-                  'Same-day billing — from i3MS PDF to GST-compliant invoice automatically',
+                  'Same-day billing — from i3MS document processing to GST-compliant invoice automatically',
                   'VoiceOps AI collections — Voice, WhatsApp & Email follow-up agents',
                   '10–15x ROI, payback in under 30 days — starting ₹1.5 Lakhs/month',
                 ].map((pt) => (
@@ -714,12 +719,12 @@ export default function OreBillAIPage() {
           <div className="relative z-10">
             <h2 className="product-page-section-heading mb-4 text-white">
               See YOUR Data Converted to<br />
-              <span style={{ color: COLOR }}>Invoices &amp; Cash — Live in 30 Minutes</span>
+              <span style={{ color: COLOR }}>Invoices &amp; Cash</span>
             </h2>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              From invoice delays to predictable cash flow in 2–4 weeks. Start with a 14-day pilot
-              on your live data — real invoices, GST + e-waybill integration, collection tracking,
-              and measurable cash acceleration from day one.
+              From invoice delays to predictable cash flow — start with a pilot on your live data:
+              real invoices, GST + e-waybill integration, collection tracking, and measurable cash
+              acceleration from day one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -733,13 +738,19 @@ export default function OreBillAIPage() {
               </motion.div>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link
-                  href="/product"
+                  href="/vertical-ai-platforms"
                   className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl text-base hover:bg-white/10 transition-colors duration-200"
                 >
-                  Explore All Platforms
+                  See All Platforms
                 </Link>
               </motion.div>
             </div>
+            <p className="mt-6 text-sm text-white/40">
+              Deploying this platform?{' '}
+              <Link href="/dset-arc-managed-intelligence-services" className="text-[#ff851b] hover:text-[#ff851b]/80 underline underline-offset-2 transition-colors">
+                See how DSeT ARC™ takes OreBill AI™ from discovery to go-live →
+              </Link>
+            </p>
 
           </div>
         </motion.div>

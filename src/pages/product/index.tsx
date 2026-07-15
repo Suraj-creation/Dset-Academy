@@ -97,7 +97,7 @@ const products: Product[] = [
     name: "SecureCloud",
     tagline: "Cloud Security, Simplified.",
     description:
-      "Next-generation cloud security platform protecting your infrastructure, data, and applications with AI-driven threat detection and zero-trust architecture from ground up.",
+      "Compliance-aware cloud security platform protecting your infrastructure, data, and applications with AI-driven threat detection and layered access architecture.",
     industry: "Cloud Security",
     gradient:
       "linear-gradient(135deg, rgba(37,99,235,0.18) 0%, rgba(147,197,253,0.05) 100%)",
@@ -108,7 +108,7 @@ const products: Product[] = [
     icon: "🔐",
     features: [
       "AI-driven threat detection",
-      "Zero-trust architecture",
+      "Layered access architecture",
       "Automated compliance reporting",
       "Real-time infrastructure monitoring",
     ],

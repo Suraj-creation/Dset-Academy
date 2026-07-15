@@ -12,13 +12,13 @@ const COLOR_ALT = '#1e90ff'; // sky blue accent
 const capabilities = [
   {
     icon: <Lock className="w-5 h-5" />,
-    title: 'Zero-Trust Access Control',
+    title: 'Identity-First Access Control',
     desc: 'Policy-based access management with identity federation, device posture checks, and continuous session verification across all workloads.',
   },
   {
     icon: <Shield className="w-5 h-5" />,
     title: 'Continuous Compliance Monitoring',
-    desc: 'Real-time posture scoring against CERT-In, MeitY, PCI-DSS, NIST CSF, and CSA frameworks — with auto-remediation workflows.',
+    desc: 'Real-time posture scoring designed for regulated cloud environments — with auto-remediation workflows and structured evidence generation.',
   },
   {
     icon: <Eye className="w-5 h-5" />,
@@ -27,7 +27,7 @@ const capabilities = [
   },
   {
     icon: <Server className="w-5 h-5" />,
-    title: 'Sovereign Data Residency',
+    title: 'Data Residency Controls',
     desc: 'Data classification and residency enforcement — ensuring sensitive workloads never leave defined geographic or jurisdictional boundaries.',
   },
   {
@@ -76,7 +76,7 @@ const architectureItems = [
   {
     num: '05',
     title: 'Compliance Dashboard',
-    desc: 'Real-time posture view mapped to selected frameworks. Exportable evidence bundles for CERT-In, MeitY, and PCI-DSS auditors.',
+    desc: 'Real-time posture view mapped to selected frameworks. Exportable evidence bundles for compliance audit preparation.',
   },
 ];
 
@@ -90,9 +90,9 @@ const industries = [
 ];
 
 const complianceBadges = [
-  { label: 'Zero-Trust Architecture', sub: 'NIST SP 800-207 aligned', icon: <Lock className="w-5 h-5" /> },
-  { label: 'CERT-In Compliant', sub: 'India CERT incident reporting workflows', icon: <Shield className="w-5 h-5" /> },
-  { label: 'MeitY Guidelines', sub: 'Government cloud policy adherence', icon: <CheckCircle className="w-5 h-5" /> },
+  { label: 'Layered Access Architecture', sub: 'Identity federation, device posture, session verification', icon: <Lock className="w-5 h-5" /> },
+  { label: 'India-Ready Compliance', sub: 'Designed for India regulatory reporting workflows', icon: <Shield className="w-5 h-5" /> },
+  { label: 'Regulatory Readiness', sub: 'Designed for government cloud policy requirements', icon: <CheckCircle className="w-5 h-5" /> },
   { label: 'NIST CSF', sub: 'Identify, Protect, Detect, Respond, Recover', icon: <Activity className="w-5 h-5" /> },
   { label: 'CSA CCM', sub: 'Cloud Security Alliance controls mapped', icon: <Server className="w-5 h-5" /> },
 ];
@@ -101,14 +101,14 @@ const metrics = [
   { value: '84%', label: 'Misconfiguration Reduction', sub: 'Within 60 days of deployment' },
   { value: '70%', label: 'Audit Prep Time Cut', sub: 'From 6 weeks to 10 days' },
   { value: '<24h', label: 'Threat Response Time', sub: 'For critical cloud incidents' },
-  { value: '100%', label: 'Data Residency Control', sub: 'Sovereign workload enforcement' },
+  { value: '100%', label: 'Data Residency Control', sub: 'Workload residency enforcement' },
 ];
 
 export default function SecureCloudPage() {
   return (
     <Layout
-      title="SecureCloud — Sovereign DevSecOps Suite | DSeT"
-      description="SecureCloud is DSeT's sovereign cloud security platform — continuous compliance, zero-trust architecture, and AI-driven threat detection built for government, defence, and regulated enterprises."
+      title="SecureCloud — Compliance-Aware Cloud Security | DSeT"
+      description="SecureCloud is DSeT's compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection built for regulated enterprises and India-ready deployments."
       ogImage="/DSeTC_logo2.png"
       jsonLd={{
         '@context': 'https://schema.org',
@@ -116,12 +116,17 @@ export default function SecureCloudPage() {
         name: 'SecureCloud',
         applicationCategory: 'SecurityApplication',
         operatingSystem: 'Cloud, On-Premise, Air-Gapped',
-        description: 'Sovereign cloud security platform — continuous compliance, zero-trust architecture, and AI-driven threat detection for government, defence, and regulated enterprises.',
+        description: 'Compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection for regulated enterprises and India-ready deployments.',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/securecloud',
-        keywords: 'cloud security, DevSecOps, zero trust, CERT-In compliance, sovereign cloud, AI threat detection',
+        keywords: 'compliance-aware cloud security India, DevSecOps platform India, regulated cloud security platform, AI threat detection India, India-ready cloud security, enterprise cloud compliance',
       }}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Platforms', href: '/product' },
+        { name: 'SecureCloud', href: '/product/securecloud' },
+      ]}
     >
       <div className={`${productPageFont.variable} product-page-shell`}>
 
@@ -144,7 +149,7 @@ export default function SecureCloudPage() {
                 className="inline-block mb-5 px-4 py-1.5 text-xs font-bold text-white rounded-full shadow tracking-wider uppercase"
                 style={{ background: 'linear-gradient(90deg, #5e17ea, #1e90ff)' }}
               >
-                Sovereign DevSecOps Suite
+                Compliance-Aware DevSecOps Suite
               </span>
               <h1 className="product-page-display mb-5 text-white">
                 SecureCloud
@@ -153,15 +158,15 @@ export default function SecureCloudPage() {
                 Digital sovereignty and compliance — by design, not retrofit.
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
-                SecureCloud is DSeT&apos;s sovereign cloud security platform — built for governments,
-                regulated enterprises, and critical infrastructure operators who cannot compromise
-                on compliance, residency, or control.
+                SecureCloud is DSeT&apos;s compliance-aware cloud security platform — built for
+                regulated enterprises and critical infrastructure operators who require strong
+                posture monitoring, data residency controls, and deployment flexibility.
               </p>
               <ul className="space-y-3 mb-10">
                 {[
-                  'Zero-trust architecture with continuous posture monitoring',
-                  'CERT-In, MeitY, PCI-DSS, and NIST CSF compliance automation',
-                  'Deployable on GovCloud, private data centres, or hybrid environments',
+                  'Layered access architecture with continuous posture monitoring',
+                  'Compliance-aware posture automation for regulated cloud environments',
+                  'Deployable on private cloud, private data centres, or hybrid environments',
                 ].map((pt) => (
                   <li key={pt} className="flex items-start gap-3 text-gray-300 text-sm">
                     <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLOR }} />
@@ -199,7 +204,7 @@ export default function SecureCloudPage() {
             >
               <Image
                 src="/cloud.avif"
-                alt="SecureCloud Sovereign Platform"
+                alt="SecureCloud Compliance-Aware Platform"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -219,7 +224,7 @@ export default function SecureCloudPage() {
                     <Shield className="w-5 h-5" style={{ color: COLOR }} />
                   </div>
                   <div>
-                    <p className="text-xl font-bold text-white">100% Sovereign</p>
+                    <p className="text-xl font-bold text-white">Data Residency Controlled</p>
                     <p className="text-xs text-gray-400">Data never leaves your perimeter</p>
                   </div>
                 </div>
@@ -241,8 +246,8 @@ export default function SecureCloudPage() {
           <div className="absolute inset-0 border border-white/[0.06] rounded-2xl" />
           <div className="absolute top-0 left-0 w-full h-0.5" style={{ background: 'linear-gradient(90deg, #5e17ea, #1e90ff)' }} />
           <p className="relative z-10 text-xl sm:text-2xl font-bold text-white max-w-3xl mx-auto leading-relaxed">
-            &ldquo;Digital sovereignty is not an option for governments and critical operators —
-            it&rsquo;s a <span style={{ color: COLOR }}>non-negotiable baseline.</span>
+            &ldquo;Compliance-aware deployment is not optional for regulated operators —
+            it&rsquo;s a <span style={{ color: COLOR }}>design baseline.</span>
             SecureCloud is built from that premise.&rdquo;
           </p>
           <p className="relative z-10 text-gray-500 text-sm mt-3">DSeT Platform Engineering</p>
@@ -284,7 +289,7 @@ export default function SecureCloudPage() {
             </span>
             <h2 className="product-page-section-heading text-white">
               Eight Pillars of<br />
-              <span style={{ color: COLOR }}>Sovereign Cloud Security</span>
+              <span style={{ color: COLOR }}>Compliance-Aware Cloud Security</span>
             </h2>
           </motion.div>
 
@@ -378,7 +383,7 @@ export default function SecureCloudPage() {
 
               {/* Floating overlay pills */}
               <div className="absolute inset-0 flex flex-col justify-end p-6 gap-2">
-                {['Policy Engine Active', 'Zero-Trust Enforced', 'Compliance: 98.4%'].map((label, i) => (
+                {['Policy Engine Active', 'Access Controls Active', 'Security Posture: 98.4%'].map((label, i) => (
                   <motion.div
                     key={label}
                     initial={{ opacity: 0, x: -20 }}
@@ -517,7 +522,7 @@ export default function SecureCloudPage() {
             </div>
             <h2 className="product-page-section-heading mb-4 text-white">
               Partner with DSeT for<br />
-              <span style={{ color: '#a78bfa' }}>Sovereign Cloud Assurance</span>
+              <span style={{ color: '#a78bfa' }}>Compliance-Aware Cloud Security</span>
             </h2>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
               SecureCloud is not a generic CSPM tool. It is purpose-built for India&apos;s regulatory
@@ -543,6 +548,12 @@ export default function SecureCloudPage() {
                 </Link>
               </motion.div>
             </div>
+            <p className="mt-6 text-sm text-white/40">
+              Planning a regulated cloud deployment?{' '}
+              <Link href="/dset-arc-managed-intelligence-services" className="text-[#5e17ea] hover:text-[#5e17ea]/80 underline underline-offset-2 transition-colors">
+                See how DSeT ARC™ handles SecureCloud onboarding →
+              </Link>
+            </p>
 
           </div>
         </motion.div>

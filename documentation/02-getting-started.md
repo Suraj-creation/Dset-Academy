@@ -139,7 +139,7 @@ Here's a suggested order to explore as a new developer:
 1. **Homepage** (`/`) — See the full layout: PromoBanner → Navbar → Hero → sections → Footer
 2. **Services** (`/services`) — The ARC framework, complex page with sections
 3. **Assessment** (`/digital-assessment`) — The lead capture flow, then the 60-question assessment
-4. **Admin login** (`/auth/signin`) — Username: `admin`, Password: `DSeTC@2025`
+4. **Admin login** (`/auth/signin`) — Username/password come from `ADMIN_USERNAME`/`ADMIN_PASSWORD` in your local `.env.local` (see `.env.example`) — ask a team member for the values, never commit them here
 5. **Admin blog** (`/admin/blog`) — Create a test blog post with TinyMCE
 6. **Blog** (`/blog`) — See your post appear here
 

@@ -107,6 +107,7 @@ async function sendLeadEmail(lead: LeadData, transcript: Message[]): Promise<voi
   await sendMail({
     to,
     subject: `New Lead Received - ${lead.name ?? 'Anonymous Visitor'} Interested in ${label}`,
+    replyTo: lead.email,
     html: `
 <!DOCTYPE html>
 <html lang="en">

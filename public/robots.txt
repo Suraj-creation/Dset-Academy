@@ -6,4 +6,9 @@ Disallow: /admin/
 Disallow: /auth/
 Disallow: /api/
 
+# Block WordPress ghost URLs and query param variants
+Disallow: /*?reloaded=true
+Disallow: /*?s=
+Disallow: /*?share=
+
 Sitemap: https://dsetconsulting.com/sitemap.xml

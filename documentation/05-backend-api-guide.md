@@ -513,7 +513,7 @@ process.env.MY_VARIABLE || 'default'  // With fallback
 | Issue | Current State | What to do |
 |---|---|---|
 | Blog API has no auth | Any request can create/delete posts | Add auth check: verify sessionStorage or use httpOnly cookies |
-| Admin credentials hardcoded | `admin` / `DSeTC@2025` in source | Move to environment variables |
+| ~~Admin credentials hardcoded~~ | Resolved — read from `ADMIN_USERNAME`/`ADMIN_PASSWORD` env vars | N/A |
 | Rate limiting uses in-memory Map | Resets on every server restart/cold start | Replace with Redis (`ioredis`) for production |
 | No CSRF protection | Anyone can POST to the API | Add CSRF tokens for form submissions |
 

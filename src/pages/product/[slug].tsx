@@ -173,7 +173,7 @@ const platforms: PlatformData[] = [
     features: [
       { icon: 'Shield',   name: 'Continuous Posture Management', desc: 'Real-time scanning against PCI-DSS, ISO 27001, RBI, and custom frameworks.' },
       { icon: 'Zap',      name: 'Auto-Remediation Engine',       desc: 'Automatically fixes low-risk misconfigurations — IAM policies, encryption gaps, open ports.' },
-      { icon: 'Lock',     name: 'Zero-Trust Architecture Audit', desc: 'Validates network segmentation, access controls, and identity policies.' },
+      { icon: 'Lock',     name: 'Layered Access Architecture Audit', desc: 'Validates network segmentation, access controls, and identity policies.' },
       { icon: 'BarChart2',name: 'Audit-Ready Reporting',         desc: 'Generates compliance evidence reports in the exact format auditors require.' },
       { icon: 'Activity', name: 'Real-Time Threat Detection',    desc: 'AI correlates cloud logs, network traffic, and config changes to flag threats.' },
       { icon: 'Cloud',    name: 'Multi-Cloud Coverage',          desc: 'Single pane of glass across AWS, Azure, and GCP with unified compliance scoring.' },
