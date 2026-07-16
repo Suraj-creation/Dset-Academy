@@ -1,9 +1,0 @@
-src/pages/gallery/index.tsx(573,15): error TS1128: Declaration or statement expected.
-src/pages/gallery/index.tsx(574,13): error TS1109: Expression expected.
-src/pages/gallery/index.tsx(574,14): error TS1128: Declaration or statement expected.
-src/pages/gallery/index.tsx(575,11): error TS1128: Declaration or statement expected.
-src/pages/gallery/index.tsx(576,9): error TS1109: Expression expected.
-src/pages/gallery/index.tsx(577,7): error TS1109: Expression expected.
-src/pages/gallery/index.tsx(946,5): error TS1128: Declaration or statement expected.
-src/pages/gallery/index.tsx(947,3): error TS1109: Expression expected.
-src/pages/gallery/index.tsx(948,1): error TS1128: Declaration or statement expected.

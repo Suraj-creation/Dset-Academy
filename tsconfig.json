@@ -31,6 +31,20 @@
   "exclude": [
     "node_modules",
     "deploy_ready",
-    "deploy_ready.zip"
+    "deploy_ready.zip",
+    "src/lib/linkedin.ts",
+    "src/lib/whitepapers.server.ts",
+    "src/data/whitepapers.ts",
+    "src/components/whitepapers",
+    "src/components/product",
+    "src/pages/whitepapers.tsx",
+    "src/pages/admin/linkedin.tsx",
+    "src/pages/admin/qr-codes.tsx",
+    "src/pages/admin/whitepapers",
+    "src/pages/api/auth",
+    "src/pages/api/cron",
+    "src/pages/api/upload-whitepaper.ts",
+    "src/pages/api/whitepaper-leads.ts",
+    "src/pages/api/whitepapers.ts"
   ]
 }

@@ -10,6 +10,7 @@ interface NavbarProps {
 }
 
 const navLinks = [
+  { name: 'Home', href: '/' },
   {
     name: 'Platforms',
     href: '/product',
