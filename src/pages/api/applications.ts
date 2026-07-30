@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { addApplication, readApplications, updateApplicationStatus, deleteApplication, ApplicationStatus } from '@/lib/applications.server';
 import { isAdminRequest } from '@/lib/auth';
 import { sendMail } from '@/lib/email';
+import { syncApplicationToZoho } from '@/lib/zoho/sync';
 import path from 'path';
 import fs from 'fs';
 
@@ -50,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       global.lastApplications.set(clientIp, now);
 
-      await addApplication({
+      const savedApplication = await addApplication({
         jobId: data.jobId,
         jobTitle: data.jobTitle,
         name: data.name,
@@ -64,6 +65,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         coverNote: data.coverNote,
         resumeLink: data.resumeLink,
       });
+
+      // Fire-and-forget — a Zoho outage or missing credentials must never affect this
+      // request; syncApplicationToZoho() is a no-op entirely while ZOHO_SYNC_ENABLED=false.
+      syncApplicationToZoho(savedApplication).catch(() => {});
 
       try {
         await sendMail({

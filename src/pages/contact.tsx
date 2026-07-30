@@ -19,6 +19,7 @@ type FormData = {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   company: string;
   designation: string;
   platform: string;
@@ -128,6 +129,7 @@ const ContactPage = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     company: '',
     designation: '',
     platform: '',
@@ -175,6 +177,7 @@ const ContactPage = () => {
         body: JSON.stringify({
           name:           `${formData.firstName} ${formData.lastName}`,
           email:          formData.email,
+          phone:          formData.phone,
           company:        formData.company,
           designation:    formData.designation,
           service:        formData.platform,
@@ -191,6 +194,7 @@ const ContactPage = () => {
         firstName: '',
         lastName: '',
         email: '',
+        phone: '',
         company: '',
         designation: '',
         platform: '',
@@ -318,17 +322,30 @@ const ContactPage = () => {
                     </div>
                   </div>
 
-                  {/* Email */}
-                  <div>
-                    <label className="block text-xs font-bold text-[#001f3f] mb-1.5 uppercase tracking-wide">
-                      Work Email *
-                    </label>
-                    <input
-                      type="email" name="email" value={formData.email}
-                      onChange={handleChange} required
-                      placeholder="rahul@yourcompany.com"
-                      className="w-full px-4 py-3 bg-white border border-[#e5e7eb] rounded-xl text-sm text-[#001f3f] placeholder-gray-400 focus:ring-2 focus:ring-[#5e17ea] focus:border-transparent transition-all outline-none"
-                    />
+                  {/* Email + Phone */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#001f3f] mb-1.5 uppercase tracking-wide">
+                        Work Email *
+                      </label>
+                      <input
+                        type="email" name="email" value={formData.email}
+                        onChange={handleChange} required
+                        placeholder="rahul@yourcompany.com"
+                        className="w-full px-4 py-3 bg-white border border-[#e5e7eb] rounded-xl text-sm text-[#001f3f] placeholder-gray-400 focus:ring-2 focus:ring-[#5e17ea] focus:border-transparent transition-all outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-[#001f3f] mb-1.5 uppercase tracking-wide">
+                        Phone
+                      </label>
+                      <input
+                        type="tel" name="phone" value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="98765 43210"
+                        className="w-full px-4 py-3 bg-white border border-[#e5e7eb] rounded-xl text-sm text-[#001f3f] placeholder-gray-400 focus:ring-2 focus:ring-[#5e17ea] focus:border-transparent transition-all outline-none"
+                      />
+                    </div>
                   </div>
 
                   {/* Company + Designation */}

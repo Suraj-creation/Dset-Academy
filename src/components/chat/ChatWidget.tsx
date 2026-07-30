@@ -1,12 +1,14 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WIDGET_CONFIG, QUICK_ACTIONS } from '@/lib/widgetConfig';
+import ReactMarkdown, { type Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { WIDGET_CONFIG, QUICK_ACTIONS, type Intent, type LeadScore } from '@/lib/widgetConfig';
 import { useChatVoice } from './useChatVoice';
 import { useLeadCapture } from './useLeadCapture';
 import {
   MessageCircle, X, Send, Mic,
-  Volume2, VolumeX, User, Briefcase, Mail,
+  Volume2, VolumeX, User, Briefcase, Mail, Phone,
   ChevronRight,
 } from 'lucide-react';
 import { VoiceWaveform } from './VoiceWaveform';
@@ -23,6 +25,38 @@ interface ChatMessage {
 // Android Chrome blocks async speechSynthesis — use "Tap to Hear" button instead.
 const isAndroidDevice = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
 
+// ─── Markdown Rendering ─────────────────────────────────────────
+// Compact, dark-theme-friendly overrides for assistant message bubbles.
+const markdownComponents: Components = {
+  p:      ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  ul:     ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-0.5 last:mb-0">{children}</ul>,
+  ol:     ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5 last:mb-0">{children}</ol>,
+  li:     ({ children }) => <li className="pl-0.5">{children}</li>,
+  strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+  a:      ({ href, children }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="underline text-blue-300 hover:text-blue-200">
+      {children}
+    </a>
+  ),
+  code:   ({ className, children }) => (
+    <code className={`bg-white/10 rounded px-1 py-0.5 text-[0.85em] font-mono ${className ?? ''}`}>
+      {children}
+    </code>
+  ),
+  pre:    ({ children }) => (
+    <pre className="bg-black/30 rounded-lg p-2.5 my-2 text-[0.85em] font-mono overflow-x-auto whitespace-pre">
+      {children}
+    </pre>
+  ),
+  table:  ({ children }) => (
+    <div className="overflow-x-auto mb-2">
+      <table className="border-collapse text-xs">{children}</table>
+    </div>
+  ),
+  th:     ({ children }) => <th className="border border-white/15 px-2 py-1 text-left font-semibold">{children}</th>,
+  td:     ({ children }) => <td className="border border-white/15 px-2 py-1">{children}</td>,
+};
+
 // ─── Component ────────────────────────────────────────────────
 export default function ChatWidget() {
   const [isOpen,    setIsOpen]    = useState(false);
@@ -31,15 +65,25 @@ export default function ChatWidget() {
   const [loading,   setLoading]   = useState(false);
   const [voiceOn,   setVoiceOn]   = useState(false);
   const [showLead,  setShowLead]  = useState(false);
-  const [leadForm,  setLeadForm]  = useState({ name: '', email: '', company: '' });
+  const [leadForm,  setLeadForm]  = useState({ name: '', email: '', phone: '', company: '' });
   const [pendingTTS,       setPendingTTS]       = useState('');
   const [isAndroidSpeaking, setIsAndroidSpeaking] = useState(false);
+  const [streamingId, setStreamingId] = useState<string | null>(null);
 
   const bottomRef     = useRef<HTMLDivElement>(null);
+  const scrollRef      = useRef<HTMLDivElement>(null);
   const inputRef      = useRef<HTMLInputElement>(null);
   const handleSendRef = useRef<((text?: string) => void) | null>(null);
   // Ref keeps voiceOn current inside async handleSend closures (avoids stale capture).
   const voiceOnRef    = useRef(false);
+  // Tracks whether the user is scrolled near the bottom — read (not re-rendered) on every new chunk.
+  const isNearBottomRef = useRef(true);
+
+  const handleMessagesScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }, []);
 
 
   const { lead, shouldAskDetails, updateFromResponse, saveLeadInfo, markCaptured, incrementMessages } = useLeadCapture();
@@ -56,9 +100,11 @@ export default function ChatWidget() {
     supported: voiceSupported,
   } = useChatVoice(onVoiceTranscript);
 
-  // ── Auto-scroll ──
+  // ── Auto-scroll (only if the user hasn't scrolled up to read earlier messages) ──
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isNearBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages, loading, showLead]);
 
   // ── Focus input on open ──
@@ -96,6 +142,12 @@ export default function ChatWidget() {
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
+    const botId = `a-${Date.now()}`;
+    let assistantText = '';
+    let streamStarted  = false;
+    let finalIntent: Intent    | undefined;
+    let finalScore:  LeadScore | undefined;
+
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
 
@@ -108,40 +160,91 @@ export default function ChatWidget() {
           sessionId: lead.sessionId,
           leadData: {
             intent:    lead.intent,
+            topics:    lead.topics,
             score:     lead.score,
             messages:  lead.messageCount,
             createdAt: lead.createdAt,
             name:      lead.info.name,
             email:     lead.info.email,
+            phone:     lead.info.phone,
             company:   lead.info.company,
           },
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Unknown error');
+      const contentType = res.headers.get('content-type') ?? '';
 
-      const botMsg: ChatMessage = {
-        id:      `a-${Date.now()}`,
-        role:    'assistant',
-        content: data.reply,
-        time:    now(),
-      };
+      // Pre-stream validation errors (bad request / provider misconfigured) still come back as JSON.
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        throw new Error(data.error ?? 'Unknown error');
+      }
+      if (!res.ok || !res.body) throw new Error('Unknown error');
 
-      setMessages((prev) => [...prev, botMsg]);
-      incrementMessages();
-      updateFromResponse(data.intent, data.score);
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      if (voiceOnRef.current) {
-        if (isAndroidDevice) {
-          setPendingTTS(data.reply);  // show "Tap to Hear" button — Android blocks async TTS
-        } else {
-          speak(data.reply);          // Desktop + iOS: auto-play as usual
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const event = JSON.parse(line) as
+            | { type: 'delta'; text: string }
+            | { type: 'done'; intent: Intent; score: LeadScore }
+            | { type: 'error'; message: string };
+
+          if (event.type === 'delta') {
+            assistantText += event.text;
+            if (!streamStarted) {
+              streamStarted = true;
+              setLoading(false);
+              setStreamingId(botId);
+              setMessages((prev) => [...prev, { id: botId, role: 'assistant', content: assistantText, time: now() }]);
+            } else {
+              const snapshot = assistantText;
+              setMessages((prev) => prev.map((m) => (m.id === botId ? { ...m, content: snapshot } : m)));
+            }
+          } else if (event.type === 'done') {
+            finalIntent = event.intent;
+            finalScore  = event.score;
+          } else if (event.type === 'error') {
+            throw new Error(event.message);
+          }
+        }
+      }
+
+      setStreamingId(null);
+
+      if (!assistantText) {
+        setMessages((prev) => [...prev, {
+          id: botId, role: 'assistant', content: 'Sorry, I could not process that.', time: now(),
+        }]);
+      } else {
+        incrementMessages();
+        if (finalIntent && finalScore) {
+          const lastAssistantMsg = [...messages].reverse().find((m) => m.role === 'assistant')?.content;
+          updateFromResponse(finalIntent, finalScore, msg, lastAssistantMsg);
+        }
+
+        if (voiceOnRef.current) {
+          if (isAndroidDevice) {
+            setPendingTTS(assistantText);  // show "Tap to Hear" button — Android blocks async TTS
+          } else {
+            speak(assistantText);          // Desktop + iOS: auto-play as usual
+          }
         }
       }
 
     } catch (err) {
       console.error('[ChatWidget]', err);
+      setStreamingId(null);
       setMessages((prev) => [...prev, {
         id:      `err-${Date.now()}`,
         role:    'assistant',
@@ -171,7 +274,7 @@ export default function ChatWidget() {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
-        message:          `My name is ${leadForm.name}, email is ${leadForm.email}${leadForm.company ? `, I work at ${leadForm.company}` : ''}.`,
+        message:          `My name is ${leadForm.name}, email is ${leadForm.email}${leadForm.phone ? `, phone ${leadForm.phone}` : ''}${leadForm.company ? `, I work at ${leadForm.company}` : ''}.`,
         history:          messages.map((m) => ({ role: m.role, content: m.content })),
         sessionId:        lead.sessionId,
         isContactCapture: true,
@@ -179,8 +282,10 @@ export default function ChatWidget() {
           ...lead.info,
           name:      leadForm.name,
           email:     leadForm.email,
+          phone:     leadForm.phone,
           company:   leadForm.company,
           intent:    lead.intent,
+          topics:    lead.topics,
           score:     lead.score,
           messages:  lead.messageCount,
           createdAt: lead.createdAt,
@@ -369,7 +474,11 @@ export default function ChatWidget() {
                 </div>
               </div>
             ) : (
-              <div className="dset-widget-scroll flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <div
+                ref={scrollRef}
+                onScroll={handleMessagesScroll}
+                className="dset-widget-scroll flex-1 overflow-y-auto px-4 py-3 space-y-3"
+              >
                 {messages.map((msg) => (
                   <motion.div
                     key={msg.id}
@@ -377,7 +486,7 @@ export default function ChatWidget() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                    <div className={`max-w-[80%] min-w-0 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                       msg.role === 'user'
                         ? 'text-white rounded-br-sm'
                         : 'bg-white/[0.07] text-white/85 rounded-bl-sm border border-white/[0.06]'
@@ -386,7 +495,16 @@ export default function ChatWidget() {
                         ? { background: `linear-gradient(135deg, ${WIDGET_CONFIG.color}, ${WIDGET_CONFIG.accentColor})` }
                         : {}}
                     >
-                      {msg.content}
+                      {msg.role === 'assistant' ? (
+                        <>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                            {msg.content}
+                          </ReactMarkdown>
+                          {streamingId === msg.id && (
+                            <span className="inline-block w-1.5 h-3.5 bg-white/50 ml-0.5 align-middle animate-pulse" />
+                          )}
+                        </>
+                      ) : msg.content}
                       <p className="text-[9px] mt-1 opacity-40 text-right">{msg.time}</p>
                     </div>
                   </motion.div>
@@ -437,6 +555,16 @@ export default function ChatWidget() {
                             value={leadForm.email}
                             onChange={(e) => setLeadForm((f) => ({ ...f, email: e.target.value }))}
                             required
+                            className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-8 pr-3 py-2 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-white/25"
+                          />
+                        </div>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
+                          <input
+                            type="tel"
+                            placeholder="Phone (optional)"
+                            value={leadForm.phone}
+                            onChange={(e) => setLeadForm((f) => ({ ...f, phone: e.target.value }))}
                             className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-8 pr-3 py-2 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-white/25"
                           />
                         </div>

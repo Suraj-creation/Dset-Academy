@@ -31,13 +31,33 @@
   },
   {
     "topic": "medicsiq",
-    "keywords": ["medicsiq", "medical", "healthcare", "health", "hospital", "clinic", "dermatology", "wellness", "pharma", "nabh", "clinical", "doctor"],
+    "keywords": ["medicsiq", "medical", "healthcare", "health", "hospital", "clinic", "dermatology", "wellness", "nabh", "clinical", "doctor"],
     "content": "MedicsIQ is DSeT's AI Dermatology & Wellness Platform. Tagline: Clinical-grade skin intelligence — delivered at consumer scale. It combines AI-driven skin analysis with personalised product mapping — built for dermatology clinics, D2C wellness brands, and beauty-tech retailers. Key capabilities: AI skin analysis across 12 biomarkers in under 3 seconds, trained on 500K+ dermatology images, Natura Sparsh product catalogue integration with SKU-level mapping, clinical intake automation reducing admin overhead by 70%, multi-channel deployment (SaaS, clinic kiosk, white-label API), GDPR/PDPA compliant. Results: 12-biomarker analysis in <3 seconds, 70% reduction in clinical intake overhead, 30-40% reduction in per-patient consultation time."
   },
   {
     "topic": "products_all",
     "keywords": ["products", "platforms", "solutions", "what do you offer", "kya offer", "all products", "saare products", "list", "platforms list"],
-    "content": "DSeT has 5 vertical AI platforms: 1) OreBill AI™ — Mining & Mineral Logistics (automated ore billing, weighbridge intelligence). 2) EdgeBay Intelligence — Industrial OT Edge AI (SCADA, PLC, sensor data intelligence). 3) SecureCloud — Cloud Security & Compliance (PCI-DSS, GDPR, HIPAA). 4) iPAS RevOps — Revenue Operations Automation (CRM unification, AR automation, forecasting). 5) MedicsIQ — Healthcare & Wellness AI (clinical workflow, HIPAA/NABH compliance)."
+    "content": "DSeT has 7 vertical AI platforms: 1) OreBill AI™ — Mining & Mineral Logistics (automated ore billing, weighbridge intelligence). 2) EdgeBay Intelligence — Industrial OT Edge AI (SCADA, PLC, sensor data intelligence). 3) SecureCloud — Cloud Security & Compliance (PCI-DSS, GDPR, HIPAA). 4) iPAS RevOps — Revenue Operations Automation (CRM unification, AR automation, forecasting). 5) MedicsIQ — Healthcare & Wellness AI (clinical workflow, HIPAA/NABH compliance). 6) VoiceOps — AI Voice Calling Platform (autonomous outbound/inbound voice conversations at scale). 7) PharmaAI — Pharma Commercial Intelligence (natural-language Q&A over licensed pharma market datasets, zero-hallucination, audit-grade)."
+  },
+  {
+    "topic": "pharmaai",
+    "keywords": ["pharmaai", "pharma ai", "pharma intelligence", "pharma market", "pharma commercial", "brand manager", "market share", "therapy", "molecule", "pharma data", "pharma analytics", "commercial pharma", "pharma forecast", "pharma dataset", "market intelligence", "life sciences"],
+    "content": "PharmaAI is DSeT's Pharma Commercial Intelligence platform — distinct from MedicsIQ (which is DSeT's healthcare/dermatology wellness AI). PharmaAI lets pharma commercial teams ask any market question in plain English — market share, growth, rankings, competitive position — and get instant answers built entirely from their own licensed pharma commercial datasets. Key capabilities: natural language Q&A, strategic recommendations (investment priority scores, therapy attractiveness, portfolio diagnostics), competitive intelligence (segment leadership, share movement, white-space opportunities), growth diagnostics (volume/price/geography/SKU/therapy-mix decomposition), 12-month sales forecasting with confidence ranges, and audit-grade outputs (every answer cited to its source metric). Architecture is deterministic retrieval, not generative — answers come from the licensed dataset, not from the model. Zero hallucination: if the answer doesn't exist in the dataset, PharmaAI says so explicitly instead of inventing a number. Full query audit trail for compliance and governance. Built for CXOs/Business Heads (portfolio strategy), Brand Managers (real-time share tracking), Sales & Marketing (therapy/geography prioritisation), and Market Research teams (instant deep-dives, no analyst wait time)."
+  },
+  {
+    "topic": "problem_pharma_market",
+    "keywords": ["market share unclear", "pharma report slow", "analyst wait", "brand performance", "therapy performance", "competitive position pharma", "portfolio strategy", "investment priority", "pharma forecast wrong", "weekly report pharma", "excel pharma", "version confusion", "pharma commercial team problem"],
+    "content": "If your pharma commercial team waits on analysts for weekly market reports, struggles to see real-time brand/therapy performance, or can't get a clear read on competitive position and portfolio priorities, PharmaAI solves this. It answers any market question in plain English directly from your licensed commercial datasets — no analyst prep, no Excel, no version confusion — with every number cited to its source and zero hallucination by design."
+  },
+  {
+    "topic": "voiceops",
+    "keywords": ["voiceops", "voice ops", "voice ai", "voice calling", "voice call", "call automation", "outbound call", "inbound call", "ai calling", "phone ai", "collections call", "voice bot", "call center ai", "conversational ai phone", "pharma ai calling", "pharma voice", "automated calls"],
+    "content": "VoiceOps is DSeT's AI Voice Calling Platform. Tagline: Enterprise Voice Operations, Powered by Real-Time AI. It autonomously executes business-critical voice conversations end-to-end — placing the call, conducting a contextual AI-driven conversation, capturing the outcome, and delivering structured data back to CRM/ERP systems automatically. Key capabilities: 24/7 operation, multi-language support, real-time transcription, resilient fallback architecture (voice synthesis, transcription, AI response, and logging safeguards so calls never drop), and CRM/existing-stack integration. Use cases: payment collections follow-up, logistics/delivery coordination, customer support, appointment scheduling, sales outreach and lead qualification, and critical notifications. Unlike human agents limited by headcount and business hours, VoiceOps scales to any call volume with consistent quality around the clock."
+  },
+  {
+    "topic": "problem_voice_calls",
+    "keywords": ["calls take too long", "agents limited calls", "call quality varies", "no calls after hours", "scale calling", "manual calling", "cold calling", "follow up calls", "collections calls slow", "call volume", "phone team problem", "customer calls", "voice automation problem"],
+    "content": "If your business struggles with limited call capacity, inconsistent call quality across agents, missed after-hours conversations, or the cost of scaling a calling team, VoiceOps solves this. It automates high-volume phone conversations — collections, delivery coordination, support, scheduling, or sales outreach — with contextual AI intelligence, structured outcome capture, and enterprise-grade reliability. Every scheduled conversation runs at exactly the right time, 24/7, without adding headcount."
   },
   {
     "topic": "services",
@@ -47,7 +67,7 @@
   {
     "topic": "industries",
     "keywords": ["industry", "industries", "sector", "vertical", "which industry", "kaun sa sector", "for whom", "kis ke liye"],
-    "content": "DSeT serves 4 primary industries: 1) Mining & Mineral Logistics — ore billing, weighbridge reconciliation, environments processing ₹100 Cr+ monthly flows. 2) Industrial Operations / OT Edge — SCADA, PLC, DCS plant environments. 3) Healthcare & Pharma — dermatology, wellness, clinical operations. 4) Secure Enterprise / BFSI — cloud security, compliance automation for banks and financial institutions. 5) Revenue Operations / B2B SaaS — CRM, AR automation, revenue forecasting."
+    "content": "DSeT serves 6 primary industries: 1) Mining & Mineral Logistics — ore billing, weighbridge reconciliation, environments processing ₹100 Cr+ monthly flows. 2) Industrial Operations / OT Edge — SCADA, PLC, DCS plant environments. 3) Healthcare & Wellness — dermatology, clinical operations (MedicsIQ). 4) Pharma & Life Sciences — commercial market intelligence built on licensed pharma datasets (PharmaAI). 5) Secure Enterprise / BFSI — cloud security, compliance automation for banks and financial institutions. 6) Revenue Operations / B2B SaaS — CRM, AR automation, revenue forecasting. Also serves enterprise voice operations across industries via VoiceOps (collections, logistics, support, scheduling, sales outreach)."
   },
   {
     "topic": "differentiators",
@@ -67,12 +87,12 @@
   {
     "topic": "demo",
     "keywords": ["demo", "demonstration", "book", "schedule", "meeting", "call", "try", "dekha", "dikhao", "show me", "interested", "contact sales"],
-    "content": "DSeT offers a 30-minute Strategic Demo — not a generic slideshow, but a session that maps your operational environment to the right DSeT platform and shows outcomes on your own data context. To book a demo, visit the Contact page or email infodsetc@gmail.com. Phone: +91 732 5948-111."
+    "content": "DSeT offers a 30-minute Strategic Demo — not a generic slideshow, but a session that maps your operational environment to the right DSeT platform and shows outcomes on your own data context. To book a demo, visit the Contact page or email contact@dsetconsulting.com. Phone: +91 732 5948-111."
   },
   {
     "topic": "contact",
     "keywords": ["contact", "reach", "email", "phone", "address", "office", "location", "kahan", "connect", "talk", "speak", "call", "helpline"],
-    "content": "DSeT Contact Details: Email: infodsetc@gmail.com | Phone: +91 732 5948-111 (Monday–Friday, 9 AM – 6 PM IST) | Office: DSeT Consulting Private Limited, Yuvaka Sangha, Yuvapatha 4, 31st Cross, 11th Main Rd, 4th Block, Jayanagar, Bengaluru, Karnataka 560011, India. Response within 24 hours."
+    "content": "DSeT Contact Details: Email: contact@dsetconsulting.com | Phone: +91 732 5948-111 (Monday–Friday, 9 AM – 6 PM IST) | Office: DSeT Consulting Private Limited, Yuvaka Sangha, Yuvapatha 4, 31st Cross, 11th Main Rd, 4th Block, Jayanagar, Bengaluru, Karnataka 560011, India. Response within 24 hours."
   },
   {
     "topic": "partnerships",
@@ -81,8 +101,8 @@
   },
   {
     "topic": "case_studies",
-    "keywords": ["case study", "case studies", "results", "success", "client", "customer", "outcome", "achievement", "proof", "example", "real", "worked", "kaam kiya", "kopl", "pharma", "sports", "university", "lms", "learning"],
-    "content": "DSeT case studies: 1) KOPL Intelligence (Manufacturing IT-OT) — Eliminated manual data reconciliation, AI flags bottlenecks in real time, voice interface for floor managers. 2) OreBill AI (Mining) — 60% reduction in billing reconciliation time, ₹1.2 Cr annual revenue leakage recovered, weighbridge discrepancy reduced from 12% to 1.5%. 3) SecureCloud (BFSI) — 70% reduction in compliance audit prep time, 84% reduction in critical misconfigurations, PCI-DSS Level 1 readiness in one quarter. 4) iPAS RevOps (SaaS) — AR overdue rate dropped from 23% to 8%, 340+ manual hours recovered monthly, forecast accuracy improved from ±31% to ±9%. 5) Pharma Intelligence (MedicsIQ) — RAG-based market audit system unifying pharma market data and insider intelligence. 6) Digital Operations for Sports/Universities — AI platform for athlete analytics and institutional workflow management. 7) Learning Management System — AI-driven personalised learning paths and future-skill recommendations for enterprises."
+    "keywords": ["case study", "case studies", "results", "success", "client", "customer", "outcome", "achievement", "proof", "example", "real", "worked", "kaam kiya", "manufacturing", "pharma", "sports", "university", "lms", "learning"],
+    "content": "DSeT case studies: 1) IT-OT Intelligence Platform (built for a specialty industrial manufacturer in India) — Eliminated manual data reconciliation, AI flags bottlenecks in real time, voice interface for floor managers. 2) OreBill AI (Mining) — 60% reduction in billing reconciliation time, ₹1.2 Cr annual revenue leakage recovered, weighbridge discrepancy reduced from 12% to 1.5%. 3) SecureCloud (BFSI) — 70% reduction in compliance audit prep time, 84% reduction in critical misconfigurations, PCI-DSS Level 1 readiness in one quarter. 4) iPAS RevOps (SaaS) — AR overdue rate dropped from 23% to 8%, 340+ manual hours recovered monthly, forecast accuracy improved from ±31% to ±9%. 5) PharmaAI (Pharma Commercial Intelligence) — natural-language, audit-grade market intelligence unifying licensed pharma commercial datasets, zero-hallucination deterministic retrieval. 6) Digital Operations for Sports/Universities — AI platform for athlete analytics and institutional workflow management. 7) Learning Management System — AI-driven personalised learning paths and future-skill recommendations for enterprises."
   },
   {
     "topic": "social_links",
@@ -111,7 +131,7 @@
   },
   {
     "topic": "problem_healthcare_clinic",
-    "keywords": ["skin analysis", "dermatology", "clinic problem", "patient intake", "clinical admin", "wellness platform", "beauty tech", "skin care", "hospital admin", "clinical workflow", "pharma data", "health data", "skin condition", "consultation time", "nabh", "patient data", "healthcare ai", "medical ai", "clinic automation", "health platform"],
+    "keywords": ["skin analysis", "dermatology", "clinic problem", "patient intake", "clinical admin", "wellness platform", "beauty tech", "skin care", "hospital admin", "clinical workflow", "health data", "skin condition", "consultation time", "nabh", "patient data", "healthcare ai", "medical ai", "clinic automation", "health platform"],
     "content": "If your dermatology clinic, wellness brand, or healthcare operation struggles with slow patient intake, manual skin assessments, or disconnected product recommendations, MedicsIQ solves this. It delivers AI-driven skin analysis across 12 biomarkers in under 3 seconds (trained on 500K+ images), automates clinical intake, and maps results to product SKUs for personalised recommendations. Deployable as SaaS, clinic kiosk, or white-label API. GDPR/PDPA compliant. Real result: 70% reduction in clinical intake overhead, 30–40% reduction in per-patient consultation time."
   },
   {

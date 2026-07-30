@@ -4,6 +4,7 @@ import { sendMail } from '@/lib/email';
 import { addContact, readContacts, markContactRead, deleteContact } from '@/lib/contacts.server';
 import { isAdminRequest } from '@/lib/auth';
 import { validateLead, LeadStatus } from '@/lib/leadValidation';
+import { syncContactToZoho } from '@/lib/zoho/sync';
 
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -128,7 +129,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       // Always save to DB (rejected leads kept as audit log)
-      await addContact({
+      const savedContact = await addContact({
         name:        data.name,
         email:       data.email,
         phone:       data.phone,
@@ -141,8 +142,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Only notify admin for valid leads
       if (validation.status === 'valid') {
+        const intent = detectIntent(data.message, data.service);
+
+        // Fire-and-forget — a Zoho outage or missing credentials must never affect this
+        // request; syncContactToZoho() is a no-op entirely while ZOHO_SYNC_ENABLED=false.
+        syncContactToZoho(savedContact, { intent }).catch(() => {});
+
         try {
-          const intent  = detectIntent(data.message, data.service);
           const action  = recommendedAction(intent);
           const dateStr = new Date().toLocaleString('en-IN', {
             timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',

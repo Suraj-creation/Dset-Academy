@@ -18,3 +18,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const db = drizzle(pool, { schema });
+// Exported for call sites that need a dedicated connection (e.g. session-level advisory
+// locks in src/lib/zoho/queue.server.ts) rather than a query through the shared drizzle instance.
+export { pool };

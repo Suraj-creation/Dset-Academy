@@ -1,33 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { SYSTEM_PROMPT, INTENT_KEYWORDS, LEAD_SCORE_RULES, Intent, LeadScore } from '@/lib/widgetConfig';
-import { searchKnowledge } from '@/lib/rag';
-import { getActiveJobs } from '@/lib/jobs.server';
-import { getGalleryEvents } from '@/lib/events.server';
-import { saveLead, LeadData } from '@/lib/leads.server';
+import { Intent, LeadScore } from '@/lib/widgetConfig';
+import { saveLead, buildLeadSummary, LeadData } from '@/lib/leads.server';
 import { sendMail } from '@/lib/email';
+import { extractIntent, scoreLeadFromIntents, buildAgentContext, streamAgentReply, type AgentMessage } from '@/lib/aiAgent';
+import { syncChatLeadToZoho } from '@/lib/zoho/sync';
 
 // ─── Types ────────────────────────────────────────────────────
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
-
-// ─── Intent Extractor ─────────────────────────────────────────
-function extractIntent(text: string): Intent {
-  const lower = text.toLowerCase();
-  for (const [intent, keywords] of Object.entries(INTENT_KEYWORDS)) {
-    if (intent === 'general') continue;
-    if (keywords.some((kw) => lower.includes(kw))) return intent as Intent;
-  }
-  return 'general';
-}
-
-// ─── Lead Scorer ──────────────────────────────────────────────
-function scoreLeadFromIntents(intents: Intent[]): LeadScore {
-  if (intents.some((i) => LEAD_SCORE_RULES.hot.includes(i)))  return 'hot';
-  if (intents.some((i) => LEAD_SCORE_RULES.warm.includes(i))) return 'warm';
-  return 'cold';
-}
+type Message = AgentMessage;
 
 // ─── Helpers ──────────────────────────────────────────────────
 function esc(s: string): string {
@@ -45,22 +24,6 @@ const INTENT_LABELS: Record<string, string> = {
 
 function intentLabel(intent: string): string {
   return INTENT_LABELS[intent] ?? (intent.charAt(0).toUpperCase() + intent.slice(1));
-}
-
-function buildLeadSummary(lead: LeadData): string {
-  const intentTopics: Record<string, string> = {
-    pricing:  'pricing and commercial terms',
-    demo:     'scheduling a product demo',
-    support:  'technical support',
-    careers:  'career opportunities at DSeT',
-    contact:  'connecting with the DSeT team',
-    general:  "DSeT's products and services",
-  };
-  const topic = intentTopics[lead.intent] ?? lead.intent;
-  const name  = lead.name ?? 'An anonymous visitor';
-  const n     = lead.messages;
-  const withContact = lead.email ? ' and shared their contact details' : '';
-  return `${name} reached out via the website chat widget showing interest in ${topic}. They exchanged ${n} message${n !== 1 ? 's' : ''} with the DSeT Bot${withContact}.`;
 }
 
 function buildRecommendedAction(intent: string): string {
@@ -153,6 +116,7 @@ async function sendLeadEmail(lead: LeadData, transcript: Message[]): Promise<voi
       </tr>
       ${lead.name    ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Name</td><td style="padding:7px 0;color:#1e293b;font-weight:600;">${esc(lead.name)}</td></tr>` : ''}
       ${lead.email   ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Email</td><td style="padding:7px 0;"><a href="mailto:${esc(lead.email)}" style="color:#1d4ed8;font-weight:600;text-decoration:none;">${esc(lead.email)}</a></td></tr>` : ''}
+      ${lead.phone   ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Phone</td><td style="padding:7px 0;"><a href="tel:${esc(lead.phone)}" style="color:#1d4ed8;font-weight:600;text-decoration:none;">${esc(lead.phone)}</a></td></tr>` : ''}
       ${lead.company ? `<tr><td style="padding:7px 0;color:#64748b;vertical-align:top;">Company</td><td style="padding:7px 0;color:#1e293b;">${esc(lead.company)}</td></tr>` : ''}
       <tr>
         <td style="padding:7px 0;color:#64748b;vertical-align:top;">Messages</td>
@@ -191,145 +155,11 @@ async function sendLeadEmail(lead: LeadData, transcript: Message[]): Promise<voi
   });
 }
 
-// ─── Dynamic Data Fetchers ────────────────────────────────────
-async function fetchDynamicContext(message: string): Promise<string> {
-  const lower = message.toLowerCase();
-  const parts: string[] = [];
-
-  const isJobQuery = ['job', 'opening', 'career', 'hiring', 'vacancy', 'vacancies', 'position', 'role', 'work with', 'join'].some(k => lower.includes(k));
-  const isEventQuery = ['event', 'webinar', 'workshop', 'meetup', 'conference', 'upcoming'].some(k => lower.includes(k));
-  const isCaseQuery = ['case study', 'case studies', 'client', 'result', 'success', 'proof', 'example', 'achievement', 'use case', 'use cases', 'industry', 'industries', 'sector', 'vertical'].some(k => lower.includes(k));
-
-  if (isJobQuery) {
-    try {
-      const jobs = await getActiveJobs();
-      if (jobs.length === 0) {
-        parts.push('CURRENT JOB OPENINGS: No openings available at the moment.');
-      } else {
-        const list = jobs.map(j => `  • ${j.title} (${j.department}) — ${j.location}, ${j.type}, ${j.level}`).join('\n');
-        parts.push(`CURRENT JOB OPENINGS:\n${list}`);
-      }
-    } catch { parts.push('CURRENT JOB OPENINGS: Could not fetch at this time.'); }
-  }
-
-  if (isEventQuery) {
-    try {
-      const events = await getGalleryEvents();
-      if (events.length === 0) {
-        parts.push('UPCOMING EVENTS: No published events at the moment.');
-      } else {
-        const list = events.slice(0, 5).map(e => `  • ${e.title} — ${e.date}${e.description ? ` (${e.description})` : ''}`).join('\n');
-        parts.push(`UPCOMING EVENTS:\n${list}`);
-      }
-    } catch { parts.push('UPCOMING EVENTS: Could not fetch at this time.'); }
-  }
-
-  if (isCaseQuery) {
-    parts.push(`CASE STUDIES & RESULTS:
-  • KOPL Intelligence (Manufacturing): Real-time IT-OT bridge with voice AI — eliminated manual data reconciliation, AI flags production bottlenecks instantly, floor managers use conversational interface.
-  • OreBill AI (Mining): 60% faster billing reconciliation, ₹1.2Cr annual leakage recovered, weighbridge discrepancy from 12% to 1.5%.
-  • SecureCloud (BFSI): 70% faster audit prep, 84% fewer critical misconfigurations, PCI-DSS Level 1 readiness in one quarter.
-  • iPaS-RevOps (B2B SaaS): AR overdue from 23% to 8%, 340+ hours/month recovered, forecast accuracy from ±31% to ±9%.
-  • Pharma Intelligence (MedicsIQ): RAG-based pharma market intelligence unifying audit data and insider data.
-  • Digital Operations for Sports/Universities: AI platform for athlete analytics and institutional workflows (upcoming).
-  • Learning Management System: AI-driven personalised learning paths and future-skill recommendations (upcoming).`);
-  }
-
-  return parts.join('\n\n');
-}
-
-// ─── Azure OpenAI Realtime (WebSocket) ───────────────────────
-async function callAzureRealtime(messages: Message[], fullContext: string): Promise<string> {
-  const { WebSocket } = await import('ws');
-
-  const endpoint   = process.env.AZURE_OPENAI_ENDPOINT!.replace(/\/$/, '');
-  const apiKey     = process.env.AZURE_OPENAI_API_KEY!;
-  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT!;
-  const apiVersion = process.env.AZURE_OPENAI_API_VERSION ?? '2024-10-01-preview';
-
-  const wsUrl = `${endpoint.replace('https://', 'wss://')}/openai/realtime?api-version=${apiVersion}&deployment=${deployment}`;
-
-  const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content ?? '';
-  const contextText = messages
-    .filter(m => m.role !== 'system')
-    .slice(-6)
-    .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
-    .join('\n');
-
-  const instructions = [
-    SYSTEM_PROMPT,
-    fullContext ? `\nRELEVANT COMPANY CONTEXT:\n${fullContext}` : '',
-    `\nConversation so far:\n${contextText}`,
-    `\nReply in ${/[ऀ-ॿ]/.test(lastUserMsg) ? 'Hindi' : 'English'}.`,
-  ].join('');
-
-  return new Promise((resolve, reject) => {
-    const ws = new WebSocket(wsUrl, { headers: { 'api-key': apiKey } });
-    let fullText = '';
-    let sessionSet = false;
-
-    const timeout = setTimeout(() => {
-      ws.close();
-      reject(new Error('Azure response timed out. Please try again.'));
-    }, 30000);
-
-    ws.on('open', () => {
-      ws.send(JSON.stringify({
-        type: 'session.update',
-        session: {
-          modalities:  ['text'],
-          instructions,
-          temperature: 0.7,
-          max_response_output_tokens: 500,
-        },
-      }));
-    });
-
-    ws.on('message', (raw: Buffer) => {
-      let event: { type: string; delta?: string; response?: { output?: Array<{ content?: Array<{ text?: string }> }> }; error?: { message?: string } };
-      try { event = JSON.parse(raw.toString()); } catch { return; }
-
-      if (event.type === 'session.updated' && !sessionSet) {
-        sessionSet = true;
-        ws.send(JSON.stringify({
-          type: 'conversation.item.create',
-          item: { type: 'message', role: 'user', content: [{ type: 'input_text', text: lastUserMsg }] },
-        }));
-        ws.send(JSON.stringify({ type: 'response.create' }));
-      }
-
-      if (event.type === 'response.text.delta' && event.delta) {
-        fullText += event.delta;
-      }
-
-      if (event.type === 'response.done') {
-        if (!fullText && event.response?.output) {
-          for (const item of event.response.output) {
-            for (const part of item.content ?? []) {
-              if (part.text) fullText += part.text;
-            }
-          }
-        }
-        clearTimeout(timeout);
-        ws.close();
-        resolve(fullText || 'Sorry, I could not process that.');
-      }
-
-      if (event.type === 'error') {
-        clearTimeout(timeout);
-        ws.close();
-        reject(new Error(event.error?.message ?? 'Realtime API error'));
-      }
-    });
-
-    ws.on('error', (err: Error) => {
-      clearTimeout(timeout);
-      reject(err);
-    });
-  });
-}
-
 // ─── Main Handler ─────────────────────────────────────────────
+export const config = {
+  api: { responseLimit: false },
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -345,29 +175,60 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'AI provider not configured' });
   }
 
+  const intent   = extractIntent(message);
+  const allIntents: Intent[] = [...(leadData?.intent ? [leadData.intent] : []), intent];
+  const score    = scoreLeadFromIntents(allIntents);
+
+  let fullContext: string;
   try {
-    const intent   = extractIntent(message);
-    const allIntents: Intent[] = [...(leadData?.intent ? [leadData.intent] : []), intent];
-    const score    = scoreLeadFromIntents(allIntents);
+    fullContext = await buildAgentContext(message);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[widget/chat]', msg);
+    return res.status(500).json({ error: msg });
+  }
 
-    const ragContext     = searchKnowledge(message);
-    const dynamicContext = await fetchDynamicContext(message);
-    const fullContext    = [ragContext, dynamicContext].filter(Boolean).join('\n\n');
+  const azureMessages: Message[] = [
+    ...history.slice(-10),
+    { role: 'user', content: message },
+  ];
 
-    const azureMessages: Message[] = [
-      ...history.slice(-10),
-      { role: 'user', content: message },
-    ];
+  // ── Switch to streaming mode: everything below writes chunks, not a single JSON body ──
+  res.writeHead(200, {
+    'Content-Type':      'text/plain; charset=utf-8',
+    'Transfer-Encoding': 'chunked',
+    'Cache-Control':     'no-cache, no-transform',
+    'Connection':        'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.flushHeaders?.();
 
-    const reply = await callAzureRealtime(azureMessages, fullContext);
+  try {
+    const reply = await streamAgentReply(azureMessages, fullContext, (delta) => {
+      res.write(JSON.stringify({ type: 'delta', text: delta }) + '\n');
+    });
 
     if (sessionId) {
+      // The lead-capture submission's own message ("My name is X, email is Y...") is a
+      // synthetic confirmation, not a real expression of interest -- its freshly-extracted
+      // intent (almost always "contact", since it contains the word "email") must never
+      // overwrite the actual topical intent already tracked from the real conversation
+      // (e.g. "demo" from an earlier "I want to book a demo for EdgeBay" turn), and must
+      // never be added to the running topics list either.
+      const leadIntent = isContactCapture && leadData?.intent ? leadData.intent : intent;
+      const priorTopics = leadData?.topics ?? [];
+      const topics = isContactCapture
+        ? priorTopics
+        : Array.from(new Set([...priorTopics, intent]));
+
       const lead: LeadData = {
         id:        sessionId,
         name:      leadData?.name,
         email:     leadData?.email,
+        phone:     leadData?.phone,
         company:   leadData?.company,
-        intent,
+        intent:    leadIntent,
+        topics,
         score,
         messages:  (leadData?.messages ?? 0) + 1,
         createdAt: leadData?.createdAt ?? new Date().toISOString(),
@@ -383,14 +244,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (score !== 'cold' || isContactCapture) {
         sendLeadEmail(lead, fullTranscript).catch(() => {});
+
+        // Fire-and-forget — a Zoho outage or missing credentials must never affect the
+        // reply the visitor is streaming right now. syncChatLeadToZoho() is also a no-op
+        // entirely while ZOHO_SYNC_ENABLED=false, and separately skips sync if lead.email
+        // isn't captured yet, even if this gate is ever loosened.
+        syncChatLeadToZoho(lead).catch(() => {});
       }
     }
 
-    return res.status(200).json({ reply, intent, score, sessionId });
+    res.write(JSON.stringify({ type: 'done', intent, score, sessionId }) + '\n');
+    res.end();
 
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
     console.error('[widget/chat]', msg);
-    return res.status(500).json({ error: msg });
+    res.write(JSON.stringify({ type: 'error', message: msg }) + '\n');
+    res.end();
   }
 }
