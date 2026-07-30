@@ -5,7 +5,7 @@ import Link from 'next/link';
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '';
 import Layout from '../components/layout/Layout';
 import Section from '../components/ui/Section';
-import { MapPin, Mail, Phone, Clock, Send, Users, ArrowRight, Zap, Shield, Cpu, BarChart2, Globe } from 'lucide-react';
+import { MapPin, Mail, Phone, Clock, Send, Users, ArrowRight, Zap, Shield, Cpu, BarChart2, Globe, Mic, Activity } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────
 type ApiResponse = {
@@ -62,6 +62,20 @@ const platforms = [
     tagline: 'Revenue Operations at Scale',
     icon: <Globe className="w-5 h-5" />,
     color: '#1e90ff',
+  },
+  {
+    id: 'voiceops',
+    name: 'VoiceOps',
+    tagline: 'AI-Powered Voice Conversations at Scale',
+    icon: <Mic className="w-5 h-5" />,
+    color: '#06b6d4',
+  },
+  {
+    id: 'pharmaai',
+    name: 'PharmaAI',
+    tagline: 'Pharma Market Intelligence, Cited.',
+    icon: <Activity className="w-5 h-5" />,
+    color: '#10b981',
   },
   {
     id: 'demo',

@@ -140,8 +140,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         leadStatus:  validation.status,
       });
 
-      // Only notify admin for valid leads
-      if (validation.status === 'valid') {
+      // Sync valid + suspicious leads to Zoho; only hard-rejected (spam/disposable) are excluded
+      if (validation.status !== 'rejected') {
         const intent = detectIntent(data.message, data.service);
 
         // Fire-and-forget — a Zoho outage or missing credentials must never affect this

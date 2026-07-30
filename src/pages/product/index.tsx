@@ -161,10 +161,56 @@ const products: Product[] = [
     href: "/product/ipas-revops",
     status: "live",
   },
+  {
+    id: "voiceops",
+    name: "VoiceOps",
+    tagline: "AI-Powered Voice Conversations at Scale",
+    description:
+      "Conversational voice AI platform that automates outbound and inbound calls — payment collections, appointment scheduling, logistics coordination, and customer support — without human involvement.",
+    industry: "Voice AI",
+    badge: "Voice AI",
+    gradient:
+      "linear-gradient(135deg, rgba(6,182,212,0.18) 0%, rgba(103,232,249,0.05) 100%)",
+    accentColor: "#06b6d4",
+    borderColor: "#06b6d4",
+    tagColor: "#67e8f9",
+    icon: "🎙️",
+    features: [
+      "Automated payment collections calls",
+      "Outbound & inbound voice AI",
+      "Appointment scheduling & reminders",
+      "Logistics coordination at scale",
+    ],
+    href: "/product/voiceops",
+    status: "live",
+  },
+  {
+    id: "pharmaai",
+    name: "PharmaAI",
+    tagline: "Pharma Market Intelligence, Cited.",
+    description:
+      "Zero-hallucination pharma intelligence platform delivering cited, source-linked answers on market share, brand performance, therapy areas, and molecule-level insights from licensed datasets.",
+    industry: "Life Sciences",
+    badge: "Pharma Intel",
+    gradient:
+      "linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(110,231,183,0.05) 100%)",
+    accentColor: "#10b981",
+    borderColor: "#10b981",
+    tagColor: "#6ee7b7",
+    icon: "🔬",
+    features: [
+      "Market share & brand performance",
+      "Therapy area & molecule insights",
+      "Deterministic, zero-hallucination answers",
+      "Full audit trail with cited sources",
+    ],
+    href: "/product/pharmaai",
+    status: "live",
+  },
 ];
 
 const stats: StatItem[] = [
-  { value: "5+", label: "AI Platforms", icon: <Zap className="w-5 h-5" /> },
+  { value: "7", label: "AI Platforms", icon: <Zap className="w-5 h-5" /> },
   {
     value: "4",
     label: "Industries",
