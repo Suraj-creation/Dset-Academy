@@ -6,11 +6,13 @@ const IconFacebook = () => <svg viewBox="0 0 24 24" fill="currentColor" width="1
 const IconInstagram = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>;
 
 const navLinks = [
+  { name: 'Platforms',              href: '/product' },
   { name: 'Vertical AI Platforms™', href: '/vertical-ai-platforms' },
   { name: 'DSeT ARC™',             href: '/dset-arc-managed-intelligence-services' },
   { name: 'Industries',             href: '/industries' },
   { name: 'Case Studies',           href: '/case-studies' },
   { name: 'About DSeT',            href: '/about' },
+  { name: 'Careers',                href: '/careers' },
   { name: 'Blog',                  href: '/blog' },
   { name: 'Contact',               href: '/contact' },
 ];
@@ -100,12 +102,13 @@ const Footer = () => {
             <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-5">Platforms</h3>
             <ul className="space-y-3">
               {[
-                { name: 'OreBill AI™',          href: '/product/orebill-ai',           color: '#f59e0b' },
-                { name: 'PharmaAI',             href: '/product/pharmaai',             color: '#10b981' },
-                { name: 'MedicsIQ',             href: '/product/medicsiq',             color: '#a855f7' },
-                { name: 'VoiceOps',             href: '/product/voiceops',             color: '#1e90ff' },
-                { name: 'EdgeBay Intelligence', href: '/product/edgebay-intelligence', color: '#0ea5e9' },
-                { name: 'SecureCloud',          href: '/product/securecloud',          color: '#5e17ea' },
+                { name: 'OreBill AI™',           href: '/product/orebill-ai',           color: '#f59e0b' },
+                { name: 'PharmaAI',              href: '/product/pharmaai',             color: '#10b981' },
+                { name: 'MedicsIQ™',             href: '/product/medicsiq',             color: '#a855f7' },
+                { name: 'VoiceOps',              href: '/product/voiceops',             color: '#1e90ff' },
+                { name: 'EdgeBay IntelliFence™', href: '/product/edgebay-intelligence', color: '#0ea5e9' },
+                { name: 'SecureCloud™',           href: '/product/securecloud',          color: '#5e17ea' },
+                { name: 'iPaS-RevOps™',          href: '/product/ipas-revops',          color: '#0284c7' },
               ].map((p) => (
                 <li key={p.name}>
                   <Link

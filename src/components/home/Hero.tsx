@@ -16,13 +16,13 @@ const itemVariants = {
 };
 
 const platforms = [
-  { name: 'OreBill AI™',          description: 'Mining billing automation for i3MS-linked workflows',      accent: '#f59e0b', icon: '⛏️', href: '/product/orebill-ai' },
-  { name: 'PharmaAI',             description: 'Pharma commercial intelligence on licensed datasets',       accent: '#10b981', icon: '💊', href: '/product/pharmaai' },
-  { name: 'MedicsIQ',             description: 'AI skin, scalp and wellness assessment platform',           accent: '#a855f7', icon: '🩺', href: '/product/medicsiq' },
-  { name: 'VoiceOps',             description: 'Enterprise voice automation for sales & collections',        accent: '#1e90ff', icon: '🎙️', href: '/product/voiceops' },
-  { name: 'EdgeBay Intelligence', description: 'Real-time AI decisioning at the operational edge',           accent: '#0ea5e9', icon: '🧠', href: '/product/edgebay-intelligence' },
-  { name: 'SecureCloud',          description: 'AI-driven cloud security & compliance monitoring',           accent: '#2563eb', icon: '🔐', href: '/product/securecloud' },
-  { name: 'iPaS-RevOps',          description: 'Revenue operations automation on Microsoft Marketplace',     accent: '#0284c7', icon: '📊', href: '/product/ipas-revops' },
+  { name: 'OreBill AI™',             description: 'Mining billing automation for i3MS-linked workflows',      accent: '#f59e0b', icon: '⛏️', href: '/product/orebill-ai' },
+  { name: 'PharmaAI',                description: 'Pharma commercial intelligence on licensed datasets',       accent: '#10b981', icon: '💊', href: '/product/pharmaai' },
+  { name: 'MedicsIQ™',               description: 'AI skin, scalp and wellness assessment platform',           accent: '#a855f7', icon: '🩺', href: '/product/medicsiq' },
+  { name: 'VoiceOps',                description: 'Enterprise voice automation for sales & collections',        accent: '#1e90ff', icon: '🎙️', href: '/product/voiceops' },
+  { name: 'EdgeBay IntelliFence™',   description: 'Real-time AI decisioning at the operational edge',           accent: '#0ea5e9', icon: '🧠', href: '/product/edgebay-intelligence' },
+  { name: 'SecureCloud™',             description: 'AI-driven cloud security & compliance monitoring',           accent: '#2563eb', icon: '🔐', href: '/product/securecloud' },
+  { name: 'iPaS-RevOps™',            description: 'Revenue operations automation on Microsoft Marketplace',     accent: '#0284c7', icon: '📊', href: '/product/ipas-revops' },
 ];
 
 const Hero = () => {
@@ -130,7 +130,7 @@ const Hero = () => {
           >
             <span className="text-white/50 text-xs uppercase tracking-widest text-center sm:text-left">Trusted by</span>
             <div className="flex items-center justify-center lg:justify-start flex-wrap gap-x-4 gap-y-2">
-              <span className="text-white/70 text-xs flex items-center gap-1 whitespace-nowrap">✅ Microsoft Partner</span>
+              <span className="text-white/70 text-xs flex items-center gap-1 whitespace-nowrap">✅ Microsoft ISV Partner</span>
               <span className="text-white/70 text-xs flex items-center gap-1 whitespace-nowrap">✅ ISO Certified</span>
               <span className="text-white/70 text-xs flex items-center gap-1 whitespace-nowrap">✅ MSME Certified</span>
             </div>
@@ -164,7 +164,7 @@ const Hero = () => {
             {[
               { label: 'OreBill AI™', color: '#f59e0b', pos: 'top-[2%] right-[2%]',    delay: 3   },
               { label: 'PharmaAI',    color: '#10b981', pos: 'top-[2%] left-[2%]',     delay: 3.6 },
-              { label: 'MedicsIQ',    color: '#a855f7', pos: 'bottom-[2%] right-[2%]', delay: 3.4 },
+              { label: 'MedicsIQ™',   color: '#a855f7', pos: 'bottom-[2%] right-[2%]', delay: 3.4 },
               { label: 'VoiceOps',    color: '#1e90ff', pos: 'bottom-[2%] left-[2%]',  delay: 3.2 },
             ].map((badge) => (
               <motion.div

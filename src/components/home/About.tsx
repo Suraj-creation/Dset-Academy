@@ -4,7 +4,7 @@ import Section from '../ui/Section';
 
 const About = () => {
   const stats = [
-    { value: '5+',      label: 'AI Platforms in Market' },
+    { value: '7',       label: 'AI Platforms in Market' },
     { value: '4',       label: 'Industries Served' },
     { value: '✓',       label: 'Microsoft ISV Partner' },
     { value: 'Pilot+',  label: 'Production Deployments' },

@@ -86,14 +86,22 @@ export async function updatePostServer(id: string, postUpdate: Partial<BlogPost>
   return row ? toPost(row) : null;
 }
 
-export async function autoPublishDuePostsServer(): Promise<number> {
+export async function autoPublishDuePostsServer(): Promise<{
+  count: number;
+  posts: Array<{ id: string; slug: string; title: string; metaDescription: string | null }>;
+}> {
   const now = new Date().toISOString();
   const rows = await db
     .update(blogPosts)
     .set({ status: 'published' })
     .where(and(eq(blogPosts.status, 'scheduled'), lte(blogPosts.publishedAt, now)))
-    .returning({ id: blogPosts.id });
-  return rows.length;
+    .returning({
+      id: blogPosts.id,
+      slug: blogPosts.slug,
+      title: blogPosts.title,
+      metaDescription: blogPosts.metaDescription,
+    });
+  return { count: rows.length, posts: rows };
 }
 
 export async function deletePostServer(id: string): Promise<string | null> {

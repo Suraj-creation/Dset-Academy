@@ -6,7 +6,7 @@ import Section from '@/components/ui/Section';
 import { productPageFont } from '@/lib/productPageTypography';
 import { CheckCircle, Shield, Lock, Server, AlertCircle, Eye, ArrowRight, Cpu, Activity, Database } from 'lucide-react';
 
-const COLOR = '#5e17ea'; // violet for SecureCloud
+const COLOR = '#5e17ea'; // violet for SecureCloud™
 const COLOR_ALT = '#1e90ff'; // sky blue accent
 
 const capabilities = [
@@ -107,13 +107,13 @@ const metrics = [
 export default function SecureCloudPage() {
   return (
     <Layout
-      title="SecureCloud — Compliance-Aware Cloud Security | DSeT"
-      description="SecureCloud is DSeT's compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection built for regulated enterprises and India-ready deployments."
+      title="SecureCloud™ — Compliance-Aware Cloud Security | DSeT"
+      description="SecureCloud™ is DSeT's compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection built for regulated enterprises and India-ready deployments."
       ogImage="/DSeTC_logo2.png"
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'SecureCloud',
+        name: 'SecureCloud™',
         applicationCategory: 'SecurityApplication',
         operatingSystem: 'Cloud, On-Premise, Air-Gapped',
         description: 'Compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection for regulated enterprises and India-ready deployments.',
@@ -125,7 +125,7 @@ export default function SecureCloudPage() {
       breadcrumbs={[
         { name: 'Home', href: '/' },
         { name: 'Platforms', href: '/product' },
-        { name: 'SecureCloud', href: '/product/securecloud' },
+        { name: 'SecureCloud™', href: '/product/securecloud' },
       ]}
     >
       <div className={`${productPageFont.variable} product-page-shell`}>
@@ -152,13 +152,13 @@ export default function SecureCloudPage() {
                 Compliance-Aware DevSecOps Suite
               </span>
               <h1 className="product-page-display mb-5 text-white">
-                SecureCloud
+                SecureCloud™
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed font-light">
                 Digital sovereignty and compliance — by design, not retrofit.
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
-                SecureCloud is DSeT&apos;s compliance-aware cloud security platform — built for
+                SecureCloud™ is DSeT&apos;s compliance-aware cloud security platform — built for
                 regulated enterprises and critical infrastructure operators who require strong
                 posture monitoring, data residency controls, and deployment flexibility.
               </p>
@@ -204,7 +204,7 @@ export default function SecureCloudPage() {
             >
               <Image
                 src="/cloud.avif"
-                alt="SecureCloud Compliance-Aware Platform"
+                alt="SecureCloud™ Compliance-Aware Platform"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -248,7 +248,7 @@ export default function SecureCloudPage() {
           <p className="relative z-10 text-xl sm:text-2xl font-bold text-white max-w-3xl mx-auto leading-relaxed">
             &ldquo;Compliance-aware deployment is not optional for regulated operators —
             it&rsquo;s a <span style={{ color: COLOR }}>design baseline.</span>
-            SecureCloud is built from that premise.&rdquo;
+            SecureCloud™ is built from that premise.&rdquo;
           </p>
           <p className="relative z-10 text-gray-500 text-sm mt-3">DSeT Platform Engineering</p>
         </motion.div>
@@ -374,7 +374,7 @@ export default function SecureCloudPage() {
             >
               <Image
                 src="/cloud.avif"
-                alt="SecureCloud Architecture"
+                alt="SecureCloud™ Architecture"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
@@ -460,7 +460,7 @@ export default function SecureCloudPage() {
               Compliance-First Architecture
             </h2>
             <p className="text-gray-400 text-lg mt-4 max-w-2xl mx-auto">
-              SecureCloud is mapped to the frameworks that govern cloud operations for
+              SecureCloud™ is mapped to the frameworks that govern cloud operations for
               government and regulated enterprises in India and globally.
             </p>
           </motion.div>
@@ -525,7 +525,7 @@ export default function SecureCloudPage() {
               <span style={{ color: '#a78bfa' }}>Compliance-Aware Cloud Security</span>
             </h2>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              SecureCloud is not a generic CSPM tool. It is purpose-built for India&apos;s regulatory
+              SecureCloud™ is not a generic CSPM tool. It is purpose-built for India&apos;s regulatory
               environment and the operational realities of government and critical infrastructure.
               Request a classified briefing or a secure demo today.
             </p>
@@ -551,7 +551,7 @@ export default function SecureCloudPage() {
             <p className="mt-6 text-sm text-white/40">
               Planning a regulated cloud deployment?{' '}
               <Link href="/dset-arc-managed-intelligence-services" className="text-[#5e17ea] hover:text-[#5e17ea]/80 underline underline-offset-2 transition-colors">
-                See how DSeT ARC™ handles SecureCloud onboarding →
+                See how DSeT ARC™ handles SecureCloud™ onboarding →
               </Link>
             </p>
 

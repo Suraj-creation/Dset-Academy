@@ -114,7 +114,7 @@ export default function TermsOfService() {
 
               <Section id="services" title="2. Description of Services" onView={setActive}>
                 <p>
-                  DSeT Consulting provides AI platform development, technology consulting, and related services for regulated and operationally complex industries — including mining, industrial OT, healthcare, and enterprise security. Our platforms include OreBill AI™, EdgeBay Intelligence, SecureCloud, iPaS-RevOps, and MedicsIQ. This Website serves as an informational and business engagement platform for these services.
+                  DSeT Consulting provides AI platform development, technology consulting, and related services for regulated and operationally complex industries — including mining, pharma, healthcare, enterprise voice, industrial OT, and enterprise security. Our platforms include OreBill AI™, PharmaAI, MedicsIQ™, VoiceOps, EdgeBay IntelliFence™, SecureCloud™, and iPaS-RevOps™. This Website serves as an informational and business engagement platform for these services.
                 </p>
               </Section>
 
@@ -144,7 +144,7 @@ export default function TermsOfService() {
                 <div className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-3">Protected Trademarks</p>
                   <div className="flex flex-wrap gap-2">
-                    {['OreBill AI™', 'EdgeBay Intelligence', 'SecureCloud', 'iPaS-RevOps', 'MedicsIQ', 'DSeT Consulting'].map((name) => (
+                    {['OreBill AI™', 'EdgeBay IntelliFence™', 'SecureCloud™', 'iPaS-RevOps™', 'MedicsIQ™', 'DSeT Consulting'].map((name) => (
                       <span key={name} className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-xs text-white/70 font-medium">
                         {name}
                       </span>

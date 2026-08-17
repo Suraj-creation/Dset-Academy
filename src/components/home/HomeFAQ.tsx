@@ -5,12 +5,12 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     q: 'What is DSeT?',
-    a: 'DSeT stands for Digital, Strategy, Execution, and Transformation — the operating model behind every engagement we run. We pair strategic diagnosis with production-grade vertical AI platforms, so digital ambition turns into a deployed, measurable outcome rather than a slide deck. DSeT\'s growing portfolio of vertical AI platforms — including OreBill AI™, PharmaAI, MedicsIQ, VoiceOps, EdgeBay IntelliFence, and SecureCloud — is deployed through our DSeT ARC™ engagement model.',
+    a: 'DSeT stands for Digital, Strategy, Execution, and Transformation — the operating model behind every engagement we run. We pair strategic diagnosis with production-grade vertical AI platforms, so digital ambition turns into a deployed, measurable outcome rather than a slide deck. DSeT\'s portfolio of 7 vertical AI platforms — OreBill AI™, PharmaAI, MedicsIQ™, VoiceOps, EdgeBay IntelliFence™, SecureCloud™, and iPaS-RevOps™ — is deployed through our DSeT ARC™ engagement model.',
     accent: '#ff851b',
   },
   {
     q: 'What is a Vertical AI Platform?',
-    a: 'A Vertical AI Platform is an AI system engineered for one industry\'s data, workflows, and compliance obligations from day one — not a general-purpose model retrofitted with prompts and plug-ins. DSeT\'s vertical AI platforms include OreBill AI™ (mining and mineral trading), PharmaAI (pharma commercial intelligence), MedicsIQ (AI wellness assessment), VoiceOps (enterprise voice automation), EdgeBay IntelliFence (industrial edge AI), and SecureCloud (compliance-aware cloud security).',
+    a: 'A Vertical AI Platform is an AI system engineered for one industry\'s data, workflows, and compliance obligations from day one — not a general-purpose model retrofitted with prompts and plug-ins. DSeT\'s vertical AI platforms include OreBill AI™ (mining and mineral trading), PharmaAI (pharma commercial intelligence), MedicsIQ™ (AI wellness assessment), VoiceOps (enterprise voice automation), EdgeBay IntelliFence™ (industrial edge AI), SecureCloud™ (compliance-aware cloud security), and iPaS-RevOps™ (revenue operations automation).',
     accent: '#1e90ff',
   },
   {
@@ -35,12 +35,12 @@ const faqs = [
   },
   {
     q: 'Can your platforms integrate with our existing ERP, CRM, or business systems?',
-    a: 'Yes — integration is scoped and built during onboarding, not left as an afterthought. OreBill AI™ connects to SAP, Oracle ERP, Tally, and Zoho; VoiceOps integrates with CRM, helpdesk, and collections platforms; EdgeBay IntelliFence supports MODBUS, OPC-UA, MQTT, and REST for OT systems. The exact integration scope is documented upfront in your deployment brief.',
+    a: 'Yes — integration is scoped and built during onboarding, not left as an afterthought. OreBill AI™ connects to SAP, Oracle ERP, Tally, and Zoho; VoiceOps integrates with CRM, helpdesk, and collections platforms; EdgeBay IntelliFence™ supports MODBUS, OPC-UA, MQTT, and REST for OT systems; iPaS-RevOps™ connects to Salesforce, HubSpot, SAP, and Microsoft Dynamics. The exact integration scope is documented upfront in your deployment brief.',
     accent: '#ff851b',
   },
   {
     q: 'Which industries does DSeT serve?',
-    a: 'Mining and mineral trading (OreBill AI™), pharmaceutical and life sciences commercial teams (PharmaAI), AI-led wellness and D2C health brands (MedicsIQ), enterprise voice and customer communication (VoiceOps), industrial manufacturing and utilities (EdgeBay IntelliFence), and compliance-driven cloud security (SecureCloud).',
+    a: 'Mining and mineral trading (OreBill AI™), pharmaceutical and life sciences commercial teams (PharmaAI), AI-led wellness and D2C health brands (MedicsIQ™), enterprise voice and customer communication (VoiceOps), industrial manufacturing and utilities (EdgeBay IntelliFence™), compliance-driven cloud security (SecureCloud™), and B2B revenue operations (iPaS-RevOps™).',
     accent: '#1e90ff',
   },
   {

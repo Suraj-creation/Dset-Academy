@@ -9,8 +9,6 @@ interface EventHeroSectionProps {
   formattedDate: string;
   imageCount: number;
   videoCount: number;
-  copied: boolean;
-  onCopyLink: () => void;
   onWhatsApp: () => void;
 }
 
@@ -19,8 +17,6 @@ export default function EventHeroSection({
   formattedDate,
   imageCount,
   videoCount,
-  copied,
-  onCopyLink,
   onWhatsApp,
 }: EventHeroSectionProps) {
   const leadMedia = getLeadMedia(event);
@@ -77,12 +73,20 @@ export default function EventHeroSection({
             <span className="rounded-full border border-[#1e90ff]/20 bg-[#1e90ff]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#b9dcff]">
               {formattedDate}
             </span>
-            <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/75">
+            <a
+              href="#event-media"
+              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/75 transition hover:border-[#1e90ff]/40 hover:text-[#b9dcff]"
+              aria-label="Jump to photos section"
+            >
               {imageCount} Photos
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/75">
+            </a>
+            <a
+              href="#event-media"
+              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/75 transition hover:border-[#1e90ff]/40 hover:text-[#b9dcff]"
+              aria-label="Jump to videos section"
+            >
               {videoCount} Videos
-            </span>
+            </a>
           </motion.div>
 
           {event.description && (
@@ -102,12 +106,6 @@ export default function EventHeroSection({
             transition={{ duration: 0.7, delay: 0.24 }}
             className="mt-8 flex flex-wrap gap-3"
           >
-            <button
-              onClick={onCopyLink}
-              className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-white px-6 text-sm font-semibold text-[#001f3f] shadow-xl transition hover:-translate-y-0.5"
-            >
-              {copied ? "Link Copied" : "Copy Event Link"}
-            </button>
             <button
               onClick={onWhatsApp}
               className="hidden sm:inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-xl transition hover:border-[#1e90ff]/40 hover:text-[#b9dcff]"

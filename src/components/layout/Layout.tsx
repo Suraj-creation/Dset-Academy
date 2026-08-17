@@ -23,7 +23,7 @@ interface LayoutProps {
 const Layout = ({
   children,
   title = 'DSeT Consulting | Vertical AI Platforms for Mining, Industrial & Healthcare Operations',
-  description = 'DSeT builds vertical AI platforms for regulated and operationally complex industries. OreBill AI, EdgeBay Intelligence, SecureCloud, iPaS-RevOps — edge-ready, compliance-first.',
+  description = 'DSeT builds vertical AI platforms for regulated and operationally complex industries. OreBill AI™, EdgeBay IntelliFence™, SecureCloud™, iPaS-RevOps™ — edge-ready, compliance-first.',
   keywords,
   ogImage = '/DSeTC_logo2.png',
   jsonLd,

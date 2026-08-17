@@ -35,9 +35,9 @@ function readTime(content: string): number {
 
 const PLATFORM_CTAS: Record<string, { headline: string; sub: string; cta: string; href: string }> = {
   medicsiq: {
-    headline: 'See MedicsIQ in a Clinical Workflow',
+    headline: 'See MedicsIQ™ in a Clinical Workflow',
     sub: 'A 30-minute demo mapped to your operational environment — not a generic slide deck.',
-    cta: 'Book a MedicsIQ Demo',
+    cta: 'Book a MedicsIQ™ Demo',
     href: '/contact?type=demo&platform=medicsiq',
   },
   voiceops: {
@@ -47,9 +47,9 @@ const PLATFORM_CTAS: Record<string, { headline: string; sub: string; cta: string
     href: '/contact?type=demo&platform=voiceops',
   },
   orebill: {
-    headline: 'See OREBill AI on Real Revenue Data',
-    sub: 'A focused walkthrough of how OREBill AI transforms billing operations at scale.',
-    cta: 'Book an OREBill Demo',
+    headline: 'See OreBill AI™ on Real Revenue Data',
+    sub: 'A focused walkthrough of how OreBill AI™ transforms billing operations at scale.',
+    cta: 'Book an OreBill AI™ Demo',
     href: '/contact?type=demo&platform=orebill',
   },
   manufacturing: {

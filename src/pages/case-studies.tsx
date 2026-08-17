@@ -33,7 +33,7 @@ const caseStudies = [
     id: 'orebill-ai-mining',
     industry: 'Mining & Mineral Logistics',
     client: 'Regional Mining Operator, India',
-    platform: 'OreBill AI',
+    platform: 'OreBill AI™',
     platformColor: '#ff851b',
     icon: '⛏️',
     status: 'pilot',
@@ -52,14 +52,14 @@ const caseStudies = [
     id: 'securecloud-pci',
     industry: 'Secure Enterprise / BFSI',
     client: 'Financial Services Provider, South Asia',
-    platform: 'SecureCloud',
+    platform: 'SecureCloud™',
     platformColor: '#5e17ea',
     icon: '🔐',
     status: 'live',
     problem:
       'Cloud adoption was stalled by compliance obligations under PCI-DSS and data sovereignty requirements. Existing tools flagged violations but provided no actionable remediation pathways, leaving the security team in a reactive posture.',
     solution:
-      'Implemented SecureCloud for continuous cloud posture management — automated policy enforcement, real-time compliance scoring, and prioritised remediation workflows across multi-cloud infrastructure.',
+      'Implemented SecureCloud™ for continuous cloud posture management — automated policy enforcement, real-time compliance scoring, and prioritised remediation workflows across multi-cloud infrastructure.',
     outcomes: [
       'Compliance audit preparation time cut by 70% (from 6 weeks to 10 days)',
       'Critical misconfiguration incidents reduced by 84% within 60 days of deployment',
@@ -71,14 +71,14 @@ const caseStudies = [
     id: 'ipas-revops',
     industry: 'B2B SaaS / Revenue Operations',
     client: 'Mid-Market SaaS Company, APAC',
-    platform: 'iPaS-RevOps',
+    platform: 'iPaS-RevOps™',
     platformColor: '#1e90ff',
     icon: '📊',
     status: 'live',
     problem:
       'The revenue team operated across three disconnected CRMs, an unintegrated billing platform, and manual AR follow-up cycles — resulting in a 23% AR overdue rate and no unified pipeline visibility for leadership.',
     solution:
-      'Deployed iPaS-RevOps to unify pipeline data, automate AR follow-up sequences, and provide real-time revenue forecasting with deal velocity analytics and churn risk scoring.',
+      'Deployed iPaS-RevOps™ to unify pipeline data, automate AR follow-up sequences, and provide real-time revenue forecasting with deal velocity analytics and churn risk scoring.',
     outcomes: [
       'AR overdue rate reduced from 23% to 8% within 90 days',
       '340+ hours/month recovered from manual follow-up and reporting processes',
@@ -90,24 +90,24 @@ const caseStudies = [
     id: 'medicsiq-dermatology',
     industry: 'Healthcare & Dermatology',
     client: 'Natura Sparsh — D2C Wellness & Dermatology Clinics',
-    platform: 'MedicsIQ',
+    platform: 'MedicsIQ™',
     platformColor: '#006d77',
     icon: '🩺',
     status: 'live',
     problem:
       'Dermatology clinics and D2C wellness brands lacked clinical-grade skin intelligence at scale — patient intake was manual, product recommendations were generic, and there was no bridge between clinical analysis and personalized product mapping.',
     solution:
-      'Deployed MedicsIQ — an AI skin analysis platform trained on 500K+ dermatology images. It analyses 12 skin biomarkers in under 3 seconds, maps results to Natura Sparsh SKUs with ingredient-level rationale, and automates clinical intake with CDSCO-aligned documentation.',
+      'Deployed MedicsIQ™ — an AI skin analysis platform trained on 500K+ dermatology images. It analyses 12 skin biomarkers in under 3 seconds, maps results to Natura Sparsh SKUs with ingredient-level rationale, and automates clinical intake with CDSCO-aligned documentation.',
     outcomes: [
       '12-biomarker AI skin analysis delivered in under 3 seconds per session',
       '70% reduction in clinical intake overhead through digital consent and intake automation',
       '30–40% reduction in per-patient consultation time for dermatology clinics',
     ],
-    tags: ['Dermatology', 'Computer Vision', 'Clinical AI', 'Wellness', 'MedicsIQ'],
+    tags: ['Dermatology', 'Computer Vision', 'Clinical AI', 'Wellness', 'MedicsIQ™'],
   },
   {
     id: 'digital-ops-sports',
-    industry: 'Sports & Education',
+    industry: 'Sports',
     client: 'PCI — Paralympic Committee of India',
     platform: 'Azure-Powered Web Platform',
     platformColor: '#f59e0b',
@@ -141,7 +141,7 @@ export default function CaseStudiesPage() {
   return (
     <Layout
       title="Case Studies | DSeT — AI Platforms in the Field"
-      description="Real-world deployments of DSeT AI platforms — OreBill AI, SecureCloud, and iPaS-RevOps. Measurable outcomes across mining, enterprise security, and revenue operations."
+      description="Real-world deployments of DSeT AI platforms — OreBill AI, SecureCloud™, MedicsIQ™, and iPaS-RevOps™. Measurable outcomes across mining, industrial IT-OT, healthcare, enterprise security, and revenue operations."
     >
 
       {/* ── Hero ── */}

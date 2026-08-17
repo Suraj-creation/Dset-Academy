@@ -6,7 +6,7 @@ import Section from '@/components/ui/Section';
 import { productPageFont } from '@/lib/productPageTypography';
 import { CheckCircle, Activity, Shield, Cpu, Layers, ArrowRight, Eye, Users, TrendingUp, Lock } from 'lucide-react';
 
-const COLOR = '#22c55e'; // emerald/green for MedicsIQ
+const COLOR = '#22c55e'; // emerald/green for MedicsIQ™
 const COLOR_ALT = '#0ea5e9'; // sky blue accent
 
 const features = [
@@ -46,7 +46,7 @@ const narrativeRows = [
   {
     label: 'AI Skin Analysis',
     heading: 'Precision skin intelligence from a smartphone camera.',
-    body: 'MedicsIQ\'s vision layer analyses facial skin across 12+ skin and scalp biomarkers — hydration, sebum production, melanin distribution, texture uniformity, and more. Results are generated in under 3 seconds and presented in a structured assessment report for brands and consumers.',
+    body: 'MedicsIQ™\'s vision layer analyses facial skin across 12+ skin and scalp biomarkers — hydration, sebum production, melanin distribution, texture uniformity, and more. Results are generated in under 3 seconds and presented in a structured assessment report for brands and consumers.',
     image: '/skin_care.jpg',
     imageAlt: 'AI Skin Analysis',
     flipped: false,
@@ -54,7 +54,7 @@ const narrativeRows = [
   {
     label: 'Product Mapping & Commerce',
     heading: 'Recommendations tied directly to any product catalogue.',
-    body: 'MedicsIQ is built to bridge wellness assessment output with commerce. Each skin report maps to your product SKUs — with ingredient-level rationale, ingredient compatibility notes, and usage protocols. The platform is multi-brand ready, supporting white-label deployments across any product ecosystem.',
+    body: 'MedicsIQ™ is built to bridge wellness assessment output with commerce. Each skin report maps to your product SKUs — with ingredient-level rationale, ingredient compatibility notes, and usage protocols. The platform is multi-brand ready, supporting white-label deployments across any product ecosystem.',
     image: '/Naural_product.avif',
     imageAlt: 'Product Mapping & Commerce',
     flipped: true,
@@ -62,7 +62,7 @@ const narrativeRows = [
   {
     label: 'Scalable Wellness Intelligence',
     heading: 'Aggregate insights across thousands of sessions.',
-    body: 'At scale, MedicsIQ becomes a population-level wellness intelligence layer. Wellness brands and retail chains see anonymised aggregate data — which skin concerns are most prevalent, which product protocols yield the best outcomes, and where geographic or demographic patterns emerge. This converts wellness data into brand strategy.',
+    body: 'At scale, MedicsIQ™ becomes a population-level wellness intelligence layer. Wellness brands and retail chains see anonymised aggregate data — which skin concerns are most prevalent, which product protocols yield the best outcomes, and where geographic or demographic patterns emerge. This converts wellness data into brand strategy.',
     image: '/Ai_face.webp',
     imageAlt: 'AI Wellness Intelligence',
     flipped: false,
@@ -102,7 +102,7 @@ const useCases = [
   {
     icon: '🏪',
     title: 'Retail & Experience Centers',
-    desc: 'Point-of-sale interaction layer to guide consumers to the right products and reduce buying hesitation. MedicsIQ turns every retail touchpoint into a personalised wellness consultation that converts.',
+    desc: 'Point-of-sale interaction layer to guide consumers to the right products and reduce buying hesitation. MedicsIQ™ turns every retail touchpoint into a personalised wellness consultation that converts.',
     color: COLOR_ALT,
   },
   {
@@ -131,13 +131,13 @@ const compliance = [
 export default function MedicsIQPage() {
   return (
     <Layout
-      title="MedicsIQ — AI Skin, Scalp & Wellness Assessment Platform | DSeT"
-      description="MedicsIQ by DSeT is an AI skin, scalp and wellness assessment platform for D2C brands, Ayurveda brands, and wellness retailers. Computer vision, 12+ biomarkers, instant product recommendations."
+      title="MedicsIQ™ — AI Skin, Scalp & Wellness Assessment Platform | DSeT"
+      description="MedicsIQ™ by DSeT is an AI skin, scalp and wellness assessment platform for D2C brands, Ayurveda brands, and wellness retailers. Computer vision, 12+ biomarkers, instant product recommendations."
       ogImage="/Derma_clinic.jpg"
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'MedicsIQ',
+        name: 'MedicsIQ™',
         applicationCategory: 'HealthApplication',
         operatingSystem: 'Cloud, Edge',
         description: 'AI skin, scalp and wellness assessment platform — combining computer vision, biomarker analysis, and multi-brand product recommendation intelligence for D2C, Ayurveda and wellness brands.',
@@ -150,7 +150,7 @@ export default function MedicsIQPage() {
       breadcrumbs={[
         { name: 'Home', href: '/' },
         { name: 'Platforms', href: '/product' },
-        { name: 'MedicsIQ', href: '/product/medicsiq' },
+        { name: 'MedicsIQ™', href: '/product/medicsiq' },
       ]}
     >
       <div className={`${productPageFont.variable} product-page-shell`}>
@@ -177,13 +177,13 @@ export default function MedicsIQPage() {
                 AI Skin, Hair & Wellness Platform
               </span>
               <h1 className="product-page-display mb-5 text-white">
-                MedicsIQ
+                MedicsIQ™
               </h1>
               <p className="text-xl text-gray-300 mb-4 leading-relaxed font-light">
                 AI-Powered Precision Wellness at Consumer Scale
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
-                MedicsIQ combines computer vision, skin and scalp assessment, and recommendation intelligence
+                MedicsIQ™ combines computer vision, skin and scalp assessment, and recommendation intelligence
                 into a single platform — built for D2C brands, Ayurveda brands, wellness retailers,
                 and consumer-facing experiences.
               </p>
@@ -231,7 +231,7 @@ export default function MedicsIQPage() {
             >
               <Image
                 src="/skin_care.jpg"
-                alt="MedicsIQ Skin Analysis Platform"
+                alt="MedicsIQ™ Skin Analysis Platform"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -282,7 +282,7 @@ export default function MedicsIQPage() {
         </div>
       </Section>
 
-      {/* ── What MedicsIQ Does — Alternating Narrative ── */}
+      {/* ── What MedicsIQ™ Does — Alternating Narrative ── */}
       <Section bgColor="light" spacing="xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -294,7 +294,7 @@ export default function MedicsIQPage() {
             Platform Capabilities
           </span>
           <h2 className="product-page-section-heading text-white">
-            What <span style={{ color: COLOR }}>MedicsIQ</span> Does
+            What <span style={{ color: COLOR }}>MedicsIQ™</span> Does
           </h2>
         </motion.div>
 
@@ -404,7 +404,7 @@ export default function MedicsIQPage() {
             <span style={{ color: '#a855f7' }}>Product Commerce</span>
           </h2>
           <p className="text-gray-400 text-lg mt-4 max-w-2xl mx-auto">
-            MedicsIQ integrates with any product ecosystem — turning every skin analysis into a
+            MedicsIQ™ integrates with any product ecosystem — turning every skin analysis into a
             conversion-ready recommendation across multiple brands and catalogues.
           </p>
         </motion.div>
@@ -460,7 +460,7 @@ export default function MedicsIQPage() {
             Use Cases
           </span>
           <h2 className="product-page-section-heading text-white">
-            Where <span style={{ color: COLOR_ALT }}>MedicsIQ</span> Deploys
+            Where <span style={{ color: COLOR_ALT }}>MedicsIQ™</span> Deploys
           </h2>
         </motion.div>
 
@@ -603,7 +603,7 @@ export default function MedicsIQPage() {
             </h2>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
               Whether you&apos;re a wellness brand, an Ayurveda brand, a D2C company, or a retail
-              platform — MedicsIQ gives you precision wellness AI at consumer scale.
+              platform — MedicsIQ™ gives you precision wellness AI at consumer scale.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -627,7 +627,7 @@ export default function MedicsIQPage() {
             <p className="mt-6 text-sm text-white/40">
               Deploying for your brand?{' '}
               <Link href="/dset-arc-managed-intelligence-services" className="text-[#a855f7] hover:text-[#a855f7]/80 underline underline-offset-2 transition-colors">
-                See how DSeT ARC™ takes MedicsIQ from discovery to go-live →
+                See how DSeT ARC™ takes MedicsIQ™ from discovery to go-live →
               </Link>
             </p>
 

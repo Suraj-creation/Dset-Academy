@@ -71,7 +71,7 @@ const products: Product[] = [
   },
   {
     id: "edgebay",
-    name: "EdgeBay Intelligence",
+    name: "EdgeBay IntelliFence™",
     tagline: "AI at the Edge of Your Business",
     description:
       "Enterprise-grade AI intelligence platform delivering real-time decision making and predictive analytics directly to your operational edge. Built for speed, accuracy, and scale.",
@@ -94,7 +94,7 @@ const products: Product[] = [
   },
   {
     id: "securecloud",
-    name: "SecureCloud",
+    name: "SecureCloud™",
     tagline: "Cloud Security, Simplified.",
     description:
       "Compliance-aware cloud security platform protecting your infrastructure, data, and applications with AI-driven threat detection and layered access architecture.",
@@ -117,7 +117,7 @@ const products: Product[] = [
   },
   {
     id: "medicsiq",
-    name: "MedicsiQ",
+    name: "MedicsIQ™",
     tagline: "Intelligence for Healthcare Operations",
     description:
       "Healthcare operations intelligence platform that streamlines clinical workflows, patient data management, and compliance reporting — designed for modern care delivery.",
@@ -140,7 +140,7 @@ const products: Product[] = [
   },
   {
     id: "ipas",
-    name: "iPaS-RevOps",
+    name: "iPaS-RevOps™",
     tagline: "Revenue Operations at Scale",
     description:
       "Enterprise revenue operations platform available on Microsoft Marketplace. Automates and optimizes your entire revenue lifecycle with deep Microsoft ecosystem integration.",
@@ -512,8 +512,8 @@ export default function ProductsPage() {
 
   return (
     <Layout
-      title="AI Platforms | DSeT — OreBill AI, EdgeBay Intelligence, SecureCloud, iPAS RevOps"
-      description="DSeT's vertical AI platforms for mining, industrial, healthcare, and revenue operations. Purpose-built, edge-ready, compliance-first. Microsoft ISV Partner."
+      title="AI Platforms | DSeT — OreBill AI™, EdgeBay IntelliFence™, SecureCloud™, iPaS-RevOps™"
+      description="DSeT's 7 vertical AI platforms for mining, pharma, healthcare, voice, industrial, and revenue operations. Purpose-built, edge-ready, compliance-first. Microsoft ISV Partner."
     >
       <div
         className="bg-[linear-gradient(135deg,#001f3f_0%,#002b57_52%,#001f3f_100%)] text-white overflow-x-hidden"

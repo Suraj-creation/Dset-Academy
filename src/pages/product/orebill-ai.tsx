@@ -39,7 +39,7 @@ const narrativeRows = [
   {
     label: 'Dispatch Automation',
     heading: 'From permit to invoice — without a single manual step.',
-    body: 'OreBill AI processes i3MS-linked documents and government dispatch data to capture permit information the moment it is issued. The platform validates, enriches, and structures this data against your pricing rules and contractual terms — removing the 3–5 day reconciliation backlog that plagues manual billing cycles.',
+    body: 'OreBill AI™ processes i3MS-linked documents and government dispatch data to capture permit information the moment it is issued. The platform validates, enriches, and structures this data against your pricing rules and contractual terms — removing the 3–5 day reconciliation backlog that plagues manual billing cycles.',
     image: '',
     imageAlt: '',
     flipped: false,
@@ -47,7 +47,7 @@ const narrativeRows = [
   {
     label: 'Grade Reconciliation',
     heading: 'End grade disputes before they become payment delays.',
-    body: "Mineral grade discrepancies between pit-to-plant measurements, third-party lab reports, and buyer assay results are the leading cause of invoice rejections in ore trading. OreBill AI's reconciliation engine cross-validates all three data sources in real time — flagging conflicts and generating audit-ready evidence before the invoice is issued.",
+    body: "Mineral grade discrepancies between pit-to-plant measurements, third-party lab reports, and buyer assay results are the leading cause of invoice rejections in ore trading. OreBill AI™'s reconciliation engine cross-validates all three data sources in real time — flagging conflicts and generating audit-ready evidence before the invoice is issued.",
     image: '/images/manufacturing.jpg',
     imageAlt: 'Industrial operations grade reconciliation',
     flipped: true,
@@ -55,7 +55,7 @@ const narrativeRows = [
   {
     label: 'Revenue Intelligence',
     heading: 'Real-time visibility from dispatch to cash collection.',
-    body: 'OreBill AI aggregates dispatch, invoice, and payment data across all sites and buyers into a single RevOps dashboard. Finance teams see cycle times, outstanding receivables, leakage flags, and compliance status — in real time, not at month-end. This converts billing data into a strategic financial intelligence layer.',
+    body: 'OreBill AI™ aggregates dispatch, invoice, and payment data across all sites and buyers into a single RevOps dashboard. Finance teams see cycle times, outstanding receivables, leakage flags, and compliance status — in real time, not at month-end. This converts billing data into a strategic financial intelligence layer.',
     image: '',
     imageAlt: '',
     flipped: false,
@@ -88,14 +88,14 @@ const integrationPoints = [
 const useCases = [
   {
     icon: '⚡',
-    title: 'Before & After OreBill AI',
+    title: 'Before & After OreBill AI™',
     desc: 'Before: 3-day billing cycles, Excel + CA dependency, manual follow-ups, and collections stuck in 30–45 day cycles. After: Same-day billing, fully automated workflows, AI-driven collections, and real-time visibility — from permit to payment, across every site.',
     color: COLOR,
   },
   {
     icon: '🏗️',
     title: 'Built for Non-API Govt Ecosystems',
-    desc: 'Not ERP. Not automation. Execution. OreBill AI is purpose-built for i3MS-linked, PDF-driven government workflows — with an agentic execution layer that works on live operational data, built for high-volume mining environments.',
+    desc: 'Not ERP. Not automation. Execution. OreBill AI™ is purpose-built for i3MS-linked, PDF-driven government workflows — with an agentic execution layer that works on live operational data, built for high-volume mining environments.',
     color: COLOR_ALT,
   },
   {
@@ -205,7 +205,7 @@ export default function OreBillAIPage() {
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'OreBill AI',
+        name: 'OreBill AI™',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Cloud, Edge, Hybrid',
         description: 'Vertical AI platform for mining billing automation — i3MS-linked workflows, grade reconciliation, GST-compliant invoicing and AI-driven collections.',
@@ -251,7 +251,7 @@ export default function OreBillAIPage() {
                 High-volume ore dispatch. Cash realisation still manual.
               </p>
               <p className="text-base text-gray-400 mb-8 leading-relaxed max-w-lg">
-                OreBill AI deploys four autonomous agents — Extraction, Billing, Compliance, and Revenue —
+                OreBill AI™ deploys four autonomous agents — Extraction, Billing, Compliance, and Revenue —
                 to eliminate 30–45 day collection cycles, unlock ₹15–35 Cr in working capital, and
                 deliver same-day invoicing from the moment a permit is issued.
               </p>
@@ -297,7 +297,7 @@ export default function OreBillAIPage() {
             >
               <Image
                 src="/images/mining.jpg"
-                alt="Mining operations — OreBill AI automates billing from dispatch to invoice"
+                alt="Mining operations — OreBill AI™ automates billing from dispatch to invoice"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -360,7 +360,7 @@ export default function OreBillAIPage() {
             Platform Capabilities
           </span>
           <h2 className="product-page-section-heading text-white">
-            What <span style={{ color: COLOR }}>OreBill AI</span> Does
+            What <span style={{ color: COLOR }}>OreBill AI™</span> Does
           </h2>
         </motion.div>
 
@@ -478,7 +478,7 @@ export default function OreBillAIPage() {
             <span style={{ color: '#f97316' }}>Existing Stack</span>
           </h2>
           <p className="text-gray-400 text-lg mt-4 max-w-2xl mx-auto">
-            OreBill AI plugs into your weighbridge hardware, ERP, and government compliance portals —
+            OreBill AI™ plugs into your weighbridge hardware, ERP, and government compliance portals —
             no middleware, no rip-and-replace.
           </p>
         </motion.div>
@@ -521,7 +521,7 @@ export default function OreBillAIPage() {
         </motion.div>
       </Section>
 
-      {/* ── Why Teams Choose OreBill AI ── */}
+      {/* ── Why Teams Choose OreBill AI™ ── */}
       <Section bgColor="white" spacing="xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -530,10 +530,10 @@ export default function OreBillAIPage() {
           className="text-center mb-14"
         >
           <span className="inline-block px-4 py-1.5 text-xs font-bold text-white rounded-full mb-4 uppercase tracking-wider" style={{ background: COLOR_ALT }}>
-            Why OreBill AI
+            Why OreBill AI™
           </span>
           <h2 className="product-page-section-heading text-white">
-            Why Teams Choose <span style={{ color: COLOR_ALT }}>OreBill AI</span>
+            Why Teams Choose <span style={{ color: COLOR_ALT }}>OreBill AI™</span>
           </h2>
         </motion.div>
 

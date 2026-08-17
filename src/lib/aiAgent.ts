@@ -74,9 +74,9 @@ async function fetchDynamicContext(message: string): Promise<string> {
   if (isCaseQuery) {
     parts.push(`CASE STUDIES & RESULTS:
   • IT-OT Intelligence Platform (built for a specialty industrial manufacturer in India): Real-time IT-OT bridge with voice AI — eliminated manual data reconciliation, AI flags production bottlenecks instantly, floor managers use conversational interface.
-  • OreBill AI (Mining): 60% faster billing reconciliation, ₹1.2Cr annual leakage recovered, weighbridge discrepancy from 12% to 1.5%.
-  • SecureCloud (BFSI): 70% faster audit prep, 84% fewer critical misconfigurations, PCI-DSS Level 1 readiness in one quarter.
-  • iPaS-RevOps (B2B SaaS): AR overdue from 23% to 8%, 340+ hours/month recovered, forecast accuracy from ±31% to ±9%.
+  • OreBill AI™ (Mining): 60% faster billing reconciliation, ₹1.2Cr annual leakage recovered, weighbridge discrepancy from 12% to 1.5%.
+  • SecureCloud™ (BFSI): 70% faster audit prep, 84% fewer critical misconfigurations, PCI-DSS Level 1 readiness in one quarter.
+  • iPaS-RevOps™ (B2B SaaS): AR overdue from 23% to 8%, 340+ hours/month recovered, forecast accuracy from ±31% to ±9%.
   • PharmaAI (Pharma Commercial Intelligence): Natural-language, audit-grade market intelligence over licensed pharma commercial datasets — zero-hallucination deterministic retrieval.
   • Digital Operations for Sports/Universities: AI platform for athlete analytics and institutional workflows (upcoming).
   • Learning Management System: AI-driven personalised learning paths and future-skill recommendations (upcoming).`);
@@ -121,7 +121,7 @@ export async function streamAgentReply(
   const instructions = [
     SYSTEM_PROMPT,
     extraInstructions ? `\n${extraInstructions}` : '',
-    fullContext ? `\nRELEVANT COMPANY CONTEXT:\n${fullContext}` : '',
+    fullContext ? `\nAPPROVED PUBLIC INFORMATION:\n${fullContext}` : '',
     `\nConversation so far:\n${contextText}`,
     `\nReply in ${/[ऀ-ॿ]/.test(lastUserMsg) ? 'Hindi' : 'English'}.`,
   ].join('');
@@ -143,7 +143,7 @@ export async function streamAgentReply(
           modalities:  ['text'],
           instructions,
           temperature: 0.7,
-          // High enough that a full "explain all 5 platforms" style answer doesn't get cut off mid-sentence.
+          // High enough that a full "explain all 7 platforms" style answer doesn't get cut off mid-sentence.
           max_response_output_tokens: 1200,
         },
       }));

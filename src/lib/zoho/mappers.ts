@@ -2,16 +2,16 @@
 // safe to unit test in isolation. Field mappings follow the "Zoho CRM Integration —
 // Implementation Plan" §06 exactly.
 //
-// Scoped to the modules currently approved for integration: Contacts, Chat Leads, and
-// Applications. WhatsApp handover and Whitepaper Leads are still under development and are
-// deliberately not mapped here yet — see project memory for the current approved scope.
+// Scoped to the modules currently approved for integration: Contacts and Chat Leads only.
+// Career Applications, WhatsApp handover, and Whitepaper Leads are all deliberately not
+// mapped here — Applications by explicit company policy (never sync to Zoho), the other two
+// because they're still under development — see project memory for the current approved scope.
 // Typed against the existing server-layer interfaces (what addContact()/saveLead()/
 // addApplication() actually return) rather than raw Drizzle rows — those are the shapes
 // available at each route's call site.
 import type { ContactEntry } from '@/lib/contacts.server';
 import { buildLeadSummary, type LeadData } from '@/lib/leads.server';
-import type { Application } from '@/lib/applications.server';
-import type { ZohoLeadPayload, ZohoJobApplicationPayload } from './types';
+import type { ZohoLeadPayload } from './types';
 
 const FALLBACK_COMPANY = 'Individual — Website Lead';
 
@@ -71,25 +71,5 @@ export function chatLeadToZohoLead(lead: LeadData): ZohoLeadPayload {
   };
 }
 
-export function applicationToZohoJobApplication(application: Application): ZohoJobApplicationPayload {
-  return {
-    // Every Zoho custom module has a mandatory default "Name" (primary) field, separate
-    // from any custom field — Candidate_Name is our own field for display clarity, Name is
-    // Zoho's required one. Both carry the same value.
-    Name: application.name,
-    Candidate_Name: application.name,
-    Email: application.email,
-    Phone: application.phone,
-    Job_Title: application.jobTitle,
-    Job_ID: application.jobId,
-    Experience: application.experience,
-    Notice_Period: application.noticePeriod,
-    Application_Source: application.source,
-    Cover_Note: application.coverNote,
-    Resume_URL: application.resumeLink,
-    Application_Status: application.status,
-    // application.linkedin / application.portfolio / application.id are still captured and
-    // kept in Postgres as before — they're just no longer sent to Zoho, since no field for
-    // them exists on Job_Application (see the note on ZohoJobApplicationPayload in types.ts).
-  };
-}
+// applicationToZohoJobApplication() was removed here (2026-08 — company policy: Career
+// Applications no longer sync to Zoho CRM at all; see project memory).

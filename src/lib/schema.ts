@@ -149,7 +149,7 @@ export const zohoSyncQueue = pgTable('zoho_sync_queue', {
   id:            text('id').primaryKey(),
   sourceTable:   text('source_table').notNull(),   // e.g. 'contacts', 'leads', 'whitepaper_leads', 'applications', 'whatsapp_conversations'
   sourceId:      text('source_id').notNull(),      // primary key of the row in sourceTable
-  zohoModule:    text('zoho_module').notNull(),    // 'Leads' | 'JobApplications'
+  zohoModule:    text('zoho_module').notNull(),    // 'Leads' — 'JobApplications' retired 2026-08, applications no longer sync to Zoho
   payload:       jsonb('payload').notNull().default({}), // pre-mapped Zoho-shaped record, computed at enqueue time
   status:        text('status').notNull().default('pending'), // 'pending' | 'processing' | 'synced' | 'failed' | 'failed_permanent'
   attempts:      integer('attempts').notNull().default(0),

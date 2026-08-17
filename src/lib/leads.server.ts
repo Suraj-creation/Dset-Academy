@@ -53,11 +53,11 @@ const INTENT_TOPICS: Record<string, string> = {
   pricing:             'pricing and commercial terms',
   consulting:          'AI transformation consulting',
   contact:             'connecting with the DSeT team',
-  product_orebill:     'OreBill AI (mining billing & dispatch)',
-  product_edgebay:     'EdgeBay Intelligence (OT/IoT data)',
-  product_securecloud: 'SecureCloud (cloud security & compliance)',
-  product_medicsiq:    'MedicsiQ (healthcare operations)',
-  product_revops:      'iPaS-RevOps (revenue operations)',
+  product_orebill:     'OreBill AI™ (mining billing & dispatch)',
+  product_edgebay:     'EdgeBay IntelliFence™ (OT/IoT data)',
+  product_securecloud: 'SecureCloud™ (cloud security & compliance)',
+  product_medicsiq:    'MedicsIQ™ (healthcare operations)',
+  product_revops:      'iPaS-RevOps™ (revenue operations)',
   product_voiceops:    'VoiceOps (voice/call automation)',
   product_pharmaai:    'PharmaAI (pharma commercial intelligence)',
   general:             "DSeT's products and services",
@@ -72,7 +72,7 @@ const NON_TOPIC_INTENTS = new Set<string>(['general', 'confidential']);
 /**
  * One-line summary of a chat lead for the internal notification email and the Zoho Lead
  * Description. Prefers `lead.topics` (every distinct topic raised across the session) so a
- * multi-topic conversation reads as "EdgeBay Intelligence, pricing and commercial terms"
+ * multi-topic conversation reads as "EdgeBay IntelliFence™, pricing and commercial terms"
  * rather than only whatever the single final `intent` happened to be; falls back to that
  * single intent when no topics list is available (e.g. an older/partial LeadData).
  */

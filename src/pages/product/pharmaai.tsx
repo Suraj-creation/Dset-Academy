@@ -517,13 +517,13 @@ export default function PharmaAIPage() {
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  <Link href="/contact"
+                  <Link href="/contact?type=demo&product=pharmaai"
                     className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all hover:brightness-110"
                     style={{ background: `linear-gradient(135deg, ${EMERALD}, ${TEAL})`, boxShadow: `0 0 24px ${EMERALD}40` }}
                   >
                     Request Demo <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <Link href="/contact"
+                  <Link href="/contact?type=talk&product=pharmaai"
                     className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-sm font-semibold text-white/70 transition-all hover:text-white hover:border-white/30"
                     style={{ borderColor: 'rgba(255,255,255,0.12)' }}
                   >
@@ -760,13 +760,13 @@ export default function PharmaAIPage() {
                 No dashboards, no setup, no analyst queue.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/contact"
+                <Link href="/contact?type=demo&product=pharmaai"
                   className="inline-flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-semibold text-white transition-all hover:brightness-110"
                   style={{ background: `linear-gradient(135deg, ${EMERALD}, ${TEAL})`, boxShadow: `0 0 32px ${EMERALD}40` }}
                 >
                   Request a Demo <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link href="/contact"
+                <Link href="/contact?type=talk&product=pharmaai"
                   className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-sm font-semibold text-white/70 transition-all hover:text-white hover:border-white/30"
                   style={{ borderColor: 'rgba(255,255,255,0.12)' }}
                 >

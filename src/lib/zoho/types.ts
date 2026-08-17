@@ -3,14 +3,15 @@
 // mirrors. Phase 1 only: these types exist so the service layer compiles end-to-end; no
 // module described here makes a live Zoho API call yet.
 
-export type ZohoModule = 'Leads' | 'JobApplications';
+export type ZohoModule = 'Leads';
 
 export type SyncStatus = 'pending' | 'processing' | 'synced' | 'failed' | 'failed_permanent';
 
-// Scoped to the modules currently approved for Zoho integration. WhatsApp handover and
-// Whitepaper Leads are deliberately excluded — those features are still under development
-// and will be wired up separately once approved (see project memory).
-export type SourceTable = 'contacts' | 'leads' | 'applications';
+// Scoped to the modules currently approved for Zoho integration. 'applications' was removed
+// (2026-08 — company policy: Career Applications never sync to Zoho, see project memory).
+// WhatsApp handover and Whitepaper Leads are deliberately excluded too — those features are
+// still under development and will be wired up separately once approved.
+export type SourceTable = 'contacts' | 'leads';
 
 export interface EnqueueSyncInput {
   sourceTable: SourceTable;
@@ -69,23 +70,6 @@ export interface ZohoLeadPayload {
   [key: string]: unknown;
 }
 
-// LinkedIn_URL, Portfolio_URL, and Postgres_Application_ID were deliberately dropped here
-// (2026-07-29 cleanup) — they don't exist as fields on the live Job_Application module (the
-// 10-custom-field cap was hit before they could be created; see project memory), so Zoho was
-// silently discarding them on every sync. Confirmed via a live GET on the module's field list
-// before removing. Re-add only if the corresponding Zoho field is created first.
-export interface ZohoJobApplicationPayload {
-  Name: string; // Zoho's mandatory default primary field for every custom module
-  Candidate_Name: string;
-  Email: string;
-  Phone: string;
-  Job_Title: string;
-  Job_ID: number;
-  Experience: string;
-  Notice_Period: string;
-  Application_Source: string;
-  Cover_Note: string;
-  Resume_URL: string;
-  Application_Status: string;
-  [key: string]: unknown;
-}
+// ZohoJobApplicationPayload was removed here (2026-08 — company policy: Career Applications
+// no longer sync to Zoho CRM at all; the Job_Application custom module was also deleted from
+// Zoho). Job application data now lives in Postgres/the admin panel only — see project memory.

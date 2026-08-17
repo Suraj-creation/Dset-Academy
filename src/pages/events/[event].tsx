@@ -26,7 +26,6 @@ interface Props {
 export default function EventDetailPage({ event }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [filter, setFilter] = useState<MediaFilter>("all");
-  const [copied, setCopied] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
@@ -70,12 +69,6 @@ export default function EventDetailPage({ event }: Props) {
   }, [lightboxIndex, filteredMedia.length, stopSlideshow]);
 
   // Share
-  const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  }, []);
-
   const handleWhatsApp = useCallback(() => {
     if (!event) return;
     const url = encodeURIComponent(window.location.href);
@@ -125,14 +118,14 @@ export default function EventDetailPage({ event }: Props) {
           <EventHeroSection
             event={event} formattedDate={formattedDate}
             imageCount={imageCount} videoCount={videoCount}
-            copied={copied} onCopyLink={handleCopyLink} onWhatsApp={handleWhatsApp}
+            onWhatsApp={handleWhatsApp}
           />
           <AboutEventSection event={event} />
           <ExperienceSection />
           <KeyHighlightsSection event={event} />
 
           {/* ── Media Section header ── */}
-          <section className="bg-[linear-gradient(180deg,#0e1b33_0%,#10213f_100%)] pt-20">
+          <section id="event-media" className="bg-[linear-gradient(180deg,#0e1b33_0%,#10213f_100%)] pt-20">
             <div className="mx-auto max-w-7xl px-6 sm:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -227,18 +220,6 @@ export default function EventDetailPage({ event }: Props) {
           )}
         </AnimatePresence>
 
-        {/* ── Copy Toast ── */}
-        <AnimatePresence>
-          {copied && (
-            <motion.div
-              variants={FADE_UP} initial="hidden" animate="visible" exit="hidden"
-              transition={{ duration: 0.25 }}
-              className="fixed bottom-7 left-1/2 z-[9999] -translate-x-1/2 whitespace-nowrap rounded-[5px] bg-[linear-gradient(90deg,#5e17ea,#1e90ff)] px-5 py-[7px] text-[0.8rem] font-semibold tracking-[0.03em] text-white"
-            >
-              ✓ Link copied
-            </motion.div>
-          )}
-        </AnimatePresence>
       </>
     </Layout>
   );

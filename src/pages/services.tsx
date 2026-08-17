@@ -102,7 +102,7 @@ const ServicesPage = () => {
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'Service',
-        name: 'DSeT ARC — Platform Deployment & AI Integration',
+        name: 'DSeT ARC™ — Platform Deployment & AI Integration',
         url: 'https://dsetconsulting.com/services',
         description: 'DSeT delivers AI platform deployment, integration, managed intelligence, advisory, and custom AI engineering for operationally complex and regulated industries.',
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
@@ -215,7 +215,7 @@ const ServicesPage = () => {
               >
                 <Image
                   src="/DsET-ARC-Design.webp"
-                  alt="DSeT ARC Framework"
+                  alt="DSeT ARC™ Framework"
                   width={260}
                   height={260}
                   className="object-contain h-56 w-auto"
@@ -294,7 +294,7 @@ const ServicesPage = () => {
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
                 How We Deliver —{' '}
                 <span className="bg-gradient-to-r from-[#ff851b] to-[#1e90ff] bg-clip-text text-transparent">
-                  DSeT ARC
+                  DSeT ARC™
                 </span>
               </h2>
               <p className="text-gray-300 max-w-2xl mx-auto text-lg">

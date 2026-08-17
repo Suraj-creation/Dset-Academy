@@ -81,40 +81,6 @@ export function upsertLead(payload: Record<string, unknown>, duplicateCheckField
   });
 }
 
-/**
- * Creates a record in the "Job Applications" custom module. Module API name is
- * `Job_Application` (singular) — Zoho auto-generated it from the singular label at creation
- * time, not the plural display name "Job Applications".
- *
- * NOTE: `duplicate_check_fields: ['Email', 'Job_ID']` looks like it should dedupe on that
- * pair, but Zoho's upsert dedupe only works when the listed fields are individually
- * configured as "unique" in Zoho — and neither can safely be, here. Marking Job_ID unique
- * alone was tried and reverted: it merged different candidates who applied to the same job
- * into one record. Marking Email unique alone would equally break one candidate legitimately
- * applying to two different jobs. There's no Zoho-native way to express a composite
- * (Email + Job_ID) unique key, so this field is left in as a harmless no-op and the real
- * dedupe now happens at the application level — see findSyncedJobApplicationMatch() in
- * queue.server.ts and processJobApplicationRow() in sync.ts, which decide up front whether
- * to call this (new record) or updateJobApplication() (existing record) below.
- */
-export function upsertJobApplication(payload: Record<string, unknown>) {
-  return zohoRequest({
-    method: 'POST',
-    path: '/crm/v3/Job_Application/upsert',
-    body: { data: [payload], duplicate_check_fields: ['Email', 'Job_ID'] },
-  });
-}
-
-/**
- * Updates a specific, already-known Job_Application record by its Zoho id — used instead of
- * upsertJobApplication() when our own Email+Job_ID lookup (queue.server.ts) already found the
- * record this submission belongs to, sidestepping Zoho's per-field-only unique constraint
- * limitation entirely.
- */
-export function updateJobApplication(recordId: string, payload: Record<string, unknown>) {
-  return zohoRequest({
-    method: 'PUT',
-    path: `/crm/v3/Job_Application/${recordId}`,
-    body: { data: [payload] },
-  });
-}
+// Job Application upsert/update functions were removed here (2026-08 — company policy:
+// Career Applications no longer sync to Zoho CRM at all; see project memory). The
+// Job_Application custom module itself was also deleted from Zoho.

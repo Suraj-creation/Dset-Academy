@@ -109,7 +109,7 @@ export default function ProblemStatement() {
             href="/vertical-ai-platforms"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[#1e90ff]/30 text-[#7cc4ff] text-sm font-semibold hover:bg-[#1e90ff]/10 transition-all duration-300"
           >
-            See all 6 vertical platforms →
+            See all 7 vertical platforms →
           </Link>
         </motion.div>
       </div>

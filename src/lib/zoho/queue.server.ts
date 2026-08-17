@@ -3,9 +3,9 @@
 // layer sitting under src/lib/zoho/sync.ts — see the implementation plan §01/§04 for why a
 // queue exists on top of a plain fire-and-forget call (crash/outage safety + retries).
 import { randomUUID } from 'crypto';
-import { and, desc, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
-import { db, pool } from '@/lib/db';
-import { zohoSyncQueue, contacts, leads, applications } from '@/lib/schema';
+import { and, eq, inArray, sql } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import { zohoSyncQueue, contacts, leads } from '@/lib/schema';
 import type { EnqueueSyncInput, SourceTable, SyncQueueRow } from './types';
 
 function maxSyncAttempts(): number {
@@ -120,61 +120,10 @@ export async function claimPendingBatch(limit: number): Promise<SyncQueueRow[]> 
   return rows.map(toQueueRow);
 }
 
-export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
-
-/**
- * Looks up an already-synced OTHER application row (not `excludeApplicationId`) whose
- * normalized email + jobId match this submission — the composite key the approved Job
- * Application dedupe design needs. Zoho's own upsert dedupe can't express this (see the note
- * on upsertJobApplication() in client.ts — neither Email nor Job_ID can safely be marked
- * unique alone), so this is the real dedupe check: a match with a zohoRecordId already means
- * that record should be updated instead of a new one created.
- */
-export async function findSyncedJobApplicationMatch(
-  email: string,
-  jobId: number,
-  excludeApplicationId: string,
-): Promise<{ id: string; zohoRecordId: string } | null> {
-  const normalized = normalizeEmail(email);
-  const rows = await db
-    .select({ id: applications.id, zohoRecordId: applications.zohoRecordId })
-    .from(applications)
-    .where(
-      and(
-        sql`lower(trim(${applications.email})) = ${normalized}`,
-        eq(applications.jobId, jobId),
-        ne(applications.id, excludeApplicationId),
-        isNotNull(applications.zohoRecordId),
-      ),
-    )
-    .orderBy(desc(applications.submittedAt))
-    .limit(1);
-
-  const match = rows[0];
-  if (!match || !match.zohoRecordId) return null;
-  return { id: match.id, zohoRecordId: match.zohoRecordId };
-}
-
-/**
- * Serializes concurrent Job Application syncs for the same normalized email+jobId, so two
- * near-simultaneous submissions can't both see "no existing Zoho record yet" and both create
- * one. Holds a session-level Postgres advisory lock on a dedicated connection for the
- * duration of the caller's critical section (lookup -> Zoho call -> write back zohoRecordId).
- * Different keys use different lock ids and never block each other.
- */
-export async function withJobApplicationLock<T>(email: string, jobId: number, fn: () => Promise<T>): Promise<T> {
-  const lockKey = `zoho-job-app:${normalizeEmail(email)}:${jobId}`;
-  const client = await pool.connect();
-  try {
-    await client.query('SELECT pg_advisory_lock(hashtext($1))', [lockKey]);
-    return await fn();
-  } finally {
-    await client.query('SELECT pg_advisory_unlock(hashtext($1))', [lockKey]).catch(() => {});
-    client.release();
-  }
-}
+// normalizeEmail(), findSyncedJobApplicationMatch(), and withJobApplicationLock() were removed
+// here (2026-08 — company policy: Career Applications no longer sync to Zoho CRM at all; that
+// whole dedupe/locking system existed solely to serve the Job Application Zoho sync — see
+// project memory).
 
 async function updateSourceZohoFields(
   sourceTable: SourceTable,
@@ -193,9 +142,6 @@ async function updateSourceZohoFields(
       return;
     case 'leads':
       await db.update(leads).set(fields).where(eq(leads.id, sourceId));
-      return;
-    case 'applications':
-      await db.update(applications).set(fields).where(eq(applications.id, sourceId));
       return;
   }
 }

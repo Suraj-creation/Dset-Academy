@@ -13,13 +13,23 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// Kept in sync with the actual `Intent` union in widgetConfig.ts. 'confidential' deliberately
+// has no entry here (mirrors src/lib/leads.server.ts) — a probe for internal info is never a
+// sales topic and must never be surfaced as a recommended action.
 const INTENT_LABELS: Record<string, string> = {
-  pricing:  'Pricing',
-  demo:     'Product Demo',
-  support:  'Technical Support',
-  careers:  'Career Opportunities',
-  contact:  'Getting in Touch',
-  general:  'Company Information',
+  services:            'Services & Capabilities',
+  demo:                'Product Demo',
+  pricing:             'Pricing',
+  consulting:          'AI Transformation Consulting',
+  contact:             'Getting in Touch',
+  product_orebill:     'OreBill AI™ (Mining Billing & Dispatch)',
+  product_edgebay:     'EdgeBay IntelliFence™ (Industrial OT Edge AI)',
+  product_securecloud: 'SecureCloud™ (Cloud Security & Compliance)',
+  product_medicsiq:    'MedicsIQ™ (Skin, Scalp & Wellness Assessment)',
+  product_revops:      'iPaS-RevOps™ (Revenue Operations)',
+  product_voiceops:    'VoiceOps (Voice Automation)',
+  product_pharmaai:    'PharmaAI (Pharma Commercial Intelligence)',
+  general:             'Company Information',
 };
 
 function intentLabel(intent: string): string {
@@ -28,12 +38,19 @@ function intentLabel(intent: string): string {
 
 function buildRecommendedAction(intent: string): string {
   const actions: Record<string, string> = {
-    pricing:  'Share detailed pricing information and schedule a commercial discussion or proposal call.',
-    demo:     'Schedule a personalized product demo at the earliest convenience.',
-    support:  'Reach out to address the support query and connect with the technical team.',
-    careers:  'Forward to the HR / talent acquisition team for a follow-up.',
-    contact:  'Follow up with a personalized introduction call within 24 hours.',
-    general:  'Send relevant product information and offer to schedule a discovery call.',
+    services:            'Share relevant DSeT platform and service capabilities, and offer to schedule a discovery call.',
+    demo:                'Schedule a personalized product demo at the earliest convenience.',
+    pricing:             'Share detailed pricing information and schedule a commercial discussion or proposal call.',
+    consulting:          'Follow up on their AI transformation / strategy interest and offer a consulting discussion.',
+    contact:             'Follow up with a personalized introduction call within 24 hours.',
+    product_orebill:     'Follow up about OreBill AI™ (mining billing & dispatch automation) and offer a platform demo.',
+    product_edgebay:     'Follow up about EdgeBay IntelliFence™ (industrial OT edge AI) and offer a platform demo.',
+    product_securecloud: 'Follow up about SecureCloud™ (cloud security & compliance) and offer a platform demo.',
+    product_medicsiq:    'Follow up about MedicsIQ™ (skin, scalp & wellness assessment) and offer a platform demo.',
+    product_revops:      'Follow up about iPaS-RevOps™ (invoice-to-cash & receivables automation) and offer a platform demo.',
+    product_voiceops:    'Follow up about VoiceOps (AI voice automation) and offer a platform demo.',
+    product_pharmaai:    'Follow up about PharmaAI (pharma commercial intelligence) and offer a platform demo.',
+    general:             'Send relevant product information and offer to schedule a discovery call.',
   };
   return actions[intent] ?? 'Follow up with the lead and offer a discovery call.';
 }

@@ -5,7 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { productPageFont } from '@/lib/productPageTypography';
 import {
   ArrowRight, CheckCircle, ChevronDown,
-  BarChart3, Pill, Activity, Mic, Cpu, Lock,
+  BarChart3, Pill, Activity, Mic, Cpu, Lock, TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -83,12 +83,13 @@ type PlatformEntry = {
 };
 
 const platforms: PlatformEntry[] = [
-  { name: 'OreBill AI™',       industry: 'Mining & Mineral Trading',          Icon: BarChart3, accent: '#f59e0b', href: '/product/orebill-ai' },
-  { name: 'PharmaAI',          industry: 'Pharma Commercial Intelligence',     Icon: Pill,      accent: '#10b981', href: '/product/pharmaai' },
-  { name: 'MedicsIQ',          industry: 'AI Wellness Assessment',             Icon: Activity,  accent: '#a855f7', href: '/product/medicsiq' },
-  { name: 'VoiceOps',          industry: 'Enterprise Voice Automation',        Icon: Mic,       accent: '#1e90ff', href: '/product/voiceops' },
-  { name: 'EdgeBay IntelliFence', industry: 'Industrial Edge AI',              Icon: Cpu,       accent: '#06b6d4', href: '/product/edgebay-intelligence' },
-  { name: 'SecureCloud',       industry: 'Compliance-Aware Cloud Security',    Icon: Lock,      accent: '#2563eb', href: '/product/securecloud' },
+  { name: 'OreBill AI™',           industry: 'Mining & Mineral Trading',          Icon: BarChart3,  accent: '#f59e0b', href: '/product/orebill-ai' },
+  { name: 'PharmaAI',              industry: 'Pharma Commercial Intelligence',     Icon: Pill,       accent: '#10b981', href: '/product/pharmaai' },
+  { name: 'MedicsIQ™',             industry: 'AI Wellness Assessment',             Icon: Activity,   accent: '#a855f7', href: '/product/medicsiq' },
+  { name: 'VoiceOps',              industry: 'Enterprise Voice Automation',        Icon: Mic,        accent: '#1e90ff', href: '/product/voiceops' },
+  { name: 'EdgeBay IntelliFence™', industry: 'Industrial Edge AI',                 Icon: Cpu,        accent: '#06b6d4', href: '/product/edgebay-intelligence' },
+  { name: 'SecureCloud™',           industry: 'Compliance-Aware Cloud Security',    Icon: Lock,       accent: '#2563eb', href: '/product/securecloud' },
+  { name: 'iPaS-RevOps™',          industry: 'Revenue Operations Automation',      Icon: TrendingUp, accent: '#0284c7', href: '/product/ipas-revops' },
 ];
 
 const faqs = [
@@ -430,7 +431,7 @@ export default function DSetARCPage() {
                 Vertical AI platforms powered through one deployment framework.
               </h2>
               <p className="text-white/45 max-w-xl mx-auto">
-                All six DSeT vertical platforms are deployed and operated through DSeT ARC™ — same framework, industry-specific configuration.
+                All seven DSeT vertical platforms are deployed and operated through DSeT ARC™ — same framework, industry-specific configuration.
               </p>
             </motion.div>
 

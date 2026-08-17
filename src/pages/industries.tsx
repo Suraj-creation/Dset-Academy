@@ -17,7 +17,7 @@ const industries = [
       'Grade disputes between pit-to-plant and third-party weighbridge data',
       'Revenue leakage due to undetected discrepancies in dispatch records',
     ],
-    platforms: ['OreBill AI™', 'EdgeBay Intelligence'],
+    platforms: ['OreBill AI™', 'EdgeBay IntelliFence™'],
     stat: { value: '60%', label: 'reduction in billing reconciliation time' },
     cta: 'See DSeT in Mining',
   },
@@ -32,7 +32,7 @@ const industries = [
       'Unplanned downtime from reactive maintenance — no predictive layer',
       'SCADA and ERP systems generate data that never reaches decision-makers',
     ],
-    platforms: ['EdgeBay Intelligence', 'iPaS-RevOps'],
+    platforms: ['EdgeBay IntelliFence™', 'iPaS-RevOps™'],
     stat: { value: '40%', label: 'reduction in unplanned downtime with edge AI' },
     cta: 'See DSeT in Industrial',
   },
@@ -47,24 +47,24 @@ const industries = [
       'Regulatory compliance (HIPAA, CDSCO) adds overhead to every workflow',
       'Manual reporting consumes clinical staff bandwidth needed for patient care',
     ],
-    platforms: ['MedicsIQ', 'SecureCloud'],
-    stat: { value: '70%', label: 'faster compliance reporting with MedicsIQ' },
+    platforms: ['MedicsIQ™', 'SecureCloud™'],
+    stat: { value: '70%', label: 'faster compliance reporting with MedicsIQ™' },
     cta: 'See DSeT in Healthcare',
   },
   {
     id: 'sports-education',
-    icon: '🎓',
-    name: 'Sports & Education Infrastructure',
+    icon: '🏆',
+    name: 'Sports',
     tagline: 'Performance data turned into institutional advantage.',
     color: '#5e17ea',
     challenges: [
-      'Athlete and student performance data sits in disconnected tools',
-      'No unified intelligence layer to support coaching or academic decisions',
+      'Athlete performance data sits in disconnected tools',
+      'No unified intelligence layer to support coaching decisions',
       'Infrastructure spend lacks data-driven justification and ROI tracking',
     ],
-    platforms: ['EdgeBay Intelligence', 'iPaS-RevOps'],
+    platforms: ['EdgeBay IntelliFence™', 'iPaS-RevOps™'],
     stat: { value: '3×', label: 'improvement in data-driven programme decisions' },
-    cta: 'See DSeT in Education',
+    cta: 'See DSeT in Sports',
   },
   {
     id: 'enterprise',
@@ -77,26 +77,26 @@ const industries = [
       'Security tools flag violations but provide no remediation pathways',
       'Revenue operations spread across disconnected CRMs, billing, and AR systems',
     ],
-    platforms: ['SecureCloud', 'iPaS-RevOps'],
+    platforms: ['SecureCloud™', 'iPaS-RevOps™'],
     stat: { value: '84%', label: 'reduction in critical cloud misconfigurations' },
     cta: 'See DSeT in Enterprise',
   },
 ];
 
 const platformColors: Record<string, string> = {
-  'OreBill AI™':         '#ff851b',
-  'EdgeBay Intelligence': '#1e90ff',
-  'SecureCloud':          '#5e17ea',
-  'MedicsIQ':             '#22c55e',
-  'iPaS-RevOps':          '#0ea5e9',
+  'OreBill AI™':           '#ff851b',
+  'EdgeBay IntelliFence™': '#1e90ff',
+  'SecureCloud™':           '#5e17ea',
+  'MedicsIQ™':             '#22c55e',
+  'iPaS-RevOps™':          '#0ea5e9',
 };
 
 const platformHrefs: Record<string, string> = {
-  'OreBill AI™':         '/product/orebill-ai',
-  'EdgeBay Intelligence': '/product/edgebay-intelligence',
-  'SecureCloud':          '/product/securecloud',
-  'MedicsIQ':             '/product/medicsiq',
-  'iPaS-RevOps':          '/product/ipas-revops',
+  'OreBill AI™':           '/product/orebill-ai',
+  'EdgeBay IntelliFence™': '/product/edgebay-intelligence',
+  'SecureCloud™':           '/product/securecloud',
+  'MedicsIQ™':             '/product/medicsiq',
+  'iPaS-RevOps™':          '/product/ipas-revops',
 };
 
 // ─── Animation ────────────────────────────────────────────
@@ -122,19 +122,20 @@ export default function IndustriesPage() {
   return (
     <Layout
       title="Industries | DSeT — AI Platforms for Mining, Healthcare, Industrial & More"
-      description="DSeT builds vertical AI platforms for Mining, Industrial OT, Healthcare, Sports & Education, and Secure Enterprise. Purpose-built for operationally complex environments."
+      description="DSeT builds vertical AI platforms for Mining, Industrial OT, Healthcare, Sports, and Secure Enterprise. Purpose-built for operationally complex environments."
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Industries — DSeT Vertical AI Platforms',
         url: 'https://dsetconsulting.com/industries',
-        description: 'DSeT builds vertical AI platforms for Mining, Industrial OT, Healthcare, Sports & Education, and Secure Enterprise.',
+        description: 'DSeT builds vertical AI platforms for Mining, Industrial OT, Healthcare, Sports, and Secure Enterprise.',
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         about: [
-          { '@type': 'Thing', name: 'Mining & Mineral Logistics AI' },
-          { '@type': 'Thing', name: 'Industrial OT Edge AI' },
-          { '@type': 'Thing', name: 'Healthcare AI Compliance' },
-          { '@type': 'Thing', name: 'Secure Enterprise Cloud' },
+          { '@type': 'Thing', name: 'Mining & Mineral Logistics' },
+          { '@type': 'Thing', name: 'Industrial & Manufacturing / OT' },
+          { '@type': 'Thing', name: 'Healthcare & Pharma' },
+          { '@type': 'Thing', name: 'Sports' },
+          { '@type': 'Thing', name: 'Secure Enterprise / BFSI' },
         ],
       }}
     >

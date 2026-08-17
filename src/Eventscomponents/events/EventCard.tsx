@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { motion, Variants } from "framer-motion";
 import {
   GalleryEvent, ENTERPRISE_EASE, EVENT_THEME_CLASS_MAP,
@@ -16,6 +17,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, index }: EventCardProps) {
+  const router = useRouter();
   const type = getEventType(event.title);
   const theme = EVENT_THEME_CLASS_MAP[type];
   const coverMedia = useMemo(() => getCoverMedia(event), [event]);
@@ -23,13 +25,23 @@ export default function EventCard({ event, index }: EventCardProps) {
   const imageCount = event.media.filter((item) => item.type === "image").length;
   const videoCount = event.media.filter((item) => item.type === "video").length;
 
+  const handleNavigate = () => {
+    router.push(`/events/${event.id}`);
+  };
+
   return (
     <motion.article
       variants={FADE_UP}
       transition={{ duration: 0.68, delay: index * 0.05, ease: ENTERPRISE_EASE }}
-      className="event-card group relative overflow-hidden rounded-[22px] border border-[rgba(204,216,233,0.82)] bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(243,247,253,0.68))] shadow-[0_18px_42px_rgba(0,31,63,0.08)] backdrop-blur-[20px] transition-[transform,box-shadow,border-color] duration-[550ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] [will-change:transform] hover:translate-y-[-5px] hover:border-[rgba(134,173,255,0.62)] hover:shadow-[0_24px_52px_rgba(0,31,63,0.12),0_0_0_1px_rgba(134,173,255,0.18)] max-sm:rounded-[18px]"
+      onClick={handleNavigate}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") handleNavigate();
+      }}
+      role="link"
+      tabIndex={0}
+      className="event-card group relative cursor-pointer overflow-hidden rounded-[22px] border border-[rgba(204,216,233,0.82)] bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(243,247,253,0.68))] shadow-[0_18px_42px_rgba(0,31,63,0.08)] backdrop-blur-[20px] transition-[transform,box-shadow,border-color] duration-[550ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] [will-change:transform] hover:translate-y-[-5px] hover:border-[rgba(134,173,255,0.62)] hover:shadow-[0_24px_52px_rgba(0,31,63,0.12),0_0_0_1px_rgba(134,173,255,0.18)] max-sm:rounded-[18px]"
     >
-      <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,rgba(0,31,63,0.08),rgba(123,156,255,0.16))] sm:h-44">
+      <div className="relative h-52 overflow-hidden bg-[linear-gradient(135deg,rgba(0,31,63,0.08),rgba(123,156,255,0.16))] sm:h-56">
         {coverMedia ? (
           <>
             {coverMedia.type === "video" ? (
@@ -65,14 +77,22 @@ export default function EventCard({ event, index }: EventCardProps) {
         {(imageCount > 0 || videoCount > 0) && (
           <div className="absolute right-3 top-3 z-[1] flex flex-wrap justify-end gap-2 sm:right-4 sm:top-4">
             {imageCount > 0 && (
-              <span className="rounded-full bg-[rgba(0,0,0,0.42)] px-2.5 py-[0.38rem] text-[0.66rem] font-bold text-white backdrop-blur-[14px] sm:text-[0.68rem]">
+              <Link
+                href={`/events/${event.id}#event-media`}
+                onClick={(e) => e.stopPropagation()}
+                className="rounded-full bg-[rgba(0,0,0,0.42)] px-2.5 py-[0.38rem] text-[0.66rem] font-bold text-white backdrop-blur-[14px] sm:text-[0.68rem] transition hover:bg-[rgba(255,255,255,0.12)]"
+              >
                 {imageCount} Photos
-              </span>
+              </Link>
             )}
             {videoCount > 0 && (
-              <span className="rounded-full bg-[rgba(0,0,0,0.42)] px-2.5 py-[0.38rem] text-[0.66rem] font-bold text-white backdrop-blur-[14px] sm:text-[0.68rem]">
+              <Link
+                href={`/events/${event.id}#event-media`}
+                onClick={(e) => e.stopPropagation()}
+                className="rounded-full bg-[rgba(0,0,0,0.42)] px-2.5 py-[0.38rem] text-[0.66rem] font-bold text-white backdrop-blur-[14px] sm:text-[0.68rem] transition hover:bg-[rgba(255,255,255,0.12)]"
+              >
                 {videoCount} Videos
-              </span>
+              </Link>
             )}
           </div>
         )}
@@ -98,12 +118,11 @@ export default function EventCard({ event, index }: EventCardProps) {
           {getEventSummary(event)}
         </p>
 
-        <Link
-          href={`/events/${event.id}`}
-          className="inline-flex min-h-[36px] items-center justify-center rounded-full border border-[rgba(189,205,228,0.9)] bg-[rgba(255,255,255,0.88)] px-3.5 py-[0.65rem] text-[0.72rem] font-extrabold tracking-[0.04em] text-[#001f3f] no-underline shadow-[0_10px_24px_rgba(0,31,63,0.06)] sm:min-h-[38px] sm:text-[0.74rem]"
+        <div
+          className="inline-flex min-h-[36px] items-center justify-center rounded-full border border-[rgba(189,205,228,0.9)] bg-[rgba(255,255,255,0.88)] px-3.5 py-[0.65rem] text-[0.72rem] font-extrabold tracking-[0.04em] text-[#001f3f] shadow-[0_10px_24px_rgba(0,31,63,0.06)] sm:min-h-[38px] sm:text-[0.74rem]"
         >
-          View Gallery
-        </Link>
+          Explore Event
+        </div>
       </div>
     </motion.article>
   );

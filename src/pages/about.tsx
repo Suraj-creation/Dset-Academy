@@ -25,11 +25,13 @@ const item = {
 };
 
 const platforms = [
-  { name: 'OreBill AI™',          industry: 'Mining & Mineral Logistics',      color: '#ff851b', href: '/product/orebill-ai' },
-  { name: 'EdgeBay IntelliFence', industry: 'Industrial / OT Edge AI',           color: '#1e90ff', href: '/product/edgebay-intelligence' },
-  { name: 'SecureCloud',          industry: 'Compliance-first Cloud Security',   color: '#5e17ea', href: '/product/securecloud' },
-  { name: 'iPaS-RevOps',          industry: 'Revenue Operations Automation',     color: '#0ea5e9', href: '/product/ipas-revops' },
-  { name: 'MedicsIQ',             industry: 'AI Dermatology & Wellness',          color: '#22c55e', href: '/product/medicsiq' },
+  { name: 'OreBill AI™',            industry: 'Mining & Mineral Logistics',      color: '#ff851b', href: '/product/orebill-ai' },
+  { name: 'PharmaAI',               industry: 'Pharma Commercial Intelligence',  color: '#10b981', href: '/product/pharmaai' },
+  { name: 'MedicsIQ™',              industry: 'AI Dermatology & Wellness',       color: '#22c55e', href: '/product/medicsiq' },
+  { name: 'VoiceOps',               industry: 'Enterprise Voice Automation',     color: '#0284c7', href: '/product/voiceops' },
+  { name: 'EdgeBay IntelliFence™',  industry: 'Industrial / OT Edge AI',         color: '#1e90ff', href: '/product/edgebay-intelligence' },
+  { name: 'SecureCloud™',            industry: 'Compliance-first Cloud Security', color: '#5e17ea', href: '/product/securecloud' },
+  { name: 'iPaS-RevOps™',           industry: 'Revenue Operations Automation',   color: '#0ea5e9', href: '/product/ipas-revops' },
 ];
 
 const capabilities = [
@@ -66,7 +68,7 @@ const capabilities = [
   {
     icon: <Globe className="w-6 h-6" />,
     title: 'Platform + Deployment',
-    desc: "DSeT ARC delivers end-to-end — platform configuration, integration, change management, and ongoing intelligence services.",
+    desc: "DSeT ARC™ delivers end-to-end — platform configuration, integration, change management, and ongoing intelligence services.",
     color: '#a855f7',
   },
 ];
@@ -85,12 +87,12 @@ const differentiators = [
   {
     icon: <Users className="w-7 h-7" />,
     title: 'Microsoft ISV Partner',
-    desc: 'iPaS-RevOps is live on Microsoft Marketplace. Our platforms meet enterprise procurement and compliance standards.',
+    desc: 'iPaS-RevOps™ is live on Microsoft Marketplace. Our platforms meet enterprise procurement and compliance standards.',
   },
   {
     icon: <Shield className="w-7 h-7" />,
     title: 'Execution Over Dashboards',
-    desc: "OreBill AI doesn't show billing data — it generates invoices. EdgeBay doesn't alert — it acts. Agentic execution, not analytics.",
+    desc: "OreBill AI™ doesn't show billing data — it generates invoices. EdgeBay IntelliFence™ doesn't alert — it acts. Agentic execution, not analytics.",
   },
 ];
 
@@ -147,7 +149,7 @@ export default function AboutPage() {
               </p>
               <ul className="space-y-3 mb-10 inline-flex flex-col items-start text-left">
                 {[
-                  '5+ vertical AI platforms in market or active pilot',
+                  '7 vertical AI platforms in market or active pilot',
                   'Deployed in environments processing ₹100 Cr+ monthly flows',
                   'Microsoft ISV Partner — enterprise-grade from day one',
                 ].map((pt) => (
@@ -269,7 +271,7 @@ export default function AboutPage() {
 
               <div className="space-y-4">
                 {[
-                  { label: 'AI Platforms in market or active pilot',      value: '5+' },
+                  { label: 'AI Platforms in market or active pilot',      value: '7' },
                   { label: 'Industries served with live deployments',     value: '4' },
                   { label: 'Monthly revenue flows managed by OreBill AI', value: '₹100 Cr+' },
                   { label: 'Microsoft ISV partner status',                value: '✓' },
@@ -481,7 +483,7 @@ export default function AboutPage() {
       </Section>
 
       {/* ── Leadership ── */}
-      <Section bgColor="white" spacing="xl">
+      <Section bgColor="white" spacing="xl" id="leadership">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

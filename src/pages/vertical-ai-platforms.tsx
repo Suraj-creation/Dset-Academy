@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { productPageFont } from '@/lib/productPageTypography';
 import {
   ArrowRight, ArrowUpRight,
-  BarChart3, Pill, Activity, Mic, Cpu, Lock,
+  BarChart3, Pill, Activity, Mic, Cpu, Lock, TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -88,10 +88,11 @@ type PlatformEntry = {
 const platforms: PlatformEntry[] = [
   { name: 'OreBill AI™', industry: 'Mining & Mineral Trading', sentence: 'Turns dispatch data into GST-compliant invoices without manual reconciliation.', href: '/product/orebill-ai', Icon: BarChart3 },
   { name: 'PharmaAI', industry: 'Pharma & Life Sciences', sentence: 'Delivers commercial intelligence built on licensed pharma datasets.', href: '/product/pharmaai', Icon: Pill },
-  { name: 'MedicsIQ', industry: 'Healthcare & Wellness', sentence: 'AI-driven wellness assessment for D2C and Ayurveda brands.', href: '/product/medicsiq', Icon: Activity },
+  { name: 'MedicsIQ™', industry: 'Healthcare & Wellness', sentence: 'AI-driven wellness assessment for D2C and Ayurveda brands.', href: '/product/medicsiq', Icon: Activity },
   { name: 'VoiceOps', industry: 'Enterprise Voice Operations', sentence: 'Runs multilingual voice outreach for collections and distributor engagement.', href: '/product/voiceops', Icon: Mic },
-  { name: 'EdgeBay IntelliFence', industry: 'Industrial & Manufacturing', sentence: 'Brings predictive AI to the shop floor without replacing existing systems.', href: '/product/edgebay-intelligence', Icon: Cpu },
-  { name: 'SecureCloud', industry: 'Cloud Security & Governance', sentence: 'Compliance-aware threat detection for regulated cloud workloads.', href: '/product/securecloud', Icon: Lock },
+  { name: 'EdgeBay IntelliFence™', industry: 'Industrial & Manufacturing', sentence: 'Brings predictive AI to the shop floor without replacing existing systems.', href: '/product/edgebay-intelligence', Icon: Cpu },
+  { name: 'SecureCloud™', industry: 'Cloud Security & Governance', sentence: 'Compliance-aware threat detection for regulated cloud workloads.', href: '/product/securecloud', Icon: Lock },
+  { name: 'iPaS-RevOps™', industry: 'Revenue Operations', sentence: 'Unifies pipeline, billing, and AR data into one revenue operations platform.', href: '/product/ipas-revops', Icon: TrendingUp },
 ];
 
 const jsonLd = {

@@ -37,28 +37,28 @@ const platforms = [
   },
   {
     id: 'edgebay',
-    name: 'EdgeBay Intelligence',
+    name: 'EdgeBay IntelliFence™',
     tagline: 'AI at the Edge of Your Business',
     icon: <Zap className="w-5 h-5" />,
     color: '#1e90ff',
   },
   {
     id: 'securecloud',
-    name: 'SecureCloud',
+    name: 'SecureCloud™',
     tagline: 'Cloud Security, Simplified.',
     icon: <Shield className="w-5 h-5" />,
     color: '#5e17ea',
   },
   {
     id: 'medicsiq',
-    name: 'MedicsiQ',
+    name: 'MedicsIQ™',
     tagline: 'Intelligence for Healthcare Operations',
     icon: <Cpu className="w-5 h-5" />,
     color: '#ff851b',
   },
   {
     id: 'ipas',
-    name: 'iPaS-RevOps',
+    name: 'iPaS-RevOps™',
     tagline: 'Revenue Operations at Scale',
     icon: <Globe className="w-5 h-5" />,
     color: '#1e90ff',
@@ -122,7 +122,6 @@ const contactInfo = [
 const whyDSeT = [
   'Proprietary AI platforms, not off-the-shelf tools',
   'Deployed across Mining, Pharma, Healthcare & more',
-  'Microsoft & Google Cloud Partner',
   'ISO Certified, MSME Recognized',
   'End-to-end implementation + support',
 ];
@@ -227,7 +226,7 @@ const ContactPage = () => {
   return (
     <Layout
       title="Book a Demo | DSeT — Deploy AI at Enterprise Scale"
-      description="Request a live platform demo. Our team maps your operational environment to the right DSeT AI platform — OreBill AI, EdgeBay Intelligence, SecureCloud, or iPaS-RevOps."
+      description="Request a live platform demo. Our team maps your operational environment to the right DSeT AI platform — OreBill AI™, EdgeBay IntelliFence™, SecureCloud™, or iPaS-RevOps™."
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'ContactPage',

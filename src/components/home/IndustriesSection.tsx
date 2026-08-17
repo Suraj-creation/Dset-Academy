@@ -38,7 +38,7 @@ const industries = [
     ),
   },
   {
-    name: 'Sports & Education',
+    name: 'Sports',
     problem: 'Performance data exists but insights never reach decisions.',
     icon: (
       <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

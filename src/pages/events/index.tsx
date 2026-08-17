@@ -125,7 +125,7 @@ export default function EventsPage({ events }: Props) {
         />
 
         {/* ── Events Grid ── */}
-        <section className="px-8 pb-24 pt-10 max-sm:px-4">
+        <section id="events-collection" className="px-8 pb-24 pt-10 max-sm:px-4">
           <div className="mx-auto max-w-[1280px] rounded-[36px] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(135deg,rgba(7,50,95,0.92),rgba(0,31,63,0.96),rgba(31,47,143,0.9))] p-8 shadow-[0_30px_80px_rgba(0,18,45,0.24)] max-md:p-6">
             {filtered.length > 0 && (
               <div className="mb-[1.8rem] flex flex-wrap items-end justify-between gap-4">

@@ -23,9 +23,9 @@ interface HeroSectionProps {
 
 export default function HeroSection({ loading, eventCount, photoCount, videoCount }: HeroSectionProps) {
   const stats = [
-    { label: "Events", value: eventCount },
-    { label: "Photos", value: photoCount },
-    { label: "Videos", value: videoCount },
+    { label: "Events", value: eventCount, href: "#events-collection" },
+    { label: "Photos", value: photoCount, href: "#events-collection" },
+    { label: "Videos", value: videoCount, href: "#events-collection" },
   ];
 
   return (
@@ -103,17 +103,19 @@ export default function HeroSection({ loading, eventCount, photoCount, videoCoun
 
             <div className="gallery-hero-stats grid max-w-[500px] auto-rows-min grid-cols-3 items-start gap-3 max-md:max-w-[480px] max-sm:max-w-none max-sm:grid-cols-1 max-sm:gap-2.5">
               {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="h-fit self-start rounded-[16px] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.05))] px-3 py-2.5 shadow-[0_14px_28px_rgba(0,0,0,0.12)] backdrop-blur-[18px]"
-                >
-                  <div className="text-[clamp(1.18rem,1.9vw,1.55rem)] font-black leading-none tracking-[-0.04em] text-white">
-                    {loading ? "--" : stat.value}
-                  </div>
-                  <div className="mt-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] text-[rgba(255,255,255,0.5)]">
-                    {stat.label}
-                  </div>
+                <Link
+                key={stat.label}
+                href={stat.href ?? "#events-collection"}
+                className="group block h-fit self-start rounded-[16px] border border-[rgba(255,255,255,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.05))] px-3 py-2.5 shadow-[0_14px_28px_rgba(0,0,0,0.12)] backdrop-blur-[18px] transition duration-200 hover:border-[#1e90ff] hover:bg-[rgba(255,255,255,0.18)] hover:text-white"
+                aria-label={`Jump to ${stat.label}`}
+              >
+                <div className="text-[clamp(1.18rem,1.9vw,1.55rem)] font-black leading-none tracking-[-0.04em] text-white">
+                  {loading ? "--" : stat.value}
                 </div>
+                <div className="mt-1 text-[0.58rem] font-bold uppercase tracking-[0.12em] text-[rgba(255,255,255,0.5)]">
+                  {stat.label}
+                </div>
+              </Link>
               ))}
             </div>
           </motion.div>

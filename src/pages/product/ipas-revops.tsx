@@ -21,13 +21,13 @@ const features = [
     icon: Bell,
     title: 'Automated reminders',
     body:
-      'AI-powered revenue operations tool for Zoho that automates payment reminders to reduce late payments and improve cash flow.',
+      'AI-powered revenue operations platform that automates payment reminders and receivables follow-ups to reduce late payments and improve cash flow.',
   },
   {
     icon: MessageSquare,
     title: 'AI communication',
     body:
-      'Stop chasing late payments and unlock predictable cash flow with iPaS, the AI-powered revenue operations (RevOps) application designed specifically to automate accounts receivable within Zoho.',
+      'Stop chasing late payments and unlock predictable cash flow with iPaS-RevOps™, the AI-powered revenue operations (RevOps) platform built for invoice-to-cash and receivables automation.',
   },
   {
     icon: Link2,
@@ -94,16 +94,16 @@ const marketplaceHref =
 export default function IpasRevOpsPage() {
   return (
     <Layout
-      title="iPaS-RevOps — Invoice-to-Payment Automation for Zoho | DSeT"
-      description="AI-powered payment reminder engine for Zoho focused on reducing late payments, improving cash flow, and automating follow-ups."
+      title="iPaS-RevOps™ — AI Revenue Operations Platform | DSeT"
+      description="AI-powered revenue operations platform for invoice-to-cash and receivables automation — automated payment follow-ups, collections, and real-time cash-flow visibility, with native Zoho integration."
       ogImage="/images/revops.png"
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'iPaS-RevOps',
+        name: 'iPaS-RevOps™',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Cloud',
-        description: 'AI-powered invoice-to-payment automation platform for Zoho — reduces late payments, improves cash flow, and automates follow-ups. Live on Microsoft Marketplace.',
+        description: 'AI-powered revenue operations platform focused on invoice-to-cash and receivables automation — automated payment follow-ups, collections, and real-time cash-flow visibility. Native Zoho integration is live on Microsoft Marketplace.',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/ipas-revops',
@@ -129,15 +129,15 @@ export default function IpasRevOpsPage() {
                   >
                     <div className="product-page-kicker inline-flex items-center gap-3 rounded-full border border-[#68bfff]/30 bg-[#1e90ff]/12 px-4 py-2 text-[#d8efff]">
                       <span className="h-2 w-2 rounded-full bg-[#78c6ff]" />
-                      AI-Powered Payment Reminder Engine For Zoho
+                      AI-Powered Revenue Operations Platform
                     </div>
 
                     <h1 className="product-page-display mt-7 text-white">
-                      iPaS-RevOps
+                      iPaS-RevOps™
                     </h1>
 
                     <p className="mt-6 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
-                      iPaS for Zoho: AI-Powered Rev-Ops for Automated Payment Reminders
+                      iPaS-RevOps™: AI-Powered Invoice-to-Cash & Receivables Automation
                     </p>
 
                     <div className="mt-8 border-l border-white/12 pl-5">
@@ -157,7 +157,7 @@ export default function IpasRevOpsPage() {
                     </div>
 
                     <p className="mt-8 max-w-2xl text-base leading-8 text-slate-300">
-                      Stop chasing late payments and unlock predictable cash flow with iPaS, the AI-powered revenue operations (RevOps) application designed specifically to automate accounts receivable within Zoho.
+                      Stop chasing late payments and unlock predictable cash flow with iPaS-RevOps™, the AI-powered revenue operations (RevOps) platform built for invoice-to-cash and receivables automation. Native Zoho integration enables AI-powered payment reminders and automated receivables workflows.
                     </p>
 
                     <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -190,7 +190,7 @@ export default function IpasRevOpsPage() {
                       <div className="relative aspect-[1.1/1] overflow-hidden rounded-[24px]">
                         <Image
                           src="/images/revops.png"
-                          alt="iPaS-RevOps product UI"
+                          alt="iPaS-RevOps™ product UI"
                           fill
                           priority
                           sizes="(max-width: 1024px) 100vw, 46vw"
@@ -251,10 +251,10 @@ export default function IpasRevOpsPage() {
                   >
                     <h3 className="product-page-subheading text-white">Solution</h3>
                     <p className="mt-4 text-base leading-8 text-slate-300 sm:text-lg">
-                      iPaS-RevOps as solution
+                      iPaS-RevOps™ as solution
                     </p>
                     <p className="mt-4 text-base leading-8 text-slate-300 sm:text-lg">
-                      AI-powered revenue operations tool for Zoho that automates payment reminders to reduce late payments and improve cash flow.
+                      AI-powered revenue operations platform focused on invoice-to-cash and receivables automation — automated payment follow-ups, collections, and real-time cash-flow visibility.
                     </p>
                   </motion.div>
                 </div>
@@ -266,15 +266,15 @@ export default function IpasRevOpsPage() {
             <div className="mx-auto max-w-[1320px] border-y border-white/10 py-12">
               <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
                 <div>
-                  <div className="product-page-kicker text-[#8fcfff]">What iPaS-RevOps Does</div>
+                  <div className="product-page-kicker text-[#8fcfff]">What iPaS-RevOps™ Does</div>
                   <h2 className="product-page-section-heading mt-5 text-white">
-                    Designed specifically to automate accounts receivable within Zoho
+                    Automates invoice-to-cash and receivables workflows
                   </h2>
                 </div>
 
                 <div>
                   <p className="text-base leading-8 text-slate-300 sm:text-lg">
-                    Stop chasing late payments and unlock predictable cash flow with iPaS, the AI-powered revenue operations (RevOps) application designed specifically to automate accounts receivable within Zoho. iPaaS helps small to medium-sized businesses streamline the tedious and often awkward process of sending payment reminder emails—so your team can focus on growth and customer relationships instead of collections.
+                    Stop chasing late payments and unlock predictable cash flow with iPaS-RevOps™, the AI-powered revenue operations (RevOps) platform built for invoice-to-cash and receivables automation. It helps businesses streamline the tedious and often awkward process of sending payment reminders and managing collections—so your team can focus on growth and customer relationships instead of chasing payments. Native Zoho integration enables AI-powered payment reminders and automated receivables workflows.
                   </p>
 
                   <div className="mt-8 flex flex-wrap gap-3">
@@ -438,7 +438,7 @@ export default function IpasRevOpsPage() {
                   <div className="relative aspect-[1.12/1] overflow-hidden rounded-[24px]">
                     <Image
                       src="/images/dashboard.png"
-                      alt="iPaS-RevOps analytics dashboard"
+                      alt="iPaS-RevOps™ analytics dashboard"
                       fill
                       sizes="(max-width: 1024px) 100vw, 48vw"
                       className="object-cover"

@@ -15,7 +15,7 @@ const overviewSections = [
   {
     title: 'Unified Edge Intelligence',
     body:
-      'EdgeBay IntelliFence fuses industrial control systems, safety sensors, and video streams with IT data lakes to deliver continuous edge intelligence for operators and command centers.',
+      'EdgeBay IntelliFence™ fuses industrial control systems, safety sensors, and video streams with IT data lakes to deliver continuous edge intelligence for operators and command centers.',
   },
   {
     title: 'Predictive Safety & Compliance',
@@ -74,7 +74,7 @@ const industries = [
   {
     name: 'Mining',
     image: '/EdgeBy1.webp',
-    alt: 'Mining operations supported by EdgeBay IntelliFence',
+    alt: 'Mining operations supported by EdgeBay IntelliFence™',
     useCases: [
       'Hazard zone detection & geofencing',
       'Haul truck & vehicle proximity intelligence',
@@ -84,7 +84,7 @@ const industries = [
   {
     name: 'Manufacturing',
     image: '/EdgeBy2.avif',
-    alt: 'Manufacturing operations supported by EdgeBay IntelliFence',
+    alt: 'Manufacturing operations supported by EdgeBay IntelliFence™',
     useCases: [
       'Predictive breakdown alerts for critical assets',
       'Worker safety assurance & PPE analytics',
@@ -94,7 +94,7 @@ const industries = [
   {
     name: 'Utilities',
     image: '/EdgeBy3.avif',
-    alt: 'Utilities operations supported by EdgeBay IntelliFence',
+    alt: 'Utilities operations supported by EdgeBay IntelliFence™',
     useCases: [
       'Grid substation heat & arc detection',
       'Plant monitoring for emissions & compliance',
@@ -113,28 +113,28 @@ const valueDelivered = [
 
 const faqs = [
   {
-    q: 'What industries does EdgeBay IntelliFence serve?',
+    q: 'What industries does EdgeBay IntelliFence™ serve?',
     a: 'Mining, manufacturing, and utilities — any environment with high OT asset density, safety-critical operations, or continuous regulatory monitoring requirements. The platform is built for harsh environments where generic IoT tools cannot operate reliably.',
   },
   {
-    q: 'Can EdgeBay IntelliFence operate without internet connectivity?',
-    a: 'Yes. EdgeBay IntelliFence is offline-first by design. Analytics continuity is maintained locally at the edge node, and when connectivity is restored, data synchronises automatically to cloud or command-centre dashboards — no gaps in the operational record.',
+    q: 'Can EdgeBay IntelliFence™ operate without internet connectivity?',
+    a: 'Yes. EdgeBay IntelliFence™ is offline-first by design. Analytics continuity is maintained locally at the edge node, and when connectivity is restored, data synchronises automatically to cloud or command-centre dashboards — no gaps in the operational record.',
   },
   {
-    q: 'How does EdgeBay IntelliFence connect to our existing OT and SCADA systems?',
-    a: 'Through hardened connectors for MODBUS, OPC-UA, MQTT, and REST. No rip-and-replace of existing SCADA or PLC infrastructure is required — EdgeBay IntelliFence integrates alongside your current stack without disrupting live operations.',
+    q: 'How does EdgeBay IntelliFence™ connect to our existing OT and SCADA systems?',
+    a: 'Through hardened connectors for MODBUS, OPC-UA, MQTT, and REST. No rip-and-replace of existing SCADA or PLC infrastructure is required — EdgeBay IntelliFence™ integrates alongside your current stack without disrupting live operations.',
   },
   {
-    q: 'What is the typical deployment timeline for EdgeBay IntelliFence?',
+    q: 'What is the typical deployment timeline for EdgeBay IntelliFence™?',
     a: 'Pilot deployment timelines depend on site complexity and the number of OT data sources involved. DSeT ARC™ handles the full discovery-to-deployment sequence, including sensor mapping, inference tuning, and operator training, and gives you a firm project timeline before configuration begins.',
   },
   {
-    q: 'What hardware does EdgeBay IntelliFence run on?',
-    a: 'EdgeBay IntelliFence runs on ruggedised edge nodes using Intel OpenVINO and NVIDIA CUDA inference pipelines — built for harsh industrial environments that don\'t have dedicated data-centre infrastructure on site.',
+    q: 'What hardware does EdgeBay IntelliFence™ run on?',
+    a: 'EdgeBay IntelliFence™ runs on ruggedised edge nodes using Intel OpenVINO and NVIDIA CUDA inference pipelines — built for harsh industrial environments that don\'t have dedicated data-centre infrastructure on site.',
   },
   {
-    q: 'Is EdgeBay IntelliFence delivered through DSeT ARC™?',
-    a: 'Yes. EdgeBay IntelliFence engagements are structured through DSeT ARC™ — from initial digital assessment and OT data mapping through deployment, tuning, and ongoing managed intelligence. You\'re not handed a product and left to run it alone.',
+    q: 'Is EdgeBay IntelliFence™ delivered through DSeT ARC™?',
+    a: 'Yes. EdgeBay IntelliFence™ engagements are structured through DSeT ARC™ — from initial digital assessment and OT data mapping through deployment, tuning, and ongoing managed intelligence. You\'re not handed a product and left to run it alone.',
   },
 ];
 
@@ -180,13 +180,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 export default function EdgeBayIntellifencePage() {
   return (
     <Layout
-      title="EdgeBay IntelliFence — Industrial Edge AI for Mining & Manufacturing | DSeT"
-      description="EdgeBay IntelliFence is DSeT's industrial edge AI platform — OT-IT convergence, predictive maintenance, and real-time safety intelligence for mining, manufacturing, and utilities in India."
+      title="EdgeBay IntelliFence™ — Industrial Edge AI for Mining & Manufacturing | DSeT"
+      description="EdgeBay IntelliFence™ is DSeT's industrial edge AI platform — OT-IT convergence, predictive maintenance, and real-time safety intelligence for mining, manufacturing, and utilities in India."
       ogImage="/images/edgebay.png"
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'EdgeBay IntelliFence',
+        name: 'EdgeBay IntelliFence™',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Edge, Cloud, Hybrid, Air-Gapped',
         description: 'Industrial Edge AI platform that fuses OT-IT sensor, control, and IT telemetry for predictive safety, compliance, and uptime at the industrial edge.',
@@ -194,12 +194,12 @@ export default function EdgeBayIntellifencePage() {
         provider: { '@type': 'Organization', name: 'DSeT Consulting', url: 'https://dsetconsulting.com' },
         url: 'https://dsetconsulting.com/product/edgebay-intelligence',
         image: 'https://dsetconsulting.com/images/edgebay.png',
-        keywords: 'industrial edge AI India, IIoT platform India, OT IT convergence India, predictive maintenance AI India, edge computing manufacturing India, industrial AI for mining India, SCADA analytics platform, edge AI for utilities India, EdgeBay IntelliFence, shop floor AI India',
+        keywords: 'industrial edge AI India, IIoT platform India, OT IT convergence India, predictive maintenance AI India, edge computing manufacturing India, industrial AI for mining India, SCADA analytics platform, edge AI for utilities India, EdgeBay IntelliFence™, shop floor AI India',
       }}
       breadcrumbs={[
         { name: 'Home', href: '/' },
         { name: 'Platforms', href: '/product' },
-        { name: 'EdgeBay IntelliFence', href: '/product/edgebay-intelligence' },
+        { name: 'EdgeBay IntelliFence™', href: '/product/edgebay-intelligence' },
       ]}
     >
       <div className={`${productPageFont.variable} product-page-shell relative overflow-hidden bg-[#020816] text-white`}>
@@ -224,7 +224,7 @@ export default function EdgeBayIntellifencePage() {
                     </div>
 
                     <h1 className="product-page-display mt-7 text-white">
-                      EdgeBay IntelliFence
+                      EdgeBay IntelliFence™
                     </h1>
 
                     <p className="mt-6 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
@@ -296,7 +296,7 @@ export default function EdgeBayIntellifencePage() {
             <div className="mx-auto max-w-[1320px]">
               <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
                 <div>
-                  <div className="product-page-kicker text-[#88dbff]">EdgeBay IntelliFence</div>
+                  <div className="product-page-kicker text-[#88dbff]">EdgeBay IntelliFence™</div>
                   <h2 className="product-page-section-heading mt-5 text-white">
                     Continuous edge intelligence for industrial operations
                   </h2>
