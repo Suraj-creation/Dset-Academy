@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { addApplication, readApplications, updateApplicationStatus, deleteApplication, ApplicationStatus } from '@/lib/applications.server';
 import { isAdminRequest } from '@/lib/auth';
 import { sendMail } from '@/lib/email';
-
+import { appendApplicationToSheet } from '@/lib/googleSheets.server';
 import path from 'path';
 import fs from 'fs';
 
@@ -51,8 +51,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       global.lastApplications.set(clientIp, now);
 
-      // Per company policy, Career Applications are no longer synced to Zoho CRM
-      // — job application data stays in Postgres/the admin panel only.
+      // Per company policy, Career Applications are no longer synced to Zoho CRM — job
+      // application data stays in Postgres/the admin panel only (see project memory).
       await addApplication({
         jobId: data.jobId,
         jobTitle: data.jobTitle,
@@ -102,6 +102,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       } catch {
         // Email failure should not block the submission
+      }
+
+      try {
+        await appendApplicationToSheet({
+          jobTitle: data.jobTitle,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          linkedin: data.linkedin,
+          portfolio: data.portfolio,
+          experience: data.experience,
+          noticePeriod: data.noticePeriod,
+          source: data.source,
+          resumeLink: data.resumeLink,
+          coverNote: data.coverNote,
+        });
+      } catch (err) {
+        // Google Sheets sync failure should not block the submission — the
+        // application is already safe in the DB and the email alert went out.
+        console.error('[applications] Google Sheets sync failed:', err);
       }
 
       return res.status(200).json({ success: true });
