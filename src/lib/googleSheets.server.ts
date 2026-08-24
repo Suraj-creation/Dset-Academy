@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google } from '@googleapis/sheets';
 
 // ── Google Sheets sync for Career Applications ────────────────────────────
 // Every application submitted on the site is appended as a new row in a
