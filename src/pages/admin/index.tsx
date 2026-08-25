@@ -10,6 +10,7 @@ const SECTIONS = [
   { label: 'Chat Leads',   href: '/admin/leads',        desc: 'Interested visitors from chatbot', color: '#5e17ea', icon: '💬' },
   { label: 'Events',       href: '/admin/events',       desc: 'Manage events and media',          color: '#1e90ff', icon: '📅' },
   { label: 'Blog',         href: '/admin/blog',         desc: 'Write and publish blog posts',     color: '#ff851b', icon: '✍️' },
+  { label: 'WhatsApp',     href: '/admin/whatsapp',     desc: 'AI conversations & handovers',     color: '#25d366', icon: '📱' },
 ];
 
 type TestStatus = 'idle' | 'loading' | 'ok' | 'fail';

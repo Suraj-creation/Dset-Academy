@@ -11,7 +11,9 @@
       "PowerShell(Add-Type -Assembly 'System.IO.Compression.FileSystem'; $z = [System.IO.Compression.ZipFile]::OpenRead\\('d:\\\\DSet\\\\deploy_ready.zip'\\); $top = $z.Entries | ForEach-Object { \\($_.FullName -split '/'\\)[0] } | Sort-Object -Unique; Write-Output $top; $z.Dispose\\(\\))",
       "Bash(az rest *)",
       "Bash(az --version)",
-      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(e['properties']['message']\\) for e in data['value']]\")"
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(e['properties']['message']\\) for e in data['value']]\")",
+      "Bash(grep -rn \"empty function\\\\|not implemented\\\\|\\\\{\\\\}\\\\|return;\\\\s*$\" \"d:/DSet/DSeTC_Web_Application/src/pages/api/\" --include=\"*.ts\")",
+      "Bash(npm run *)"
     ]
   }
 }

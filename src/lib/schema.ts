@@ -116,6 +116,29 @@ export const whitepapers = pgTable('whitepapers', {
   createdAt:     timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
 
+export const whatsappConversations = pgTable('whatsapp_conversations', {
+  id:                  text('id').primaryKey(), // wa_id (customer phone, digits only, e.g. 9198xxxxxxxx)
+  customerName:        text('customer_name'),
+  status:              text('status').notNull().default('bot'), // 'bot' | 'human' | 'closed'
+  lastInboundAt:       timestamp('last_inbound_at', { withTimezone: true, mode: 'string' }),
+  lastOutboundAt:      timestamp('last_outbound_at', { withTimezone: true, mode: 'string' }),
+  handoverRequestedAt: timestamp('handover_requested_at', { withTimezone: true, mode: 'string' }),
+  createdAt:           timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  ...zohoSyncColumns,
+});
+
+export const whatsappMessages = pgTable('whatsapp_messages', {
+  id:             text('id').primaryKey(), // Meta wamid, or generated uuid for outbound-before-ack
+  conversationId: text('conversation_id').notNull(),
+  direction:      text('direction').notNull(), // 'inbound' | 'outbound'
+  messageType:    text('message_type').notNull().default('text'),
+  content:        text('content').notNull().default(''),
+  mediaUrl:       text('media_url'),
+  status:         text('status').notNull().default('received'), // 'received' | 'sent' | 'delivered' | 'read' | 'failed'
+  aiHandled:      boolean('ai_handled').notNull().default(false),
+  createdAt:      timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
 export const whitepaperLeads = pgTable('whitepaper_leads', {
   id:              text('id').primaryKey(),
   whitepaperID:    text('whitepaper_id').notNull(),

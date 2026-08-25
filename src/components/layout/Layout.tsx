@@ -1,9 +1,12 @@
 import { ReactNode, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import PromoBanner from './PromoBanner';
+
+const WhatsAppButton = dynamic(() => import('@/components/whatsapp/WhatsAppButton'), { ssr: false });
 
 interface BreadcrumbItem {
   name: string;
@@ -134,6 +137,8 @@ const Layout = ({
         </main>
         <Footer />
       </div>
+
+      <WhatsAppButton />
     </>
   );
 };
