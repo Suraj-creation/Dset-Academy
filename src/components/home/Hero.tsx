@@ -160,28 +160,35 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Floating platform badges — asymmetric layout like reference design */}
-            {[
-              { label: 'OreBill AI™', color: '#f59e0b', pos: 'top-[2%] right-[2%]',    delay: 3   },
-              { label: 'PharmaAI',    color: '#10b981', pos: 'top-[2%] left-[2%]',     delay: 3.6 },
-              { label: 'MedicsIQ™',   color: '#a855f7', pos: 'bottom-[2%] right-[2%]', delay: 3.4 },
-              { label: 'VoiceOps',    color: '#1e90ff', pos: 'bottom-[2%] left-[2%]',  delay: 3.2 },
-            ].map((badge) => (
-              <motion.div
-                key={badge.label}
-                className={`absolute z-10 ${badge.pos}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1, transition: { delay: badge.delay, duration: 0.5 } }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="px-3 sm:px-4 py-2 sm:py-2.5 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl">
-                  <p className="text-white font-semibold text-[0.7rem] sm:text-[0.82rem] flex items-center gap-1.5 whitespace-nowrap">
-                    <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style={{ backgroundColor: badge.color }} />
-                    {badge.label}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            {/* Floating platform badges — evenly distributed around the orbit so any number of products fits */}
+            {platforms.map((platform, i) => {
+              const angle = (i / platforms.length) * 2 * Math.PI - Math.PI / 2; // start at top, go clockwise
+              const radiusX = 46; // % of container width
+              const radiusY = 46; // % of container height
+              const leftPct = 50 + radiusX * Math.cos(angle);
+              const topPct = 50 + radiusY * Math.sin(angle);
+              return (
+                <motion.div
+                  key={platform.name}
+                  className="absolute z-10"
+                  style={{
+                    left: `${leftPct}%`,
+                    top: `${topPct}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1, transition: { delay: 3 + i * 0.15, duration: 0.5 } }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="px-3 sm:px-4 py-2 sm:py-2.5 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl">
+                    <p className="text-white font-semibold text-[0.7rem] sm:text-[0.82rem] flex items-center gap-1.5 whitespace-nowrap">
+                      <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0" style={{ backgroundColor: platform.accent }} />
+                      {platform.name}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       </div>
