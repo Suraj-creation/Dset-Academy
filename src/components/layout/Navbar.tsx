@@ -155,12 +155,12 @@ const Navbar = ({ bannerVisible = true }: NavbarProps) => {
               className="flex-shrink-0"
             >
               <Link href="/" className="group flex items-center gap-2 focus:outline-none">
-                <div className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 transition-transform duration-300 group-hover:scale-105">
+                <div className="relative flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 transition-transform duration-300 group-hover:scale-105">
                   <Image
-                    src="/logo8.png"
+                    src="/New_logo1.png"
                     alt="DSeT Consulting logo"
                     fill
-                    sizes="(max-width: 640px) 36px, (max-width: 1024px) 40px, 44px"
+                    sizes="(max-width: 640px) 48px, (max-width: 1024px) 56px, 64px"
                     className="object-contain opacity-90"
                     priority
                   />
@@ -267,12 +267,12 @@ const Navbar = ({ bannerVisible = true }: NavbarProps) => {
               style={{ backgroundColor: '#5e17eb' }}
             >
               <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <div className="relative w-8 h-8 flex-shrink-0">
+                <div className="relative w-11 h-11 flex-shrink-0">
                   <Image
-                    src="/logo8.png"
+                    src="/New_logo1.png"
                     alt="DSeT Consulting logo"
                     fill
-                    sizes="32px"
+                    sizes="44px"
                     className="object-contain opacity-90"
                   />
                 </div>

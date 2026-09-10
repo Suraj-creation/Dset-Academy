@@ -17,10 +17,17 @@ function toPost(row: Row): BlogPost {
     imageUrl:    row.imageUrl,
     publishedAt: row.publishedAt,
     author:      row.author,
+    authorId:    row.authorId ?? null,
+    contributors: (row.contributors as BlogPost['contributors']) ?? [],
+    aiGenerated: (row.aiGenerated as BlogPost['aiGenerated']) ?? 'no',
     status:      row.status as BlogPost['status'],
     tags:        (row.tags as BlogPost['tags']) ?? [],
     ...(row.metaDescription != null ? { metaDescription: row.metaDescription } : {}),
     slug:        row.slug,
+    submittedBy:   row.submittedBy ?? null,
+    reviewComment: row.reviewComment ?? null,
+    reviewedBy:    row.reviewedBy ?? null,
+    reviewedAt:    row.reviewedAt ?? null,
   };
 }
 
@@ -52,6 +59,9 @@ export async function createPostServer(post: Omit<BlogPost, 'id'>): Promise<Blog
       imageUrl:        post.imageUrl || '',
       publishedAt:     post.publishedAt,
       author:          post.author,
+      authorId:        post.authorId || null,
+      contributors:    post.contributors ?? [],
+      aiGenerated:     post.aiGenerated ?? 'no',
       status:          post.status,
       tags:            post.tags ?? [],
       metaDescription: post.metaDescription || null,
@@ -74,6 +84,9 @@ export async function updatePostServer(id: string, postUpdate: Partial<BlogPost>
   if (postUpdate.imageUrl        !== undefined) set.imageUrl        = postUpdate.imageUrl;
   if (postUpdate.publishedAt     !== undefined) set.publishedAt     = postUpdate.publishedAt;
   if (postUpdate.author          !== undefined) set.author          = postUpdate.author;
+  if (postUpdate.authorId        !== undefined) set.authorId        = postUpdate.authorId;
+  if (postUpdate.contributors    !== undefined) set.contributors    = postUpdate.contributors;
+  if (postUpdate.aiGenerated     !== undefined) set.aiGenerated     = postUpdate.aiGenerated;
   if (postUpdate.status          !== undefined) set.status          = postUpdate.status;
   if (postUpdate.tags            !== undefined) set.tags            = postUpdate.tags;
   if (postUpdate.metaDescription !== undefined) set.metaDescription = postUpdate.metaDescription;
@@ -102,6 +115,64 @@ export async function autoPublishDuePostsServer(): Promise<{
       metaDescription: blogPosts.metaDescription,
     });
   return { count: rows.length, posts: rows };
+}
+
+// The approval chain: draft → pmo_review → leadership_review → ready_to_publish.
+// A reject from either review stage sends the post back to 'draft'.
+const REVIEW_CHAIN: Record<string, string> = {
+  draft:              'pmo_review',
+  pmo_review:         'leadership_review',
+  leadership_review:  'ready_to_publish',
+};
+
+export type ReviewAction = 'submit' | 'approve' | 'refer_back' | 'reject_permanently';
+
+/**
+ * Advances, refers back, or permanently rejects a post in the approval chain. `role` is the
+ * caller's role, already validated by the API route to be allowed to act on the post's
+ * current status.
+ */
+export async function reviewPostServer(
+  id: string,
+  action: ReviewAction,
+  actor: string,
+  comment?: string
+): Promise<BlogPost | null> {
+  const [row] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+  if (!row) return null;
+
+  const set: Partial<typeof blogPosts.$inferInsert> = {
+    reviewedBy: actor,
+    reviewedAt: new Date().toISOString(),
+  };
+
+  if (action === 'submit') {
+    const next = REVIEW_CHAIN[row.status];
+    if (!next) throw new Error(`Cannot submit a post with status "${row.status}" for review.`);
+    set.status = next;
+    set.submittedBy = actor;
+    set.reviewComment = null;
+  } else if (action === 'approve') {
+    const next = REVIEW_CHAIN[row.status];
+    if (!next) throw new Error(`Cannot approve a post with status "${row.status}".`);
+    set.status = next;
+    set.reviewComment = comment || null;
+  } else if (action === 'refer_back') {
+    if (row.status !== 'pmo_review' && row.status !== 'leadership_review') {
+      throw new Error(`Cannot refer back a post with status "${row.status}".`);
+    }
+    set.status = 'draft';
+    set.reviewComment = comment || null;
+  } else if (action === 'reject_permanently') {
+    if (row.status !== 'pmo_review' && row.status !== 'leadership_review') {
+      throw new Error(`Cannot reject a post with status "${row.status}".`);
+    }
+    set.status = 'rejected_permanently';
+    set.reviewComment = comment || null;
+  }
+
+  const [updated] = await db.update(blogPosts).set(set).where(eq(blogPosts.id, id)).returning();
+  return updated ? toPost(updated) : null;
 }
 
 export async function deletePostServer(id: string): Promise<string | null> {

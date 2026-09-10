@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { withAuth } from '@/components/auth/withAuth';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { getAllAuthors, type Author } from '@/lib/authors';
 
 const BlogEditor = dynamic(() => import('@/components/admin/BlogEditor'), { ssr: false });
 
@@ -32,10 +33,18 @@ const NewBlogPost = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [contributors, setContributors] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
   const [slug, setSlug] = useState('');
   const [slugEdited, setSlugEdited] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [authorId, setAuthorId] = useState('');
+  const [aiGenerated, setAiGenerated] = useState<'no' | 'partially' | 'yes'>('no');
+
+  useEffect(() => {
+    getAllAuthors().then(list => setAuthors(list.filter(a => a.isActive))).catch(() => {});
+  }, []);
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
@@ -51,11 +60,12 @@ const NewBlogPost = () => {
     reader.readAsDataURL(file);
   };
 
-  const isFuture = new Date(publishDateTime) > new Date();
+  const [submitAfterSave, setSubmitAfterSave] = useState(false);
 
-  const handleSave = async (saveAs: 'draft' | 'published' | 'scheduled') => {
+  const handleSave = async (submitForReviewAfter: boolean) => {
     if (!title.trim()) { alert('Title is required.'); return; }
     setLoading(true);
+    setSubmitAfterSave(submitForReviewAfter);
     try {
       let imageUrl = '';
       if (image) {
@@ -75,8 +85,11 @@ const NewBlogPost = () => {
           content,
           imageUrl,
           publishedAt: new Date(publishDateTime).toISOString(),
-          author: 'DSeT Consulting',
-          status: saveAs,
+          author: authors.find(a => a.id === authorId)?.name || 'DSeT Consulting',
+          authorId: authorId || null,
+          contributors: contributors.split(',').map(c => c.trim()).filter(Boolean),
+          aiGenerated,
+          status: 'draft',
           tags: selectedTags.map(id => PRESET_TAGS.find(t => t.id === id)).filter(Boolean),
           metaDescription: metaDescription.trim(),
           slug: slug.trim() || slugify(title),
@@ -86,10 +99,23 @@ const NewBlogPost = () => {
         const err = await res.json().catch(() => ({}));
         throw new Error(`${res.status}: ${err.error || 'Server error'}`);
       }
+      const created = await res.json();
+
+      if (submitForReviewAfter) {
+        const reviewRes = await fetch(`/api/blog/review?id=${created.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'submit' }),
+        });
+        if (!reviewRes.ok) {
+          const err = await reviewRes.json().catch(() => ({}));
+          throw new Error(`Saved as draft, but couldn't submit for review: ${err.error || reviewRes.status}`);
+        }
+      }
       router.push('/admin/blog');
     } catch (err) {
       console.error(err);
-      alert('Error saving post. Please try again.');
+      alert(err instanceof Error ? err.message : 'Error saving post. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -118,29 +144,19 @@ const NewBlogPost = () => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
-              onClick={() => handleSave('draft')}
+              onClick={() => handleSave(false)}
               disabled={loading}
               className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
             >
-              Save Draft
+              {loading && !submitAfterSave ? 'Saving…' : 'Save Draft'}
             </button>
-            {isFuture ? (
-              <button
-                onClick={() => handleSave('scheduled')}
-                disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-              >
-                {loading ? 'Scheduling…' : 'Schedule'}
-              </button>
-            ) : (
-              <button
-                onClick={() => handleSave('published')}
-                disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
-                {loading ? 'Publishing…' : 'Publish Now'}
-              </button>
-            )}
+            <button
+              onClick={() => handleSave(true)}
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {loading && submitAfterSave ? 'Submitting…' : 'Submit for PMO Review'}
+            </button>
           </div>
         </div>
 
@@ -172,17 +188,10 @@ const NewBlogPost = () => {
           <div className="w-[268px] flex-shrink-0 space-y-4">
 
             {/* Status */}
-            <SidebarCard title="Status">
-              <div className="space-y-1">
-                {(['draft', 'published'] as const).map(s => (
-                  <div key={s} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50">
-                    <span className={`w-2 h-2 rounded-full ${s === 'published' ? 'bg-green-500' : 'bg-amber-400'}`} />
-                    <span className="text-sm text-gray-600 capitalize">{s}</span>
-                    <span className="ml-auto text-xs text-gray-400">
-                      {s === 'draft' ? '(Save Draft)' : '(Publish)'}
-                    </span>
-                  </div>
-                ))}
+            <SidebarCard title="Approval Workflow">
+              <div className="space-y-1.5 text-xs text-gray-500">
+                <p>Draft → PMO/BA Review → Leadership Review → Ready to Publish.</p>
+                <p>Save as draft to keep editing, or submit straight to PMO/BA review.</p>
               </div>
             </SidebarCard>
 
@@ -194,9 +203,7 @@ const NewBlogPost = () => {
                 onChange={(e) => setPublishDateTime(e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               />
-              {isFuture && (
-                <p className="mt-2 text-xs text-purple-600 font-medium">Will auto-publish at scheduled time</p>
-              )}
+              <p className="mt-2 text-xs text-gray-400">Used once the post is approved and published/scheduled.</p>
             </SidebarCard>
 
             {/* Featured Image */}
@@ -250,6 +257,51 @@ const NewBlogPost = () => {
                   );
                 })}
               </div>
+            </SidebarCard>
+
+            {/* Author */}
+            <SidebarCard title="Author">
+              <select
+                value={authorId}
+                onChange={(e) => setAuthorId(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="">DSeT Consulting (default)</option>
+                {authors.map(a => (
+                  <option key={a.id} value={a.id}>{a.name}{a.designation ? ` — ${a.designation}` : ''}</option>
+                ))}
+              </select>
+              {authors.length === 0 && (
+                <p className="mt-1.5 text-[11px] text-gray-400">
+                  No author profiles yet. <Link href="/admin/authors" className="text-blue-600 hover:underline">Add one</Link>.
+                </p>
+              )}
+            </SidebarCard>
+
+            {/* Contributors */}
+            <SidebarCard title="Contributors">
+              <input
+                type="text"
+                value={contributors}
+                onChange={(e) => setContributors(e.target.value)}
+                placeholder="e.g. Ajay, Hemant, Rakshi"
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+              <p className="mt-1.5 text-[11px] text-gray-400">Comma-separated names. Shown alongside the author on the published post.</p>
+            </SidebarCard>
+
+            {/* AI-generated content declaration */}
+            <SidebarCard title="AI-Generated Content">
+              <select
+                value={aiGenerated}
+                onChange={(e) => setAiGenerated(e.target.value as 'no' | 'partially' | 'yes')}
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="no">No — fully human-written</option>
+                <option value="partially">Partially — AI-assisted</option>
+                <option value="yes">Yes — primarily AI-generated</option>
+              </select>
+              <p className="mt-1.5 text-[11px] text-gray-400">Self-declared by you. A disclaimer badge shows on the published post if not &quot;No&quot;.</p>
             </SidebarCard>
 
             {/* SEO */}

@@ -44,6 +44,8 @@ const Blog: NextPage<Props> = ({ posts }) => {
     <Layout
       title="Insights & Perspectives | DSeT Consulting"
       description="Analysis, perspectives, and platform intelligence from DSeT — covering industrial AI, revenue operations, cloud compliance, and deeptech transformation."
+      keywords="vertical AI platforms, industrial AI, mining AI, pharma intelligence, revenue operations, cloud compliance, DSeT Consulting blog"
+      breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Insights', href: '/blog' }]}
     >
       {/* ── Hero ── */}
       <div className="bg-gray-950 py-16 sm:py-24">

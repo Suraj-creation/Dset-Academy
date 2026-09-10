@@ -76,6 +76,10 @@ export const jobs = pgTable('jobs', {
   isActive:    boolean('is_active').notNull().default(true),
 });
 
+// status: 'draft' | 'pmo_review' | 'leadership_review' | 'ready_to_publish' | 'published' | 'scheduled' | 'rejected_permanently'
+// A "refer back" at any review stage sends the post back to 'draft' with a comment so the
+// creator can revise it. A "reject permanently" sends it to 'rejected_permanently' instead —
+// a dead end; it will never be published (see blog.server.ts reviewPostServer).
 export const blogPosts = pgTable('blog_posts', {
   id:              text('id').primaryKey(),
   title:           text('title').notNull(),
@@ -83,11 +87,40 @@ export const blogPosts = pgTable('blog_posts', {
   content:         text('content').notNull(),
   imageUrl:        text('image_url').notNull().default(''),
   publishedAt:     timestamp('published_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  // Free-text fallback (kept for backward compatibility with posts created before author
+  // profiles existed). New posts should also set authorId so bio/photo/designation show.
   author:          text('author').notNull().default('DSeT Team'),
+  authorId:        text('author_id'),
+  // Additional people who contributed to the post but aren't the primary author (e.g. subject
+  // matter experts who supplied the content). Shown alongside the author, not in place of it.
+  contributors:    jsonb('contributors').$type<string[]>().notNull().default([]),
+  // Self-declared by the Creator — no automatic AI/plagiarism detection is run (that would
+  // require a paid third-party API). 'no' | 'partially' | 'yes'. Shown as a disclaimer badge
+  // on the published post when not 'no'.
+  aiGenerated:     text('ai_generated').notNull().default('no'),
   status:          text('status').notNull().default('draft'),
   tags:            jsonb('tags').$type<Tag[]>().notNull().default([]),
   metaDescription: text('meta_description'),
   slug:            text('slug').notNull().unique(),
+  // Approval workflow (additive — existing posts default to nulls and keep working unchanged)
+  submittedBy:     text('submitted_by'),
+  reviewComment:   text('review_comment'),
+  reviewedBy:      text('reviewed_by'),
+  reviewedAt:      timestamp('reviewed_at', { withTimezone: true, mode: 'string' }),
+});
+
+// A curated author profile a Publisher/Admin maintains — Creators pick from this list when
+// writing a post rather than typing a free-text author name, keeping bios/photos consistent
+// and preventing anyone from publishing under an author identity that isn't set up here.
+export const authors = pgTable('authors', {
+  id:           text('id').primaryKey(),
+  name:         text('name').notNull(),
+  designation:  text('designation').notNull().default(''),
+  bio:          text('bio').notNull().default(''),
+  photoUrl:     text('photo_url').notNull().default(''),
+  linkedinUrl:  text('linkedin_url'),
+  isActive:     boolean('is_active').notNull().default(true),
+  createdAt:    timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
 
 export const galleryEvents = pgTable('gallery_events', {
@@ -180,6 +213,14 @@ export const zohoSyncQueue = pgTable('zoho_sync_queue', {
   nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }),
   createdAt:     timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
   updatedAt:     timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
+// Generic single-row-per-key settings store. Currently used to persist the LinkedIn OAuth
+// access token (see src/lib/linkedin.ts). Pre-existing gap fixed alongside the blog approval
+// workflow change: this table was imported by linkedin.ts but never actually defined here.
+export const appSettings = pgTable('app_settings', {
+  key:   text('key').primaryKey(),
+  value: text('value').notNull(),
 });
 
 // Append-only audit trail of every sync attempt, success or failure. Never updated after insert.

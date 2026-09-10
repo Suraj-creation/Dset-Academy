@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { getPublishedPostsServer, getPostBySlugServer } from '@/lib/blog.server';
+import { getAllAuthorsServer } from '@/lib/authors.server';
+import type { Author } from '@/lib/authors';
 import { format } from 'date-fns';
 import sanitizeHtml from 'sanitize-html';
 import Layout from '@/components/layout/Layout';
@@ -16,6 +18,9 @@ interface BlogPost {
   imageUrl: string;
   publishedAt: string;
   author: string;
+  authorId?: string | null;
+  contributors?: string[];
+  aiGenerated?: 'no' | 'partially' | 'yes';
   status: 'draft' | 'published';
   tags: Array<{ id: string; name: string; color: string }>;
   metaDescription?: string;
@@ -24,6 +29,7 @@ interface BlogPost {
 
 interface Props {
   post: BlogPost;
+  author: Author | null;
   preview?: boolean;
 }
 
@@ -76,7 +82,7 @@ function getCTA(tags: BlogPost['tags']) {
   return DEFAULT_CTA;
 }
 
-const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
+const BlogPostPage: NextPage<Props> = ({ post, author, preview }) => {
   const router = useRouter();
 
   if (!post) {
@@ -100,12 +106,41 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
     : post.imageUrl.startsWith('/')
     ? post.imageUrl
     : `/${post.imageUrl}`;
+  const siteUrl = 'https://dsetconsulting.com';
+  const canonicalUrl = `${siteUrl}/blog/${post.slug}`;
+  const keywords = post.tags?.map(t => t.name).join(', ');
+
+  // BlogPosting structured data — lets Google show rich results (author, date, image) for
+  // this post in search. This is free — no paid SEO/AI-discoverability tool (e.g. Profound)
+  // is needed for this baseline; see documentation/08-blog-approval-workflow.md §10.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    ...(post.subtitle ? { description: post.subtitle } : {}),
+    image: imageUrl.startsWith('http') ? imageUrl : `${siteUrl}${imageUrl}`,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+    author: author
+      ? { '@type': 'Person', name: author.name, ...(author.linkedinUrl ? { sameAs: [author.linkedinUrl] } : {}) }
+      : { '@type': 'Organization', name: post.author },
+    publisher: {
+      '@type': 'Organization',
+      name: 'DSeT Consulting',
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo8.png` },
+    },
+    ...(post.tags?.length ? { keywords: post.tags.map(t => t.name).join(', ') } : {}),
+  };
 
   return (
     <Layout
       title={`${post.title} | DSeT Consulting`}
       description={post.metaDescription || post.subtitle || `Read about ${post.title} on the DSeT Insights blog.`}
+      keywords={keywords}
       ogImage={post.imageUrl.startsWith('http') ? undefined : imageUrl}
+      jsonLd={jsonLd}
+      breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Insights', href: '/blog' }, { name: post.title, href: `/blog/${post.slug}` }]}
     >
       {preview && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-amber-50 border-b border-amber-200 py-2 px-4 text-center">
@@ -178,6 +213,11 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
                 {post.author[0].toUpperCase()}
               </div>
               <span className="text-gray-200">{post.author}</span>
+              {post.contributors && post.contributors.length > 0 && (
+                <span className="text-gray-400">
+                  · Contributors: {post.contributors.join(', ')}
+                </span>
+              )}
               <span className="text-gray-500">·</span>
               <time className="text-gray-300">{format(new Date(post.publishedAt), 'MMMM d, yyyy')}</time>
               <span className="text-gray-500">·</span>
@@ -212,6 +252,18 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
       {/* ── Article content ── */}
       <div className="bg-gray-950">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+          {post.aiGenerated && post.aiGenerated !== 'no' && (
+            <div className="mb-8 flex items-start gap-2.5 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-sm">
+              <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>
+                {post.aiGenerated === 'yes'
+                  ? 'This article was primarily generated with AI assistance.'
+                  : 'This article was partially written with AI assistance.'}
+              </span>
+            </div>
+          )}
           <div
             className="tinymce-content"
             dangerouslySetInnerHTML={{
@@ -230,6 +282,47 @@ const BlogPostPage: NextPage<Props> = ({ post, preview }) => {
           />
         </div>
       </div>
+
+      {/* ── Author card ── */}
+      {author && (
+        <div className="bg-gray-950 border-t border-gray-800/60">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+            <div className="flex items-start gap-4 bg-white/[0.03] border border-white/10 rounded-2xl p-5 sm:p-6">
+              {author.photoUrl ? (
+                <img src={author.photoUrl} alt={author.name} className="w-14 h-14 rounded-full object-cover flex-shrink-0" />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-[#5e17ea] flex items-center justify-center text-white font-bold flex-shrink-0">
+                  {author.name[0]?.toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-white font-semibold">{author.name}</span>
+                  {author.linkedinUrl && (
+                    <a
+                      href={author.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0a66c2] hover:text-[#4098d7] transition-colors"
+                      aria-label={`${author.name} on LinkedIn`}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
+                    </a>
+                  )}
+                </div>
+                {author.designation && (
+                  <p className="text-sm text-gray-400 mt-0.5">{author.designation}</p>
+                )}
+                {author.bio && (
+                  <p className="text-sm text-gray-300 mt-2 leading-relaxed">{author.bio}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Lead Capture ── */}
       <BlogSubscribe slug={post.slug} />
@@ -395,7 +488,14 @@ export const getStaticProps: GetStaticProps = async ({ params, preview = false }
   const post = await getPostBySlugServer(slug);
   if (!post) return { notFound: true };
   if (post.status !== 'published' && !preview) return { notFound: true };
-  return { props: { post, preview: preview || false }, revalidate: 300 };
+
+  let author: Author | null = null;
+  if (post.authorId) {
+    const allAuthors = await getAllAuthorsServer();
+    author = allAuthors.find(a => a.id === post.authorId) ?? null;
+  }
+
+  return { props: { post, author, preview: preview || false }, revalidate: 300 };
 };
 
 export default BlogPostPage;

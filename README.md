@@ -34,6 +34,7 @@ All detailed documentation lives in the [`documentation/`](./documentation/) fol
 | [05 — Backend & API Guide](./documentation/05-backend-api-guide.md) | All API routes, request/response formats, validation rules | You're building or testing any API endpoint |
 | [06 — Frontend ↔ Backend](./documentation/06-frontend-backend-connection.md) | How the browser calls the server, data flow diagrams for every feature | You're tracing a bug or adding a new full-stack feature |
 | [07 — Database Guide](./documentation/07-database-guide.md) | Current file-based storage, how to swap in PostgreSQL/MongoDB/SQLite | You're setting up persistent storage or migrating data |
+| [08 — Blog Approval Workflow](./documentation/08-blog-approval-workflow.md) | Roles, post statuses, approve/refer-back/reject flow, author profiles, LinkedIn/Buffer publishing | You're writing, reviewing, or publishing a blog post, or managing author profiles |
 
 ---
 

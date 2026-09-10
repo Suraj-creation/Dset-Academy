@@ -1,28 +1,34 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { getAllPosts, deletePost } from '@/lib/blog';
+import { getAllPosts, deletePost, type BlogPost, type BlogStatus } from '@/lib/blog';
 import { useAuth } from '@/context/AuthContext';
 import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
 
-interface BlogPost {
-  id: string;
-  title: string;
-  subtitle?: string;
-  content: string;
-  imageUrl: string;
-  publishedAt: string;
-  author: string;
-  status: 'draft' | 'published' | 'scheduled';
-  tags: Array<{ id: string; name: string; color: string }>;
-  metaDescription?: string;
-  slug: string;
-}
+const STATUS_LABELS: Record<BlogStatus, string> = {
+  draft: 'Draft',
+  pmo_review: 'PMO/BA Review',
+  leadership_review: 'Leadership Review',
+  ready_to_publish: 'Ready to Publish',
+  scheduled: 'Scheduled',
+  published: 'Published',
+  rejected_permanently: 'Rejected',
+};
+
+const STATUS_COLORS: Record<BlogStatus, string> = {
+  draft: 'bg-amber-100 text-amber-700',
+  pmo_review: 'bg-blue-100 text-blue-700',
+  leadership_review: 'bg-indigo-100 text-indigo-700',
+  ready_to_publish: 'bg-teal-100 text-teal-700',
+  scheduled: 'bg-purple-100 text-purple-700',
+  published: 'bg-green-100 text-green-700',
+  rejected_permanently: 'bg-gray-200 text-gray-600',
+};
 
 const AdminBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published' | 'scheduled'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | BlogStatus>('all');
   const [deleting, setDeleting] = useState<string | null>(null);
   const { logout } = useAuth();
 
@@ -58,6 +64,7 @@ const AdminBlog = () => {
   const published = posts.filter(p => p.status === 'published').length;
   const drafts = posts.filter(p => p.status === 'draft').length;
   const scheduled = posts.filter(p => p.status === 'scheduled').length;
+  const inReview = posts.filter(p => p.status === 'pmo_review' || p.status === 'leadership_review').length;
 
   return (
     <>
@@ -76,6 +83,7 @@ const AdminBlog = () => {
               <h1 className="text-lg font-bold text-gray-900">Blog Posts</h1>
               <nav className="hidden md:flex items-center gap-0.5 ml-2">
                 {[
+                  { label: 'Authors', href: '/admin/authors' },
                   { label: 'Events', href: '/admin/events' },
                   { label: 'Careers', href: '/admin/careers' },
                   { label: 'Leads', href: '/admin/leads' },
@@ -110,9 +118,10 @@ const AdminBlog = () => {
         <div className="max-w-6xl mx-auto px-5 py-6 space-y-5">
 
           {/* ── Stats row ────────────────────────────────────────── */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             {[
               { label: 'Total Posts', value: posts.length, color: 'text-gray-900' },
+              { label: 'In Review', value: inReview, color: 'text-blue-600' },
               { label: 'Published', value: published, color: 'text-green-600' },
               { label: 'Scheduled', value: scheduled, color: 'text-purple-600' },
               { label: 'Drafts', value: drafts, color: 'text-amber-600' },
@@ -138,14 +147,14 @@ const AdminBlog = () => {
                 className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               />
             </div>
-            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
-              {(['all', 'published', 'scheduled', 'draft'] as const).map(s => (
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 flex-wrap">
+              {(['all', 'draft', 'pmo_review', 'leadership_review', 'ready_to_publish', 'scheduled', 'published', 'rejected_permanently'] as const).map(s => (
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors capitalize ${statusFilter === s ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-800'}`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${statusFilter === s ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-800'}`}
                 >
-                  {s === 'all' ? 'All' : s === 'published' ? 'Published' : s === 'scheduled' ? 'Scheduled' : 'Drafts'}
+                  {s === 'all' ? 'All' : STATUS_LABELS[s]}
                 </button>
               ))}
             </div>
@@ -186,8 +195,8 @@ const AdminBlog = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-gray-900 truncate">{post.title}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide flex-shrink-0 ${post.status === 'published' ? 'bg-green-100 text-green-700' : post.status === 'scheduled' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-700'}`}>
-                          {post.status === 'scheduled' ? `Scheduled` : post.status}
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide flex-shrink-0 ${STATUS_COLORS[post.status]}`}>
+                          {STATUS_LABELS[post.status]}
                         </span>
                       </div>
                       {post.subtitle && (

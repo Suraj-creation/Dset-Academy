@@ -48,7 +48,7 @@ const Footer = () => {
           <div>
             <Link href="/" className="flex items-center gap-3 mb-5 group focus:outline-none">
               <div className="relative w-[36px] h-[36px] flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
-                <Image src="/logo8.png" alt="DSeT Consulting" fill sizes="36px" className="object-contain opacity-90" priority />
+                <Image src="/New_logo1.png" alt="DSeT Consulting" fill sizes="36px" className="object-contain opacity-90" priority />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-semibold text-[19px] text-white tracking-tight">

@@ -55,6 +55,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   is_active    BOOLEAN NOT NULL DEFAULT true
 );
 
+-- status: 'draft' | 'pmo_review' | 'leadership_review' | 'ready_to_publish' | 'published' | 'scheduled' | 'rejected_permanently'
+-- "Refer back" at any review stage sends the post back to 'draft' with a comment so the
+-- creator can revise it. "Reject permanently" sends it to 'rejected_permanently' instead —
+-- a dead end; it will never be published.
 CREATE TABLE IF NOT EXISTS blog_posts (
   id                TEXT PRIMARY KEY,
   title             TEXT NOT NULL,
@@ -63,10 +67,38 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   image_url         TEXT NOT NULL DEFAULT '',
   published_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   author            TEXT NOT NULL DEFAULT 'DSeT Team',
+  author_id         TEXT,
+  contributors      JSONB NOT NULL DEFAULT '[]',
+  ai_generated      TEXT NOT NULL DEFAULT 'no',
   status            TEXT NOT NULL DEFAULT 'draft',
   tags              JSONB NOT NULL DEFAULT '[]',
   meta_description  TEXT,
-  slug              TEXT NOT NULL UNIQUE
+  slug              TEXT NOT NULL UNIQUE,
+  submitted_by      TEXT,
+  review_comment    TEXT,
+  reviewed_by       TEXT,
+  reviewed_at       TIMESTAMPTZ
+);
+
+-- A curated author profile a Publisher/Admin maintains — Creators pick from this list when
+-- writing a post rather than typing a free-text author name, keeping bios/photos consistent
+-- and preventing anyone from publishing under an author identity that isn't set up here.
+CREATE TABLE IF NOT EXISTS authors (
+  id            TEXT PRIMARY KEY,
+  name          TEXT NOT NULL,
+  designation   TEXT NOT NULL DEFAULT '',
+  bio           TEXT NOT NULL DEFAULT '',
+  photo_url     TEXT NOT NULL DEFAULT '',
+  linkedin_url  TEXT,
+  is_active     BOOLEAN NOT NULL DEFAULT true,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Generic single-row-per-key settings store. Currently used to persist the LinkedIn OAuth
+-- access token. Pre-existing gap: linkedin.ts imported this table before it was ever defined.
+CREATE TABLE IF NOT EXISTS app_settings (
+  key    TEXT PRIMARY KEY,
+  value  TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS gallery_events (

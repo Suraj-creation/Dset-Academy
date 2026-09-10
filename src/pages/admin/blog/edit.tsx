@@ -1,26 +1,34 @@
 import { useState, useEffect } from 'react';
 import { withAuth } from '@/components/auth/withAuth';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { getAllPosts } from '@/lib/blog';
+import { getAllPosts, submitForReview, approvePost, referBackPost, rejectPostPermanently, type BlogPost, type BlogStatus } from '@/lib/blog';
+import { getAllAuthors, type Author } from '@/lib/authors';
 
 const BlogEditor = dynamic(() => import('@/components/admin/BlogEditor'), { ssr: false });
 
-interface BlogPost {
-  id: string;
-  title: string;
-  subtitle?: string;
-  content: string;
-  imageUrl: string;
-  publishedAt: string;
-  author: string;
-  status: 'draft' | 'published' | 'scheduled';
-  tags: Array<{ id: string; name: string; color: string }>;
-  metaDescription?: string;
-  slug: string;
-}
+const STATUS_LABELS: Record<BlogStatus, string> = {
+  draft: 'Draft',
+  pmo_review: 'Pending PMO/BA Review',
+  leadership_review: 'Pending Leadership Review',
+  ready_to_publish: 'Ready to Publish',
+  scheduled: 'Scheduled',
+  published: 'Published',
+  rejected_permanently: 'Rejected (Permanent)',
+};
+
+const STATUS_COLORS: Record<BlogStatus, string> = {
+  draft: 'bg-amber-100 text-amber-700',
+  pmo_review: 'bg-blue-100 text-blue-700',
+  leadership_review: 'bg-indigo-100 text-indigo-700',
+  ready_to_publish: 'bg-teal-100 text-teal-700',
+  scheduled: 'bg-purple-100 text-purple-700',
+  published: 'bg-green-100 text-green-700',
+  rejected_permanently: 'bg-gray-200 text-gray-600',
+};
 
 const PRESET_TAGS = [
   { id: 'ai', name: 'AI & ML', color: '#2563eb' },
@@ -38,6 +46,7 @@ function slugify(t: string) {
 const EditBlogPost = () => {
   const router = useRouter();
   const id = router.query.id as string | undefined;
+  const { role } = useAuth();
 
   const [post, setPost] = useState<BlogPost | null>(null);
   const [title, setTitle] = useState('');
@@ -47,11 +56,22 @@ const EditBlogPost = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [contributors, setContributors] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
-  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>('draft');
+  const [status, setStatus] = useState<BlogStatus>('draft');
   const [slug, setSlug] = useState('');
   const [fetchLoading, setFetchLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewComment, setReviewComment] = useState('');
+  const [activeReviewBox, setActiveReviewBox] = useState<'refer_back' | 'reject_permanently' | null>(null);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [authorId, setAuthorId] = useState('');
+  const [aiGenerated, setAiGenerated] = useState<'no' | 'partially' | 'yes'>('no');
+
+  useEffect(() => {
+    getAllAuthors().then(list => setAuthors(list.filter(a => a.isActive))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -67,6 +87,9 @@ const EditBlogPost = () => {
         setPublishDateTime(found.publishedAt.slice(0, 16));
         setImagePreview(found.imageUrl);
         setSelectedTags(found.tags?.map(t => t.id) || []);
+        setContributors((found.contributors || []).join(', '));
+        setAuthorId(found.authorId || '');
+        setAiGenerated(found.aiGenerated || 'no');
         setMetaDescription(found.metaDescription || '');
         setStatus(found.status);
         setSlug(found.slug);
@@ -90,7 +113,7 @@ const EditBlogPost = () => {
 
   const isFuture = publishDateTime ? new Date(publishDateTime) > new Date() : false;
 
-  const handleSave = async (saveAs: 'draft' | 'published' | 'scheduled') => {
+  const handleSave = async (saveAs: BlogStatus) => {
     if (!title.trim()) { alert('Title is required.'); return; }
     setLoading(true);
     try {
@@ -114,7 +137,11 @@ const EditBlogPost = () => {
           imageUrl,
           publishedAt: new Date(publishDateTime).toISOString(),
           status: saveAs,
+          author: authorId ? (authors.find(a => a.id === authorId)?.name || post?.author) : post?.author,
+          authorId: authorId || null,
           tags: selectedTags.map(tid => PRESET_TAGS.find(t => t.id === tid)).filter(Boolean),
+          contributors: contributors.split(',').map(c => c.trim()).filter(Boolean),
+          aiGenerated,
           metaDescription: metaDescription.trim() || null,
           slug: slug.trim() || slugify(title),
         }),
@@ -126,11 +153,41 @@ const EditBlogPost = () => {
       router.push('/admin/blog');
     } catch (err) {
       console.error(err);
-      alert('Error saving post. Please try again.');
+      alert(err instanceof Error ? err.message : 'Error saving post. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleReviewAction = async (action: 'submit' | 'approve' | 'refer_back' | 'reject_permanently') => {
+    if (!id) return;
+    if ((action === 'refer_back' || action === 'reject_permanently') && !reviewComment.trim()) {
+      alert('Please add a comment explaining why this post is being sent back / rejected.');
+      return;
+    }
+    setReviewLoading(true);
+    try {
+      const updated =
+        action === 'submit' ? await submitForReview(id)
+        : action === 'approve' ? await approvePost(id)
+        : action === 'refer_back' ? await referBackPost(id, reviewComment.trim())
+        : await rejectPostPermanently(id, reviewComment.trim());
+      setStatus(updated.status);
+      setActiveReviewBox(null);
+      setReviewComment('');
+      router.push('/admin/blog');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Action failed.');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  // Which review action(s) the current user's role can take on this post's current status.
+  const canSubmit  = status === 'draft' && (role === 'creator' || role === 'admin');
+  const canReview  =
+    (status === 'pmo_review' && (role === 'pmo' || role === 'admin')) ||
+    (status === 'leadership_review' && (role === 'leadership' || role === 'admin'));
 
   const metaLen = metaDescription.length;
 
@@ -160,8 +217,8 @@ const EditBlogPost = () => {
             <span className="text-sm text-gray-400 hidden sm:block">Blog Posts</span>
             <span className="text-gray-300 hidden sm:block">/</span>
             <span className="text-sm font-medium text-gray-700 truncate max-w-[200px]">{title}</span>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${status === 'published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-              {status === 'published' ? 'Published' : 'Draft'}
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${STATUS_COLORS[status]}`}>
+              {STATUS_LABELS[status]}
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -175,29 +232,48 @@ const EditBlogPost = () => {
               </svg>
               Preview
             </Link>
-            <button
-              onClick={() => handleSave('draft')}
-              disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
-            >
-              Save Draft
-            </button>
-            {isFuture ? (
-              <button
-                onClick={() => handleSave('scheduled')}
-                disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-              >
-                {loading ? 'Scheduling…' : 'Schedule'}
-              </button>
-            ) : (
-              <button
-                onClick={() => handleSave(status)}
-                disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
-                {loading ? 'Saving…' : 'Update'}
-              </button>
+
+            {/* Content edits (title/body/etc.) only make sense while the post is still a draft */}
+            {status === 'draft' && (
+              <>
+                <button
+                  onClick={() => handleSave('draft')}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  {loading ? 'Saving…' : 'Save Draft'}
+                </button>
+                {canSubmit && (
+                  <button
+                    onClick={() => handleReviewAction('submit')}
+                    disabled={reviewLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    {reviewLoading ? 'Submitting…' : 'Submit for PMO Review'}
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Publisher/admin only: once approved, actually publish or schedule it */}
+            {status === 'ready_to_publish' && (role === 'publisher' || role === 'admin') && (
+              isFuture ? (
+                <button
+                  onClick={() => handleSave('scheduled')}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                >
+                  {loading ? 'Scheduling…' : 'Schedule'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleSave('published')}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {loading ? 'Publishing…' : 'Publish Now'}
+                </button>
+              )
             )}
           </div>
         </div>
@@ -230,25 +306,90 @@ const EditBlogPost = () => {
           <div className="w-[268px] flex-shrink-0 space-y-4">
 
             {/* Status */}
-            <SidebarCard title="Status">
-              <div className="space-y-1">
-                {(['draft', 'published'] as const).map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setStatus(s)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${status === s ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${s === 'published' ? 'bg-green-500' : 'bg-amber-400'}`} />
-                    {s === 'published' ? 'Published' : 'Draft'}
-                    {status === s && (
-                      <svg className="w-3.5 h-3.5 ml-auto text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
+            <SidebarCard title="Approval Status">
+              <div className={`px-3 py-2 rounded-lg text-sm font-medium ${STATUS_COLORS[status]}`}>
+                {STATUS_LABELS[status]}
               </div>
+
+              {post.reviewComment && (
+                <div className="mt-3 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg p-2.5">
+                  <p className="font-semibold text-gray-600 mb-0.5">
+                    {status === 'draft' ? 'Referred back — comment'
+                      : status === 'rejected_permanently' ? 'Rejection comment'
+                      : 'Last review comment'}
+                  </p>
+                  <p>{post.reviewComment}</p>
+                  {post.reviewedBy && <p className="mt-1 text-gray-400">— {post.reviewedBy}</p>}
+                </div>
+              )}
+
+              {canReview && (
+                <div className="mt-3 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleReviewAction('approve')}
+                    disabled={reviewLoading}
+                    className="w-full px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                  >
+                    {reviewLoading ? 'Approving…' : 'Approve'}
+                  </button>
+
+                  {activeReviewBox === null && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setActiveReviewBox('refer_back')}
+                        className="w-full px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                      >
+                        Refer Back
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveReviewBox('reject_permanently')}
+                        className="w-full px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                      >
+                        Reject Permanently
+                      </button>
+                    </>
+                  )}
+
+                  {activeReviewBox !== null && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-500">
+                        {activeReviewBox === 'refer_back'
+                          ? 'Sends this back to the creator as a draft so they can revise and resubmit it.'
+                          : 'Permanently rejects this post — it will never be published, even after edits.'}
+                      </p>
+                      <textarea
+                        rows={3}
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder={activeReviewBox === 'refer_back' ? 'What needs to change? (required)' : 'Why is this being rejected? (required)'}
+                        className={`w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 resize-none text-gray-700 ${activeReviewBox === 'refer_back' ? 'focus:ring-amber-400' : 'focus:ring-red-400'}`}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleReviewAction(activeReviewBox)}
+                          disabled={reviewLoading}
+                          className={`flex-1 px-3 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 transition-colors ${activeReviewBox === 'refer_back' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        >
+                          {reviewLoading
+                            ? (activeReviewBox === 'refer_back' ? 'Referring back…' : 'Rejecting…')
+                            : (activeReviewBox === 'refer_back' ? 'Confirm Refer Back' : 'Confirm Reject')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setActiveReviewBox(null); setReviewComment(''); }}
+                          className="px-3 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </SidebarCard>
 
             {/* Publish Date & Time */}
@@ -310,6 +451,46 @@ const EditBlogPost = () => {
                   );
                 })}
               </div>
+            </SidebarCard>
+
+            {/* Author */}
+            <SidebarCard title="Author">
+              <select
+                value={authorId}
+                onChange={(e) => setAuthorId(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="">{post?.author || 'DSeT Consulting'} (current)</option>
+                {authors.map(a => (
+                  <option key={a.id} value={a.id}>{a.name}{a.designation ? ` — ${a.designation}` : ''}</option>
+                ))}
+              </select>
+            </SidebarCard>
+
+            {/* Contributors */}
+            <SidebarCard title="Contributors">
+              <input
+                type="text"
+                value={contributors}
+                onChange={(e) => setContributors(e.target.value)}
+                placeholder="e.g. Ajay, Hemant, Rakshi"
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+              <p className="mt-1.5 text-[11px] text-gray-400">Comma-separated names. Shown alongside the author on the published post.</p>
+            </SidebarCard>
+
+            {/* AI-generated content declaration */}
+            <SidebarCard title="AI-Generated Content">
+              <select
+                value={aiGenerated}
+                onChange={(e) => setAiGenerated(e.target.value as 'no' | 'partially' | 'yes')}
+                className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="no">No — fully human-written</option>
+                <option value="partially">Partially — AI-assisted</option>
+                <option value="yes">Yes — primarily AI-generated</option>
+              </select>
+              <p className="mt-1.5 text-[11px] text-gray-400">Self-declared by you. A disclaimer badge shows on the published post if not &quot;No&quot;.</p>
             </SidebarCard>
 
             {/* SEO */}
