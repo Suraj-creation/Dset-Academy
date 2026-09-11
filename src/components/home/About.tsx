@@ -138,7 +138,7 @@ const About = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Image
-                  src="/New_logo1.png"
+                  src="/dset-logo-orb.svg"
                   alt="DSeT Logo"
                   width={80}
                   height={80}

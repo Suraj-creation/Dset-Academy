@@ -96,7 +96,7 @@ export default function CareersPage({ jobs }: CareersProps) {
           '@type': 'Organization',
           name: 'DSeT Consulting',
           url: 'https://dsetconsulting.com',
-          logo: 'https://dsetconsulting.com/DSeTC_logo2.png',
+          logo: 'https://dsetconsulting.com/dset-logo-orb.png',
         },
         jobLocation: {
           '@type': 'Place',

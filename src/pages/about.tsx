@@ -106,7 +106,7 @@ export default function AboutPage() {
         '@type': 'Organization',
         name: 'DSeT Consulting',
         url: 'https://dsetconsulting.com',
-        logo: 'https://dsetconsulting.com/DSeTC_logo2.png',
+        logo: 'https://dsetconsulting.com/dset-logo-orb.png',
         description: 'DSeT is a deeptech AI platform company building proprietary vertical AI platforms for mining, industrial operations, healthcare, and secure enterprise.',
         foundingLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressRegion: 'Karnataka', addressCountry: 'IN' } },
         sameAs: [

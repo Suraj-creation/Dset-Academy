@@ -128,7 +128,7 @@ const BlogPostPage: NextPage<Props> = ({ post, author, preview }) => {
     publisher: {
       '@type': 'Organization',
       name: 'DSeT Consulting',
-      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo8.png` },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/dset-logo-orb.png` },
     },
     ...(post.tags?.length ? { keywords: post.tags.map(t => t.name).join(', ') } : {}),
   };

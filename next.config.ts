@@ -73,6 +73,8 @@ const nextConfig: NextConfig = {
       { source: '/services/cx-optimization',      destination: '/services', permanent: true },
       { source: '/services/process-management',   destination: '/services', permanent: true },
       { source: '/services/data-analytics',       destination: '/services', permanent: true },
+      // Sitemap: redirect static URL to dynamic API route
+      { source: '/sitemap.xml', destination: '/api/sitemap.xml', permanent: false },
       // Old about page variant → current about page (404 fix)
       { source: '/about-us-two',                  destination: '/about',    permanent: true },
       { source: '/about-us-two/',                 destination: '/about',    permanent: true },

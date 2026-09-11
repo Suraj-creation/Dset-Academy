@@ -154,19 +154,19 @@ const Navbar = ({ bannerVisible = true }: NavbarProps) => {
               transition={{ duration: 0.5 }}
               className="flex-shrink-0"
             >
-              <Link href="/" className="group flex items-center gap-2 focus:outline-none">
-                <div className="relative flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 transition-transform duration-300 group-hover:scale-105">
+              <Link href="/" className="group flex items-center gap-0.5 focus:outline-none">
+                <div className="relative flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
                   <Image
-                    src="/New_logo1.png"
+                    src="/dset-logo-orb.svg"
                     alt="DSeT Consulting logo"
                     fill
-                    sizes="(max-width: 640px) 48px, (max-width: 1024px) 56px, 64px"
-                    className="object-contain opacity-90"
+                    sizes="(max-width: 640px) 40px, (max-width: 1024px) 44px, 48px"
+                    className="object-contain"
                     priority
                   />
                 </div>
                 <div className="flex flex-col justify-center leading-tight">
-                  <span className="font-semibold tracking-tight text-[18px] sm:text-[22px] lg:text-[24px] text-white">
+                  <span className="font-semibold tracking-tight text-[23px] sm:text-[26px] lg:text-[28px] text-white">
                     DSeT <span className="font-normal">Consulting</span>
                   </span>
                   <div className="mt-0.5 h-[2px] w-10 bg-gradient-to-r from-[#5e17ea] to-[#1e90ff] rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
@@ -269,7 +269,7 @@ const Navbar = ({ bannerVisible = true }: NavbarProps) => {
               <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
                 <div className="relative w-11 h-11 flex-shrink-0">
                   <Image
-                    src="/New_logo1.png"
+                    src="/dset-logo-orb.svg"
                     alt="DSeT Consulting logo"
                     fill
                     sizes="44px"

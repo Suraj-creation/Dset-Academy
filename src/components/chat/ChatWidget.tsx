@@ -374,7 +374,7 @@ export default function ChatWidget() {
               }}>
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center flex-shrink-0 overflow-hidden p-1.5 shadow-lg shadow-black/10">
-                  <img src="/DSeTC_logo2.png" alt="DSeT" className="w-full h-full object-contain" />
+                  <img src="/dset-logo-orb.svg" alt="DSeT" className="w-full h-full object-contain" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-white text-sm font-bold leading-tight">DSeT AI Agent</p>
@@ -423,7 +423,7 @@ export default function ChatWidget() {
                     transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
                   >
                     <span className="absolute inset-2 rounded-full border border-white/10" />
-                    <img src="/DSeTC_logo2.png" alt="DSeT" className="relative w-full h-full object-contain" />
+                    <img src="/dset-logo-orb.svg" alt="DSeT" className="relative w-full h-full object-contain" />
                   </motion.div>
                   <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-[#0d1117]" />
                 </div>

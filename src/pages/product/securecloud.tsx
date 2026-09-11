@@ -109,7 +109,7 @@ export default function SecureCloudPage() {
     <Layout
       title="SecureCloud™ — Compliance-Aware Cloud Security | DSeT"
       description="SecureCloud™ is DSeT's compliance-aware cloud security platform — continuous posture monitoring, layered access controls, and AI-driven threat detection built for regulated enterprises and India-ready deployments."
-      ogImage="/DSeTC_logo2.png"
+      ogImage="/dset-logo-orb.png"
       jsonLd={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',

@@ -35,7 +35,7 @@ const SignIn = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
           <div className="flex flex-col items-center">
-            <Image src="/New_logo1.png" alt="DSeT Consulting" width={56} height={56} className="mb-3 object-contain" />
+            <Image src="/dset-logo-orb.svg" alt="DSeT Consulting" width={56} height={56} className="mb-3 object-contain" />
             <h2 className="text-center text-3xl font-bold text-gray-900">Admin Login</h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

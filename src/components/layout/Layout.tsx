@@ -28,7 +28,7 @@ const Layout = ({
   title = 'DSeT Consulting | Vertical AI Platforms for Mining, Industrial & Healthcare Operations',
   description = 'DSeT builds vertical AI platforms for regulated and operationally complex industries. OreBill AI™, EdgeBay IntelliFence™, SecureCloud™, iPaS-RevOps™ — edge-ready, compliance-first.',
   keywords,
-  ogImage = '/DSeTC_logo2.png',
+  ogImage = '/dset-logo-orb.png',
   jsonLd,
   breadcrumbs,
 }: LayoutProps) => {
@@ -71,7 +71,7 @@ const Layout = ({
               '@type': 'Organization',
               name: 'DSeT Consulting',
               url: 'https://dsetconsulting.com',
-              logo: 'https://dsetconsulting.com/DSeTC_logo2.png',
+              logo: 'https://dsetconsulting.com/dset-logo-orb.png',
               sameAs: [
                 'https://www.linkedin.com/company/dset-consulting',
                 'https://twitter.com/cmdset10x',
