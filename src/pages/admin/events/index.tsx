@@ -97,6 +97,10 @@ function AdminEvents() {
     router.replace("/auth/signin");
   };
 
+
+console.log(events);
+  
+
   return (
     <>
       <Head>

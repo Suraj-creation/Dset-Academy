@@ -110,7 +110,11 @@ function CoexistenceSetup() {
         config_id: configId,
         response_type: 'code',
         override_default_response_type: true,
-        extras: { sessionInfoVersion: '3' },
+        // featureType tells Meta this is a Coexistence (WhatsApp Business App)
+        // onboarding, not a plain Cloud-API-only migration — without it Meta only
+        // offers "disconnect" (destructive) instead of "migrate" for numbers that
+        // already have the WhatsApp Business App installed.
+        extras: { sessionInfoVersion: '3', featureType: 'whatsapp_business_app_onboarding' },
       },
     );
   };

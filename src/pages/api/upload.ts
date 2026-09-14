@@ -3,11 +3,13 @@ import formidable from 'formidable';
 import fs from 'fs/promises';
 import path from 'path';
 import { uploadBlob } from '@/lib/azure-blob';
+import { isAdminRequest } from '@/lib/auth';
 
 export const config = { api: { bodyParser: false } };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!isAdminRequest(req.cookies)) return res.status(401).json({ error: 'Unauthorized' });
 
   const tmpDir = path.join(process.cwd(), 'tmp');
   await fs.mkdir(tmpDir, { recursive: true });

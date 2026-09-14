@@ -5,6 +5,7 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import { uploadBlob, deleteBlob } from "@/lib/azure-blob";
 import { addMediaToEvent, removeMediaFromEvent, getGalleryEventById } from "@/lib/events.server";
+import { isAdminRequest } from "@/lib/auth";
 
 export const config = { api: { bodyParser: false } };
 
@@ -21,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // ── POST — Upload media ────────────────────────────────────
   if (req.method === "POST") {
+    if (!isAdminRequest(req.cookies)) return res.status(401).json({ message: "Unauthorized" });
     if (!eventId || typeof eventId !== "string")
       return res.status(400).json({ message: "eventId is required" });
 
@@ -95,6 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // ── DELETE — Remove media ──────────────────────────────────
   if (req.method === "DELETE") {
+    if (!isAdminRequest(req.cookies)) return res.status(401).json({ message: "Unauthorized" });
     if (!eventId || !mediaId)
       return res.status(400).json({ message: "eventId and mediaId are required" });
 
