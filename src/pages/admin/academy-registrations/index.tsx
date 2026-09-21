@@ -37,6 +37,21 @@ interface Registration {
   amountMismatch: boolean;
 }
 
+// General interest signups — no payment involved (institutional, interest-list,
+// custom cohort, "coming next"). Kept separate from Registration/paymentStatus so
+// the revenue stats above are never diluted by rows that were never meant to pay.
+interface Interest {
+  id: string;
+  programmeTitle: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  role: string;
+  institution: string | null;
+  contacted: boolean;
+  createdAt: string;
+}
+
 const STATUS_META: Record<PaymentStatus, { label: string; cls: string }> = {
   paid:     { label: 'Paid',     cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
   created:  { label: 'Pending',  cls: 'bg-amber-100 text-amber-700 border-amber-200'       },
@@ -62,6 +77,10 @@ function AdminAcademyRegistrations() {
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const [interest, setInterest]             = useState<Interest[]>([]);
+  const [interestLoading, setInterestLoading] = useState(true);
+  const [interestBusyId, setInterestBusyId]   = useState<string | null>(null);
+
   useEffect(() => {
     (async () => {
       try {
@@ -76,7 +95,28 @@ function AdminAcademyRegistrations() {
         setLoading(false);
       }
     })();
+
+    (async () => {
+      try {
+        const res = await fetch('/api/academy/interest');
+        if (!res.ok) return;
+        const data = await res.json();
+        setInterest(data.registrations ?? []);
+      } finally {
+        setInterestLoading(false);
+      }
+    })();
   }, [router]);
+
+  const handleMarkContacted = async (id: string) => {
+    setInterestBusyId(id);
+    try {
+      const res = await fetch(`/api/academy/interest?id=${id}`, { method: 'PATCH' });
+      if (res.ok) setInterest(prev => prev.map(r => r.id === id ? { ...r, contacted: true } : r));
+    } finally {
+      setInterestBusyId(null);
+    }
+  };
 
   const paid = rows.filter(r => r.paymentStatus === 'paid');
   // Revenue counts verified payments only — pending orders are not money received.
@@ -106,7 +146,7 @@ function AdminAcademyRegistrations() {
           <div className="mx-auto flex max-w-6xl items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-gray-900">Academy Registrations</h1>
-              <p className="text-sm text-gray-500">Cohort enrolments and Razorpay payments</p>
+              <p className="text-sm text-gray-500">Cohort enrolments, Razorpay payments and general interest</p>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/admin" className="text-sm text-gray-600 hover:text-gray-900">← Dashboard</Link>
@@ -309,6 +349,74 @@ function AdminAcademyRegistrations() {
               </div>
             </div>
           )}
+
+          {/* ── General interest ── */}
+          {/* No payment involved (institutional, interest-list, custom cohort, "coming
+              next"). Separate table since these rows never carry payment/status fields. */}
+          <div className="mt-10">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">General Interest</h2>
+                <p className="text-sm text-gray-500">Signups with no published fee yet — no payment involved</p>
+              </div>
+              {!interestLoading && (
+                <span className="rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-semibold text-gray-600">
+                  {interest.filter(r => !r.contacted).length} awaiting outreach
+                </span>
+              )}
+            </div>
+
+            {interestLoading ? (
+              <div className="py-10 text-center text-gray-500">Loading…</div>
+            ) : interest.length === 0 ? (
+              <div className="rounded-xl border border-gray-200 bg-white py-10 text-center text-gray-500">
+                No interest signups yet.
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="border-b border-gray-200 bg-gray-50 text-left">
+                      <tr className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        <th className="px-4 py-3">Applicant</th>
+                        <th className="px-4 py-3">Programme</th>
+                        <th className="px-4 py-3">Role</th>
+                        <th className="px-4 py-3">Submitted</th>
+                        <th className="px-4 py-3"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {interest.map(r => (
+                        <tr key={r.id} className={r.contacted ? 'opacity-60' : 'hover:bg-gray-50'}>
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-gray-900">{r.fullName}</div>
+                            <div className="text-xs text-gray-500">{r.email} · {r.mobile}</div>
+                            {r.institution && <div className="text-xs text-gray-400">{r.institution}</div>}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700">{r.programmeTitle}</td>
+                          <td className="px-4 py-3 text-gray-500">{r.role}</td>
+                          <td className="px-4 py-3 text-gray-500">{formatDateTime(r.createdAt)}</td>
+                          <td className="px-4 py-3 text-right">
+                            {r.contacted ? (
+                              <span className="text-xs font-medium text-emerald-600">Contacted</span>
+                            ) : (
+                              <button
+                                onClick={() => handleMarkContacted(r.id)}
+                                disabled={interestBusyId === r.id}
+                                className="text-xs font-medium text-gray-600 hover:text-gray-900 disabled:opacity-50"
+                              >
+                                Mark contacted
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

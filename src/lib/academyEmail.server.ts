@@ -1,6 +1,7 @@
 import { sendMail } from './email';
 import { formatPaise } from './academyPrograms';
 import type { RegistrationRow } from './academyRegistrations.server';
+import type { InterestRow } from './academyInterest.server';
 
 function esc(s: string): string {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -98,5 +99,47 @@ export async function sendRegistrationEmails(reg: RegistrationRow): Promise<void
          View all enrolments → /admin/academy-registrations
        </p>`,
     ),
+  });
+}
+
+/**
+ * Internal-only notification for a general interest signup (no payment involved —
+ * institutional cohorts, interest-list, custom cohort, "coming next"). The applicant
+ * gets their "welcome aboard" moment in the modal itself; this just makes sure the
+ * Academy team actually sees the submission instead of it sitting invisibly in the DB.
+ */
+export async function sendInterestNotification(row_: InterestRow): Promise<void> {
+  const notifyTo = process.env.ACADEMY_NOTIFY_EMAIL
+    ?? process.env.CONTACT_EMAIL
+    ?? 'contact@dsetconsulting.com';
+
+  await sendMail({
+    to: notifyTo,
+    replyTo: row_.email,
+    subject: `New Academy interest — ${row_.fullName} · ${row_.programmeTitle}`,
+    html: `
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;">
+<div style="max-width:640px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <div style="background:linear-gradient(135deg,#0a1830 0%,#071224 100%);padding:28px 32px;border-radius:12px 12px 0 0;">
+    <span style="color:#20c4ad;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">DSeT Academy</span>
+    <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:16px 0 6px;line-height:1.25;">New interest signup</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;margin:0;">${esc(row_.programmeTitle)}</p>
+  </div>
+  <div style="background:#ffffff;border:1px solid #e6e9f0;border-top:none;padding:24px 28px;border-radius:0 0 12px 12px;">
+    <table style="width:100%;border-collapse:collapse;">
+      ${row('Name', esc(row_.fullName))}
+      ${row('Email', `<a href="mailto:${esc(row_.email)}" style="color:#0d7d6f;">${esc(row_.email)}</a>`)}
+      ${row('Mobile', esc(row_.mobile))}
+      ${row('Role', esc(row_.role))}
+      ${row('Institution', esc(row_.institution ?? '—'))}
+      ${row('Submitted', istDate(row_.createdAt))}
+    </table>
+    <p style="font-size:13px;color:#64748b;margin:20px 0 0;">
+      No payment involved — this is a general enquiry. Reach out to move it forward.
+    </p>
+  </div>
+</div></body></html>`,
   });
 }

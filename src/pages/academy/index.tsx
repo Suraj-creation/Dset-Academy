@@ -172,10 +172,10 @@ const FAQS = [
   { q: 'What makes the programmes "verticalised"?', a: 'Every programme is built around a specific industry — starting with Life Sciences — using real DSeT platform use cases and department workflows, instead of generic, one-size-fits-all AI training content.' },
 ];
 
-// Only cohorts with a published fee can be paid for online. Everything else
-// (institutional, interest-list, coming-next) routes to /contact instead, so the
-// enrolment modal never offers a programme it cannot actually charge for.
-const PROGRAMME_OPTIONS = PROGRAMS.filter((p) => 'slug' in p && p.slug).map((p) => p.title);
+// Every programme is offered in the dropdown. The modal branches on whether the selected
+// title resolves to a payable slug (PAYABLE_SLUG_BY_TITLE): payable ones go through
+// Razorpay, everything else submits as a general interest signup with no payment involved.
+const PROGRAMME_OPTIONS = PROGRAMS.map((p) => p.title);
 const ROLE_OPTIONS = [
   'Faculty / academic leader',
   'Trainer / facilitator',
@@ -262,12 +262,14 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; onClose: () => void; presetProgramme?: string }) {
-  const [step, setStep] = useState<'form' | 'paid'>('form');
+  const [step, setStep] = useState<'form' | 'done'>('form');
   const [form, setForm] = useState({ programme: '', fullName: '', email: '', mobile: '', role: '', institution: '', consent: false });
   const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
-  const [receipt, setReceipt] = useState<{ registrationId: string; programmeTitle: string } | null>(null);
+  // `paid` distinguishes the Razorpay success screen from the general-interest one —
+  // same shape, different copy, since neither involves money for the interest path.
+  const [receipt, setReceipt] = useState<{ registrationId: string; programmeTitle: string; paid: boolean } | null>(null);
 
   // No early return: Headless UI's Dialog owns mount/unmount and needs to stay rendered
   // for its closing transition to play.
@@ -282,8 +284,32 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
     setPayError(null);
     if (!isValid) return;
 
+    // No fee published for this programme yet — general interest, no Razorpay at all.
     if (!payableSlug) {
-      setPayError('Please choose a cohort that is open for enrolment.');
+      setBusy(true);
+      try {
+        const res = await fetch('/api/academy/interest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            programmeTitle: programme,
+            fullName: form.fullName.trim(),
+            email: form.email.trim(),
+            mobile: form.mobile.trim(),
+            role: form.role,
+            institution: form.institution.trim() || undefined,
+            consent: form.consent,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? 'Could not submit your details.');
+        setReceipt({ registrationId: data.registrationId, programmeTitle: data.programmeTitle, paid: false });
+        setStep('done');
+      } catch (err) {
+        setPayError((err as Error).message);
+      } finally {
+        setBusy(false);
+      }
       return;
     }
 
@@ -329,8 +355,8 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
             });
             const v = await vr.json();
             if (!vr.ok) throw new Error(v.error ?? 'Payment verification failed.');
-            setReceipt({ registrationId: v.registrationId, programmeTitle: v.programmeTitle });
-            setStep('paid');
+            setReceipt({ registrationId: v.registrationId, programmeTitle: v.programmeTitle, paid: true });
+            setStep('done');
           } catch (err) {
             // Money may well have been captured — the webhook will still confirm it,
             // so never tell the applicant the payment failed here.
@@ -392,7 +418,9 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
           <div className="flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 pb-4 border-b" style={{ borderColor: BORDER }}>
             <div>
               <DialogTitle className="text-[19px] font-semibold tracking-[-0.02em]" style={{ color: INK }}>
-                {step === 'paid' ? 'Enrolment confirmed' : 'Reserve your place'}
+                {step === 'done'
+                  ? (receipt?.paid ? 'Enrolment confirmed' : 'Welcome aboard')
+                  : (payableSlug ? 'Reserve your place' : 'Tell us about you')}
               </DialogTitle>
             </div>
             <button onClick={handleClose} aria-label="Close"
@@ -481,18 +509,18 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                              transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
                   style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
                   {busy
-                    ? 'Opening secure checkout…'
+                    ? (payableSlug ? 'Opening secure checkout…' : 'Submitting…')
                     : payableSlug
                       ? <>Pay securely &amp; confirm seat <ArrowRight size={15} /></>
-                      : <>Continue <ArrowRight size={15} /></>}
+                      : <>Welcome me aboard <ArrowRight size={15} /></>}
                 </button>
-                {payableSlug && (
-                  <p className="text-[11px] text-center leading-relaxed" style={{ color: MUTED }}>
-                    Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.
-                  </p>
-                )}
+                <p className="text-[11px] text-center leading-relaxed" style={{ color: MUTED }}>
+                  {payableSlug
+                    ? 'Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.'
+                    : 'No payment required. Our Academy team will reach out with next steps.'}
+                </p>
               </form>
-            ) : (
+            ) : receipt?.paid ? (
               <div>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: TEAL_TINT }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={TEAL_DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -506,6 +534,28 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                 </p>
                 <div className="rounded-lg p-3.5 text-xs leading-relaxed mb-5" style={{ backgroundColor: LIGHT_BG, color: INK }}>
                   Registration ID<br />
+                  <span className="font-mono font-semibold">{receipt?.registrationId}</span>
+                </div>
+                <button type="button" onClick={handleClose}
+                  className="w-full py-3 rounded-full font-semibold text-sm text-white transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98]"
+                  style={{ backgroundColor: INK }}>
+                  Done
+                </button>
+              </div>
+            ) : (
+              <div>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: TEAL_TINT }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={TEAL_DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <h4 className="text-lg font-semibold mb-2.5" style={{ color: INK }}>Congratulations, {form.fullName.split(' ')[0]}!</h4>
+                <p className={`${T.body} mb-4`} style={{ color: MUTED }}>
+                  You're on the list for <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. Welcome to
+                  great learning ahead. Our Academy team will reach out shortly with next steps.
+                </p>
+                <div className="rounded-lg p-3.5 text-xs leading-relaxed mb-5" style={{ backgroundColor: LIGHT_BG, color: INK }}>
+                  Reference ID<br />
                   <span className="font-mono font-semibold">{receipt?.registrationId}</span>
                 </div>
                 <button type="button" onClick={handleClose}
@@ -875,15 +925,16 @@ export default function AcademyPage() {
                     <h3 className={`${T.cardTitle} mb-2.5`}>{p.title}</h3>
                     <p className={`${T.body} mb-6 flex-grow`} style={{ color: MUTED }}>{p.desc}</p>
 
-                    {/* One label for one destination: all four of these route to /contact,
-                        so they read as a single action rather than four different ones. */}
-                    <Link href="/contact"
+                    {/* Opens the same modal as the paid cohorts. It has no published fee, so
+                        the modal skips Razorpay and submits as a general interest signup —
+                        one label, one consistent action across all four cards. */}
+                    <button type="button" onClick={() => openApply(p.title)}
                       className="inline-flex items-center justify-center gap-2 py-2.5 rounded-full border text-[13px] font-semibold
                                  border-[#0d7d6f]/35 text-[#0d7d6f]
                                  transition-[background-color,color,border-color,transform] duration-200 ease-out
                                  hover:bg-[#0d7d6f] hover:text-white hover:border-[#0d7d6f] active:scale-[0.98]">
                       {p.cta} <ArrowRight size={14} />
-                    </Link>
+                    </button>
                   </motion.div>
                 ))}
               </div>

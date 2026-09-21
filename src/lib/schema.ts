@@ -293,3 +293,20 @@ export const academyPaymentEvents = pgTable('academy_payment_events', {
   payload:           jsonb('payload'),
   createdAt:         timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
+
+// General interest signups for programmes with no published fee yet (institutional,
+// interest-list, custom cohort, "coming next"). Deliberately separate from
+// academyRegistrations — mixing unpaid interest rows into that table would corrupt its
+// revenue and paid-status reporting.
+export const academyInterestRegistrations = pgTable('academy_interest_registrations', {
+  id:             text('id').primaryKey(),
+  programmeTitle: text('programme_title').notNull(),
+  fullName:       text('full_name').notNull(),
+  email:          text('email').notNull(),
+  mobile:         text('mobile').notNull(),
+  role:           text('role').notNull(),
+  institution:    text('institution'),
+  consent:        boolean('consent').notNull().default(false),
+  contacted:      boolean('contacted').notNull().default(false),
+  createdAt:      timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
