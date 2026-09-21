@@ -11,6 +11,7 @@ const SECTIONS = [
   { label: 'Events',       href: '/admin/events',       desc: 'Manage events and media',          color: '#1e90ff', icon: '📅' },
   { label: 'Blog',         href: '/admin/blog',         desc: 'Write and publish blog posts',     color: '#ff851b', icon: '✍️' },
   { label: 'WhatsApp',     href: '/admin/whatsapp',     desc: 'AI conversations & handovers',     color: '#25d366', icon: '📱' },
+  { label: 'Academy',      href: '/admin/academy-registrations', desc: 'Cohort enrolments & payments', color: '#20c4ad', icon: '🎓' },
 ];
 
 type TestStatus = 'idle' | 'loading' | 'ok' | 'fail';

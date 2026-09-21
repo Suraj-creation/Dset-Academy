@@ -69,6 +69,9 @@ const PROGRAMS = [
     desc: 'Become a certified AI faculty-cum-trainer for Life Science & Healthcare — hand-held through 60+ AI tools mapped to 18 departments, then paid assignments to teach what you have mastered.',
     format: '32-hour workshop cohort', outcome: 'Certificate + paid-assignment eligibility', forWhom: 'Faculty, trainers, academic leaders',
     fee: '₹43,660', cta: 'Register for this cohort', href: '/academy/programs/ai-educator-mastery',
+    // slug resolves against the server-side price catalogue (src/lib/academyPrograms.ts).
+    // The displayed fee is presentational only — the charged amount comes from the server.
+    slug: 'ai-educator-mastery',
   },
   {
     eyebrow: 'VENTURE PATHWAY', badge: 'Enrolment open', badgeLive: true,
@@ -76,6 +79,7 @@ const PROGRAMS = [
     desc: 'Lead AI adoption across your organisation — or build your own AI-transformation practice — for Life Science & Healthcare, through 60+ AI tools mapped to 18 business departments.',
     format: '32-hour workshop cohort', outcome: 'Detailed certificate + paid assignments', forWhom: 'Founders and aspiring entrepreneurs',
     fee: '₹60,180', cta: 'Register for this cohort', href: '/academy/programs/entrepreneur-mastery',
+    slug: 'entrepreneur-mastery',
   },
   {
     eyebrow: 'CAMPUS TO CAREER', badge: 'Institutional', badgeLive: false,
@@ -138,7 +142,10 @@ const FAQS = [
   { q: 'What makes the programmes "verticalised"?', a: 'Every programme is built around a specific industry — starting with Life Sciences — using real DSeT platform use cases and department workflows, instead of generic, one-size-fits-all AI training content.' },
 ];
 
-const PROGRAMME_OPTIONS = [...PROGRAMS.map((p) => p.title), 'Institutional partnership'];
+// Only cohorts with a published fee can be paid for online. Everything else
+// (institutional, interest-list, coming-next) routes to /contact instead, so the
+// enrolment modal never offers a programme it cannot actually charge for.
+const PROGRAMME_OPTIONS = PROGRAMS.filter((p) => 'slug' in p && p.slug).map((p) => p.title);
 const ROLE_OPTIONS = [
   'Faculty / academic leader',
   'Trainer / facilitator',
@@ -161,34 +168,121 @@ function Eyebrow({ children, dark }: { children: React.ReactNode; dark?: boolean
 
 const inputClass = 'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-colors focus:ring-2';
 
+/** Title -> payable slug, derived from PROGRAMS so the catalogue stays the single source. */
+const PAYABLE_SLUG_BY_TITLE: Record<string, string> = Object.fromEntries(
+  PROGRAMS.flatMap((p) => ('slug' in p && p.slug ? [[p.title, p.slug as string]] : [])),
+);
+
+declare global {
+  interface Window { Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void } }
+}
+
+/** Inject Razorpay Checkout once, on demand. Resolves false if it cannot load. */
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
 function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; onClose: () => void; presetProgramme?: string }) {
-  const [step, setStep] = useState<'form' | 'success'>('form');
+  const [step, setStep] = useState<'form' | 'paid'>('form');
   const [form, setForm] = useState({ programme: '', fullName: '', email: '', mobile: '', role: '', institution: '', consent: false });
   const [touched, setTouched] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<{ registrationId: string; programmeTitle: string } | null>(null);
 
   if (!open) return null;
 
   const programme = form.programme || presetProgramme || '';
+  const payableSlug = PAYABLE_SLUG_BY_TITLE[programme];
   const isValid = form.fullName.trim() && form.email.trim() && form.mobile.trim() && form.role && form.consent;
 
-  const summaryText =
-    `DSeT Academy — Founding Cohort application\n` +
-    `Programme: ${programme || 'General enquiry'}\n` +
-    `Name: ${form.fullName}\n` +
-    `Email: ${form.email}\n` +
-    `Mobile: ${form.mobile}\n` +
-    `Joining as: ${form.role}\n` +
-    `Institution: ${form.institution || '—'}`;
-
-  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
-  const whatsappHref = `https://wa.me/${waNumber}?text=${encodeURIComponent(summaryText)}`;
-  const emailHref = `mailto:contact@dsetconsulting.com?subject=${encodeURIComponent('DSeT Academy — Founding Cohort application')}&body=${encodeURIComponent(summaryText)}`;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
+    setPayError(null);
     if (!isValid) return;
-    setStep('success');
+
+    if (!payableSlug) {
+      setPayError('Please choose a cohort that is open for enrolment.');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const ok = await loadRazorpayScript();
+      if (!ok || !window.Razorpay) throw new Error('Could not load the secure checkout. Check your connection and try again.');
+
+      // The server prices this from the slug — no amount is sent from the browser.
+      const orderRes = await fetch('/api/academy/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          programmeSlug: payableSlug,
+          fullName: form.fullName.trim(),
+          email: form.email.trim(),
+          mobile: form.mobile.trim(),
+          role: form.role,
+          institution: form.institution.trim() || undefined,
+          consent: form.consent,
+        }),
+      });
+      const order = await orderRes.json();
+      if (!orderRes.ok) throw new Error(order.error ?? 'Could not start the payment.');
+
+      const rzp = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.orderId,
+        name: 'DSeT Academy',
+        description: order.programmeTitle,
+        prefill: { name: form.fullName, email: form.email, contact: form.mobile },
+        theme: { color: TEAL },
+        modal: { ondismiss: () => setBusy(false) },
+        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          // Payment is only "done" once the server verifies the signature.
+          try {
+            const vr = await fetch('/api/academy/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response),
+            });
+            const v = await vr.json();
+            if (!vr.ok) throw new Error(v.error ?? 'Payment verification failed.');
+            setReceipt({ registrationId: v.registrationId, programmeTitle: v.programmeTitle });
+            setStep('paid');
+          } catch (err) {
+            // Money may well have been captured — the webhook will still confirm it,
+            // so never tell the applicant the payment failed here.
+            setPayError(
+              `${(err as Error).message} Your payment reference is ${response.razorpay_payment_id}. ` +
+              `If the amount was debited, your enrolment will still be confirmed — please contact the Academy team with this reference.`,
+            );
+          } finally {
+            setBusy(false);
+          }
+        },
+      } as Record<string, unknown>);
+
+      rzp.on('payment.failed', (resp: unknown) => {
+        const r = resp as { error?: { description?: string } };
+        setPayError(r?.error?.description ?? 'The payment did not go through. Please try again.');
+        setBusy(false);
+      });
+
+      rzp.open();
+    } catch (err) {
+      setPayError((err as Error).message);
+      setBusy(false);
+    }
   };
 
   const handleClose = () => {
@@ -196,6 +290,9 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
     setTimeout(() => {
       setStep('form');
       setTouched(false);
+      setBusy(false);
+      setPayError(null);
+      setReceipt(null);
       setForm({ programme: '', fullName: '', email: '', mobile: '', role: '', institution: '', consent: false });
     }, 250);
   };
@@ -215,7 +312,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
           </button>
           <Eyebrow>FOUNDING COHORT</Eyebrow>
           <h3 className="text-2xl font-bold" style={{ color: INK }}>
-            {step === 'form' ? 'Reserve your place' : 'Reserve your place'}
+            {step === 'paid' ? 'Enrolment confirmed' : 'Reserve your place'}
           </h3>
         </div>
 
@@ -284,45 +381,50 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
               {touched && !isValid && (
                 <p className="text-xs font-medium" style={{ color: '#e11d48' }}>Please fill all required fields and accept the consent to continue.</p>
               )}
+              {payError && (
+                <div className="rounded-xl p-4 text-xs leading-relaxed" style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}>
+                  {payError}
+                </div>
+              )}
 
-              <button type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full font-semibold transition-opacity hover:opacity-90"
+              <button type="submit" disabled={busy}
+                className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
-                Continue to cohort confirmation <ArrowRight size={16} />
+                {busy
+                  ? 'Opening secure checkout…'
+                  : payableSlug
+                    ? <>Pay securely & confirm seat <ArrowRight size={16} /></>
+                    : <>Continue to cohort confirmation <ArrowRight size={16} /></>}
               </button>
+              {payableSlug && (
+                <p className="text-xs text-center" style={{ color: MUTED }}>
+                  Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.
+                </p>
+              )}
             </form>
-          ) : (
+          ) : step === 'paid' ? (
             <div>
               <div className="w-14 h-14 rounded-full flex items-center justify-center mb-5" style={{ backgroundColor: '#e6fbf7' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0d7d6f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h4 className="text-xl font-bold mb-3" style={{ color: INK }}>Registration captured on this device.</h4>
-              <p className="text-sm leading-relaxed mb-7" style={{ color: MUTED }}>
-                Send your pre-filled application to the Academy team. Once the cohort and fee are confirmed, you
-                will receive the verified Razorpay checkout.
+              <h4 className="text-xl font-bold mb-3" style={{ color: INK }}>Payment verified — your seat is confirmed.</h4>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: MUTED }}>
+                You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. A receipt has been
+                emailed to {form.email}. The Academy team will follow up with your cohort schedule.
               </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                <a href={whatsappHref} target="_blank" rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-sm transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
-                  Send via WhatsApp
-                </a>
-                <a href={emailHref}
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-sm text-white transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: INK }}>
-                  Send via email
-                </a>
+              <div className="rounded-xl p-4 text-xs leading-relaxed mb-6" style={{ backgroundColor: LIGHT_BG, color: INK }}>
+                Registration ID<br />
+                <span className="font-mono font-semibold">{receipt?.registrationId}</span>
               </div>
-
-              <div className="rounded-xl p-4 text-xs leading-relaxed" style={{ backgroundColor: '#fff8e6', color: '#8a6d1f' }}>
-                Razorpay activation requires the approved cohort payment link or live key/order service. No payment
-                data is collected on this page.
-              </div>
+              <button type="button" onClick={handleClose}
+                className="w-full py-3.5 rounded-full font-semibold text-sm text-white transition-opacity hover:opacity-90"
+                style={{ backgroundColor: INK }}>
+                Done
+              </button>
             </div>
-          )}
+          ) : null}
         </div>
       </motion.div>
     </div>
@@ -640,11 +742,21 @@ export default function AcademyPage() {
 
                   {p.fee && <p className="text-xl font-bold mb-4">{p.fee} <span className="text-xs font-normal" style={{ color: MUTED }}>incl. GST</span></p>}
 
-                  <button type="button" onClick={() => openApply(p.title)}
-                    className="inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm text-white transition-colors hover:opacity-90"
-                    style={{ backgroundColor: INK }}>
-                    {p.cta}
-                  </button>
+                  {'slug' in p && p.slug ? (
+                    <button type="button" onClick={() => openApply(p.title)}
+                      className="inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm text-white transition-colors hover:opacity-90"
+                      style={{ backgroundColor: INK }}>
+                      {p.cta}
+                    </button>
+                  ) : (
+                    // No published fee — there is nothing to charge, so send these to the
+                    // contact form (which already persists to the contacts table).
+                    <Link href="/contact"
+                      className="inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm transition-colors hover:opacity-90 border"
+                      style={{ borderColor: INK, color: INK }}>
+                      {p.cta}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
             </motion.div>

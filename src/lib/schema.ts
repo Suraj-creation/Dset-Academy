@@ -235,3 +235,61 @@ export const zohoSyncLog = pgTable('zoho_sync_log', {
   error:           text('error'),
   createdAt:       timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
+
+// DSeT Academy cohort enrolment. Every amount column is an integer in PAISE
+// (₹1 = 100 paise) — Razorpay's API is denominated in paise, so storing paise
+// keeps the DB, the charge and the reconciliation report on one unit with no
+// float rounding anywhere. programmeTitle and the amounts are snapshotted at
+// registration time so a later price change never rewrites a past enrolment.
+export const academyRegistrations = pgTable('academy_registrations', {
+  id:                text('id').primaryKey(),
+  programmeSlug:     text('programme_slug').notNull(),
+  programmeTitle:    text('programme_title').notNull(),
+  fullName:          text('full_name').notNull(),
+  email:             text('email').notNull(),
+  mobile:            text('mobile').notNull(),
+  role:              text('role').notNull(),
+  institution:       text('institution'),
+  consent:           boolean('consent').notNull().default(false),
+  baseAmount:        integer('base_amount').notNull(),
+  gstAmount:         integer('gst_amount').notNull(),
+  totalAmount:       integer('total_amount').notNull(),
+  currency:          text('currency').notNull().default('INR'),
+  razorpayOrderId:   text('razorpay_order_id').unique(),
+  razorpayPaymentId: text('razorpay_payment_id'),
+  razorpaySignature: text('razorpay_signature'),
+  // 'created' | 'paid' | 'failed' | 'refunded'
+  paymentStatus:     text('payment_status').notNull().default('created'),
+  // 'pending' | 'confirmed' | 'cancelled' — only ever 'confirmed' after a verified payment
+  enrollmentStatus:  text('enrollment_status').notNull().default('pending'),
+  failureReason:     text('failure_reason'),
+  paidAt:            timestamp('paid_at', { withTimezone: true, mode: 'string' }),
+  createdAt:         timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  updatedAt:         timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  // Fetched from the Razorpay Payments API after the signature check — proof the
+  // payment was really captured, plus what it cost to collect.
+  paymentMethod:     text('payment_method'),
+  amountCaptured:    integer('amount_captured'),
+  razorpayFee:       integer('razorpay_fee'),
+  razorpayTax:       integer('razorpay_tax'),
+  payerEmail:        text('payer_email'),
+  payerContact:      text('payer_contact'),
+  amountMismatch:    boolean('amount_mismatch').notNull().default(false),
+});
+
+// Append-only payment audit trail. Never updated after insert — a payment can
+// always be reconciled against Razorpay from the raw payloads kept here, even
+// if the registration row was edited afterwards.
+export const academyPaymentEvents = pgTable('academy_payment_events', {
+  id:                text('id').primaryKey(),
+  registrationId:    text('registration_id'),
+  eventType:         text('event_type').notNull(),
+  // Razorpay's x-razorpay-event-id. UNIQUE, so a webhook redelivery is recorded once.
+  razorpayEventId:   text('razorpay_event_id').unique(),
+  razorpayOrderId:   text('razorpay_order_id'),
+  razorpayPaymentId: text('razorpay_payment_id'),
+  status:            text('status'),
+  amount:            integer('amount'),
+  payload:           jsonb('payload'),
+  createdAt:         timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
