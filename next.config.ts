@@ -47,6 +47,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Root → /academy, gated behind an env var rather than unconditional. This file's
+      // history is shared with the DSeT Consulting site's repo (deployed separately on
+      // Azure), so an unconditional redirect here would be safe today but would silently
+      // hijack the real DSeT homepage if this commit ever gets merged/cherry-picked back.
+      // Set REDIRECT_ROOT_TO_ACADEMY=true only on the dset-academy Vercel project.
+      ...(process.env.REDIRECT_ROOT_TO_ACADEMY === 'true'
+        ? [{ source: '/', destination: '/academy', permanent: false }]
+        : []),
       // Gallery → Events (legacy)
       { source: '/gallery',              destination: '/events',        permanent: true },
       { source: '/gallery/:path*',       destination: '/events/:path*', permanent: true },
