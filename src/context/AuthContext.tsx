@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { setAuthToken, clearAuthToken, isAuthenticated } from '@/lib/auth';
+import { setAuthToken, clearAuthToken, isAuthenticated } from '@/lib/authClient';
 
 type Role = 'creator' | 'pmo' | 'leadership' | 'publisher' | 'admin' | null;
 
