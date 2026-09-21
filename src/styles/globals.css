@@ -341,9 +341,37 @@
   .animate-spin-slow {
     animation: spin-slow 8s linear infinite;
   }
-  
+
   .animate-spin-reverse {
     animation: spin-reverse 6s linear infinite;
+  }
+
+  /* Logo marquee (footer partner rail).
+     The track holds the logo list twice; translating it from -50% to 0 moves the
+     logos left-to-right and loops seamlessly because the halves are identical.
+     Pure CSS on purpose: framer-motion is aliased to a shim that ignores
+     `repeat: Infinity`, so a JS-driven loop would never run. */
+  @keyframes marquee-ltr {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-ltr 46s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-viewport:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* No motion: stop the loop and let the rail be scrolled by hand instead, so the
+     logos stay reachable rather than frozen half out of view. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+    .marquee-viewport { overflow-x: auto; }
   }
   
   .glass-card-dark {

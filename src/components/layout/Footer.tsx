@@ -17,19 +17,20 @@ const navLinks = [
   { name: 'Contact',               href: '/contact' },
 ];
 
+// The rail shows marks only, so the name lives in `alt` for screen readers.
 const partnerLogos = [
-  { src: '/Partner_Logos/DPIIT.jpg',                                                           alt: 'DPIIT',                 label: 'DPIIT' },
-  { src: '/Partner_Logos/MSME-logo.jpg',                                                        alt: 'MSME',                  label: 'MSME' },
-  { src: '/Partner_Logos/Microsoft_Success_Partner.png',                                        alt: 'Microsoft ISV Partner', label: 'Microsoft ISV Partner' },
-  { src: '/Partner_Logos/STPI.jpg',                                                             alt: 'STPI - Bengaluru',      label: 'STPI - Bengaluru' },
-  { src: '/Partner_Logos/stpi_centre_of_excellence_for_efficiency_augmentation_logo.jpg',       alt: 'STPI CoE',              label: 'STPI CoE' },
-  { src: '/Partner_Logos/gcp.png',                                                              alt: 'Google Cloud',          label: 'Google Cloud' },
-  { src: '/Partner_Logos/Nvidia_partner.webp',                                                  alt: 'NVIDIA Partner',        label: 'NVIDIA Partner' },
-  { src: '/Partner_Logos/Ingram_Logo.png',                                                      alt: 'Ingram Micro',          label: 'Ingram Micro' },
-  { src: '/Partner_Logos/redington.png',                                                        alt: 'Redington',             label: 'Redington' },
-  { src: '/Partner_Logos/Utkarsh-Odisha.jpg',                                                   alt: 'Utkarsh Odisha',        label: 'Utkarsh Odisha' },
-  { src: '/Partner_Logos/eMudhra.png',                                                          alt: 'eMudhra',               label: 'eMudhra' },
-  { src: '/Partner_Logos/inspace.png',                                                          alt: 'IN-SPACe',              label: 'IN-SPACe' },
+  { src: '/Partner_Logos/DPIIT.jpg',                                                      alt: 'DPIIT' },
+  { src: '/Partner_Logos/MSME-logo.jpg',                                                  alt: 'MSME' },
+  { src: '/Partner_Logos/Microsoft_Success_Partner.png',                                  alt: 'Microsoft ISV Partner' },
+  { src: '/Partner_Logos/STPI.jpg',                                                       alt: 'STPI - Bengaluru' },
+  { src: '/Partner_Logos/stpi_centre_of_excellence_for_efficiency_augmentation_logo.jpg', alt: 'STPI Centre of Excellence' },
+  { src: '/Partner_Logos/gcp.png',                                                        alt: 'Google Cloud' },
+  { src: '/Partner_Logos/Nvidia_partner.webp',                                            alt: 'NVIDIA Partner' },
+  { src: '/Partner_Logos/Ingram_Logo.png',                                                alt: 'Ingram Micro' },
+  { src: '/Partner_Logos/redington.png',                                                  alt: 'Redington' },
+  { src: '/Partner_Logos/Utkarsh-Odisha.jpg',                                             alt: 'Utkarsh Odisha' },
+  { src: '/Partner_Logos/eMudhra.png',                                                    alt: 'eMudhra' },
+  { src: '/Partner_Logos/inspace.png',                                                    alt: 'IN-SPACe' },
 ];
 
 const Footer = () => {
@@ -41,12 +42,12 @@ const Footer = () => {
       <div className="h-[3px] w-full bg-gradient-to-r from-[#5e17ea] via-[#1e90ff] to-[#ff851b]" />
 
       {/* ── Main columns ── */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-14 pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1.4fr] gap-10 lg:gap-16">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1.8fr_1fr_1fr_1.2fr] gap-8 lg:gap-12">
 
           {/* Col 1 — Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-3 mb-5 group focus:outline-none">
+            <Link href="/" className="flex items-center gap-3 mb-4 group focus:outline-none">
               <div className="relative w-[36px] h-[36px] flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <Image src="/dset-logo-orb.svg" alt="DSeT Consulting" fill sizes="36px" className="object-contain" priority />
               </div>
@@ -58,26 +59,26 @@ const Footer = () => {
               </div>
             </Link>
 
-            <p className="text-sm text-white/50 leading-relaxed mb-6 max-w-[280px]">
+            <p className="text-[13px] text-white/45 leading-relaxed mb-5 max-w-[270px]">
               Vertical AI platforms for Mining, Industrial OT, Healthcare, and Secure Enterprise.
               Purpose-built for the world&apos;s hardest operating environments.
             </p>
 
             <div className="flex items-center gap-2.5">
               <a href="https://www.linkedin.com/company/dset-consulting" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white/50 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/45 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-colors duration-200">
                 <IconLinkedin />
               </a>
               <a href="https://x.com/cmdset10x" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white/50 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/45 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-colors duration-200">
                 <IconX />
               </a>
               <a href="https://www.facebook.com/DSeTConsulting/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white/50 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/45 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-colors duration-200">
                 <IconFacebook />
               </a>
               <a href="https://www.instagram.com/dsetconsulting/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white/50 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/45 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-colors duration-200">
                 <IconInstagram />
               </a>
             </div>
@@ -85,11 +86,11 @@ const Footer = () => {
 
           {/* Col 2 — Navigation */}
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-5">Navigation</h3>
-            <ul className="space-y-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Navigation</h3>
+            <ul className="space-y-2">
               {navLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="text-sm text-white/55 hover:text-white transition-colors duration-200">
+                  <Link href={link.href} className="text-[13px] text-white/50 hover:text-white transition-colors duration-200">
                     {link.name}
                   </Link>
                 </li>
@@ -99,8 +100,8 @@ const Footer = () => {
 
           {/* Col 3 — Platforms */}
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-5">Platforms</h3>
-            <ul className="space-y-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Platforms</h3>
+            <ul className="space-y-2">
               {[
                 { name: 'OreBill AI™',           href: '/product/orebill-ai',           color: '#f59e0b' },
                 { name: 'PharmaAI',              href: '/product/pharmaai',             color: '#10b981' },
@@ -113,7 +114,7 @@ const Footer = () => {
                 <li key={p.name}>
                   <Link
                     href={p.href}
-                    className="flex items-center gap-2 text-sm text-white/55 hover:text-white transition-colors duration-200 group"
+                    className="flex items-center gap-2 text-[13px] text-white/50 hover:text-white transition-colors duration-200 group"
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
@@ -128,17 +129,17 @@ const Footer = () => {
 
           {/* Col 4 — Contact */}
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-5">Get in Touch</h3>
-            <div className="space-y-4">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-4">Get in Touch</h3>
+            <div className="space-y-3.5">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">Email</p>
-                <a href="mailto:contact@dsetconsulting.com" className="text-sm text-white/55 hover:text-white transition-colors duration-200">
+                <a href="mailto:contact@dsetconsulting.com" className="text-[13px] text-white/50 hover:text-white transition-colors duration-200">
                   contact@dsetconsulting.com
                 </a>
               </div>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">Office</p>
-                <p className="text-sm text-white/55 leading-relaxed">Bengaluru, Karnataka, India</p>
+                <p className="text-[13px] text-white/50 leading-relaxed">Bengaluru, Karnataka, India</p>
               </div>
             </div>
           </div>
@@ -146,39 +147,51 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* ── Partners strip ── */}
+      {/* ── Partners rail ── */}
       <div className="border-t border-white/[0.07]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 text-center mb-7">
+        <div className="py-7">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/25 text-center mb-5 px-6">
             Our Accelerators, Partners, Collaborators and Certifications
           </p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3 items-center justify-items-center">
-            {partnerLogos.map((p) => (
-              <div
-                key={p.src}
-                className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.05] border border-white/[0.07] hover:bg-white/[0.09] transition-colors duration-200 w-full"
-              >
-                <div style={{ width: '100%', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.src}
-                    alt={p.alt}
-                    loading="lazy"
-                    style={{ maxWidth: '100%', maxHeight: '40px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }}
-                  />
+
+          <div className="marquee-viewport relative overflow-hidden">
+            {/* Edge fades so logos enter and leave the rail instead of being cut off */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 z-10"
+              style={{ background: 'linear-gradient(90deg, #0B1B3A 0%, rgba(11,27,58,0) 100%)' }} />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 z-10"
+              style={{ background: 'linear-gradient(270deg, #0B1B3A 0%, rgba(11,27,58,0) 100%)' }} />
+
+            <div className="marquee-track">
+              {/* The list is rendered twice; the copy is hidden from assistive tech. */}
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex shrink-0" aria-hidden={copy === 1 || undefined}>
+                  {partnerLogos.map((p) => (
+                    <div
+                      key={`${copy}-${p.src}`}
+                      // A white chip because five of these logos are JPGs with baked-in
+                      // white backgrounds; on bare navy they would read as pale rectangles.
+                      className="mx-1.5 flex h-14 w-[132px] shrink-0 items-center justify-center rounded-lg bg-white/95 px-4
+                                 transition-[transform,background-color] duration-200 hover:bg-white hover:-translate-y-0.5"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={p.src}
+                        alt={p.alt}
+                        loading="lazy"
+                        className="max-h-8 w-auto max-w-full object-contain"
+                      />
+                    </div>
+                  ))}
                 </div>
-                <span className="text-[9px] sm:text-[10px] text-white/40 text-center font-medium leading-tight hidden sm:block">
-                  {p.label}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* ── Bottom bar ── */}
       <div className="border-t border-white/[0.07]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-white/30 text-center sm:text-left">
             &copy; {currentYear} DSeT Consulting Private Limited. All rights reserved.
           </p>

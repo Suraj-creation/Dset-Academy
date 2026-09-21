@@ -90,11 +90,15 @@ try {
       `got ${rr.status}${rr.status === 429 ? ' (rate limited)' : ''}`);
   }
 
-  // The endpoint accepts no amount field at all; this documents that a client
-  // cannot smuggle one in even if it starts being sent.
-  const rr = await post('/api/academy/create-order', { ...form, amount: 100, totalAmount: 100 });
-  check('create-order never 200s on a client-supplied amount with test keys',
-    rr.status !== 200, `got ${rr.status}`);
+  // A smuggled amount must not rescue an otherwise-invalid request. The positive case
+  // (a valid request priced from the server catalogue, ignoring the client's amount) is
+  // deliberately not tested here: it would create a real Razorpay order and a real DB row,
+  // which would break this script's guarantee of being safe to run against production.
+  const rr = await post('/api/academy/create-order', {
+    ...form, programmeSlug: 'free-seat', amount: 100, totalAmount: 100,
+  });
+  check('a smuggled amount cannot buy an unlisted programme',
+    rr.status === 400 || rr.status === 429, `got ${rr.status}`);
 
 } catch (e) {
   console.error('\nHARNESS ERROR:', e.message);

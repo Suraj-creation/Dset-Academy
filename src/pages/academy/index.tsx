@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '@/components/layout/Layout';
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { productPageFont } from '@/lib/productPageTypography';
 import { ArrowRight, ArrowUpRight, ChevronDown, X } from 'lucide-react';
 
@@ -16,20 +17,49 @@ const IconLinkedin = ({ size = 16 }: { size?: number }) => (
 const NAVY      = '#0a1830';
 const NAVY_DEEP = '#071224';
 const TEAL      = '#20c4ad';
+const TEAL_DARK = '#0d7d6f';
+const TEAL_TINT = '#e6fbf7';
 const INK       = '#0f1b2d';
 const MUTED     = '#64748b';
 const LIGHT_BG  = '#f6f7fb';
 const BORDER    = '#e6e9f0';
 const ACADEMY_LINKEDIN_URL = 'https://www.linkedin.com/company/103688936/';
 
+/**
+ * Type scale. Sizes are explicit px because globals.css sets `html { font-size: 17px }`,
+ * which inflates every rem-based Tailwind step by 6% and made the old scale read oversized.
+ * Five tiers replace the two the page used to have (every section heading was identical),
+ * so hierarchy now comes from real size and weight steps rather than repetition.
+ */
+const T = {
+  display:   'text-[34px] sm:text-[44px] lg:text-[52px] font-semibold tracking-[-0.035em] leading-[1.08]',
+  h2:        'text-[28px] sm:text-[34px] font-semibold tracking-[-0.03em] leading-[1.12]',
+  h2Support: 'text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] leading-[1.18]',
+  cardTitle: 'text-[17px] font-semibold leading-snug tracking-[-0.01em]',
+  body:      'text-[13.5px] sm:text-sm leading-[1.65]',
+  meta:      'text-[11px] font-semibold uppercase tracking-[0.28em]',
+};
+
+/**
+ * Card hover. The framer-motion import is aliased to a shim (src/lib/motion.tsx) that
+ * silently discards whileHover/whileTap, so every interactive state on this page has to be
+ * CSS. Tailwind v4 already scopes `hover:` behind `@media (hover: hover)`.
+ */
+const HOVER_LIFT =
+  'transition-[transform,box-shadow,border-color] duration-200 ease-out ' +
+  'hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(15,23,42,0.10)]';
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55 } },
+  hidden: { opacity: 0, y: 20 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
+
+/**
+ * Per-item entrance delay. The shim never reads `staggerChildren` (it is declared in its
+ * types but never applied), so the page's old stagger parents did nothing. It does honour
+ * `transition.delay`, so sequencing is done explicitly per child.
+ */
+const step = (i: number, base = 0) => ({ duration: 0.5, delay: base + i * 0.05 });
 
 /* ═══════ Data ═══════ */
 const STAT_STRIP = [
@@ -86,28 +116,28 @@ const PROGRAMS = [
     title: 'AI Foundations for Life Sciences Students', tags: ['Students'],
     desc: 'Practical AI literacy, data thinking, safe tool use and a domain capstone designed for employability and research readiness.',
     format: 'Live labs + project', outcome: 'Demonstrable capstone portfolio', forWhom: 'UG, PG and research students',
-    fee: null, cta: 'Request a campus cohort', href: '#enquiry',
+    fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
   {
     eyebrow: 'MULTIPLIER', badge: 'Interest list', badgeLive: false,
     title: 'DSeT Applied AI Train-the-Trainer', tags: ['Trainers'],
     desc: 'Learn facilitation, lab design, evaluation and vertical adaptation to deliver rigorous DSeT Academy learning experiences.',
     format: 'Guided certification pathway', outcome: 'Micro-teach + facilitator portfolio', forWhom: 'Trainers and domain practitioners',
-    fee: null, cta: 'Join the interest list', href: '#enquiry',
+    fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
   {
     eyebrow: 'INSTITUTIONAL', badge: 'Custom cohort', badgeLive: false,
     title: 'AI Curriculum & Faculty Enablement Lab', tags: ['Faculty'],
     desc: 'A working lab for departments that need curriculum mapping, faculty capacity, assessments and industry-linked student projects.',
     format: 'Department workshop + advisory', outcome: 'Implementable curriculum blueprint', forWhom: 'Universities, colleges, councils',
-    fee: null, cta: 'Plan an institutional cohort', href: '#enquiry',
+    fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
   {
     eyebrow: 'CROSS-VERTICAL', badge: 'Coming next', badgeLive: false,
     title: 'Applied AI for Engineering & Management', tags: ['Students', 'Entrepreneurs'],
     desc: 'Problem framing, agentic workflows, analytics and implementation thinking through industrial and enterprise casework.',
     format: 'Modular live cohort', outcome: 'Industry problem portfolio', forWhom: 'Engineering and management learners',
-    fee: null, cta: 'Get launch updates', href: '#enquiry',
+    fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
 ];
 
@@ -155,18 +185,59 @@ const ROLE_OPTIONS = [
 ];
 
 /* ═══════ Small UI pieces ═══════ */
+/**
+ * Kept for the three sections that still earn one (hero, founding programmes, DAARC).
+ * It used to open seven of nine sections, which is what made every section look alike.
+ */
 function Eyebrow({ children, dark }: { children: React.ReactNode; dark?: boolean }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      <span className="w-4 h-px" style={{ backgroundColor: TEAL }} />
-      <span className="text-xs font-semibold tracking-[0.12em]" style={{ color: dark ? TEAL : '#0d7d6f' }}>
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className="w-5 h-px" style={{ backgroundColor: TEAL }} />
+      <span className={T.meta} style={{ color: dark ? TEAL : TEAL_DARK }}>
         {children}
       </span>
     </div>
   );
 }
 
-const inputClass = 'w-full px-4 py-3 rounded-xl border text-sm outline-none transition-colors focus:ring-2';
+/** Small tracked ordinal. Replaces the 30px numerals that outweighed their own card titles. */
+function Ordinal({ n, dark }: { n: string | number; dark?: boolean }) {
+  return (
+    <span className={T.meta} style={{ color: dark ? 'rgba(255,255,255,0.35)' : '#aab3c2' }}>
+      {typeof n === 'number' ? String(n).padStart(2, '0') : n}
+    </span>
+  );
+}
+
+/** Section heading block. Vertical stack, no floating right-hand explainer paragraph. */
+function SectionHead({
+  eyebrow, title, lead, anchor = true, dark = false, className = '',
+}: {
+  eyebrow?: string; title: React.ReactNode; lead?: React.ReactNode;
+  anchor?: boolean; dark?: boolean; className?: string;
+}) {
+  return (
+    <motion.div
+      initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+      className={`max-w-2xl ${className}`}
+    >
+      {eyebrow && <Eyebrow dark={dark}>{eyebrow}</Eyebrow>}
+      <h2 className={anchor ? T.h2 : T.h2Support} style={{ color: dark ? '#fff' : INK }}>
+        {title}
+      </h2>
+      {lead && (
+        <p className={`${T.body} mt-4 max-w-xl`} style={{ color: dark ? 'rgba(255,255,255,0.6)' : MUTED }}>
+          {lead}
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+// Sized so the six-field form clears a 700px viewport without scrolling.
+const inputClass =
+  'w-full px-3.5 py-2.5 rounded-lg border text-sm outline-none transition-colors ' +
+  'focus:ring-2 focus:ring-offset-0';
 
 /** Title -> payable slug, derived from PROGRAMS so the catalogue stays the single source. */
 const PAYABLE_SLUG_BY_TITLE: Record<string, string> = Object.fromEntries(
@@ -198,7 +269,8 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
   const [payError, setPayError] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<{ registrationId: string; programmeTitle: string } | null>(null);
 
-  if (!open) return null;
+  // No early return: Headless UI's Dialog owns mount/unmount and needs to stay rendered
+  // for its closing transition to play.
 
   const programme = form.programme || presetProgramme || '';
   const payableSlug = PAYABLE_SLUG_BY_TITLE[programme];
@@ -297,137 +369,156 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
     }, 250);
   };
 
+  const labelClass = 'block text-[13px] font-semibold mb-1.5';
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-0 sm:p-4">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={handleClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+    // Headless UI gives focus trap, Escape, scroll lock, role="dialog" and aria-modal,
+    // none of which the previous hand-rolled overlay had. Its `transition` prop drives
+    // real CSS transitions, so the panel can animate out — the motion shim discards `exit`.
+    <Dialog open={open} onClose={handleClose} className="relative z-[100]" transition>
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition duration-200 ease-out data-[closed]:opacity-0"
+      />
 
-      <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-        className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <DialogPanel
+          transition
+          className="relative bg-white w-full sm:max-w-xl sm:rounded-2xl rounded-t-2xl shadow-2xl
+                     max-h-[94vh] sm:max-h-[88vh] overflow-y-auto
+                     transition duration-200 ease-out
+                     data-[closed]:opacity-0 data-[closed]:translate-y-2 data-[closed]:scale-[0.97]"
+        >
+          <div className="flex items-start justify-between gap-4 px-5 sm:px-7 pt-5 pb-4 border-b" style={{ borderColor: BORDER }}>
+            <div>
+              <DialogTitle className="text-[19px] font-semibold tracking-[-0.02em]" style={{ color: INK }}>
+                {step === 'paid' ? 'Enrolment confirmed' : 'Reserve your place'}
+              </DialogTitle>
+            </div>
+            <button onClick={handleClose} aria-label="Close"
+              className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-black/5 active:scale-95">
+              <X size={17} style={{ color: MUTED }} />
+            </button>
+          </div>
 
-        <div className="sticky top-0 z-10 bg-white px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b" style={{ borderColor: BORDER }}>
-          <button onClick={handleClose} aria-label="Close"
-            className="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/5 transition-colors">
-            <X size={18} style={{ color: INK }} />
-          </button>
-          <Eyebrow>FOUNDING COHORT</Eyebrow>
-          <h3 className="text-2xl font-bold" style={{ color: INK }}>
-            {step === 'paid' ? 'Enrolment confirmed' : 'Reserve your place'}
-          </h3>
-        </div>
-
-        <div className="relative z-0 px-6 sm:px-8 py-6">
-          {step === 'form' ? (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>Programme or enquiry</label>
-                <div className="relative">
-                  <select value={form.programme || presetProgramme || ''} onChange={(e) => setForm({ ...form, programme: e.target.value })}
-                    className={`${inputClass} appearance-none pr-10`} style={{ borderColor: TEAL, color: INK }}>
-                    <option value="">Choose one</option>
-                    {PROGRAMME_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>Full name</label>
-                  <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                    placeholder="Your name" className={inputClass} style={{ borderColor: touched && !form.fullName ? '#e11d48' : BORDER, color: INK }} />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>Work email</label>
-                  <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="you@institution.org" className={inputClass} style={{ borderColor: touched && !form.email ? '#e11d48' : BORDER, color: INK }} />
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>Mobile number</label>
-                  <input required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })}
-                    placeholder="+91 …" className={inputClass} style={{ borderColor: touched && !form.mobile ? '#e11d48' : BORDER, color: INK }} />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>You are joining as</label>
-                  <div className="relative">
-                    <select required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
-                      className={`${inputClass} appearance-none pr-10`}
-                      style={{ borderColor: touched && !form.role ? '#e11d48' : (form.role ? TEAL : BORDER), color: INK }}>
-                      <option value="">Select role</option>
-                      {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                    <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+          <div className="px-5 sm:px-7 py-5">
+            {step === 'form' ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Three paired rows rather than six stacked fields — this is what keeps the
+                    whole form above the fold on a 768px-tall laptop. */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Programme</label>
+                    <div className="relative">
+                      <select value={form.programme || presetProgramme || ''} onChange={(e) => setForm({ ...form, programme: e.target.value })}
+                        className={`${inputClass} appearance-none pr-9 truncate`} style={{ borderColor: TEAL, color: INK }}>
+                        <option value="">Choose one</option>
+                        {PROGRAMME_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>You are joining as</label>
+                    <div className="relative">
+                      <select required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        className={`${inputClass} appearance-none pr-9 truncate`}
+                        style={{ borderColor: touched && !form.role ? '#e11d48' : (form.role ? TEAL : BORDER), color: INK }}>
+                        <option value="">Select role</option>
+                        {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: INK }}>Institution / organisation</label>
-                <input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })}
-                  placeholder="Institution or company name" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
-              </div>
-
-              <label className="flex items-start gap-3 cursor-pointer pt-1">
-                <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-                  className="mt-0.5 w-4 h-4 rounded shrink-0" style={{ accentColor: TEAL }} />
-                <span className="text-sm leading-relaxed" style={{ color: MUTED }}>
-                  I agree to be contacted about this cohort and understand that final schedule, fee, admission and
-                  payment details will be confirmed by DSeT Academy.
-                </span>
-              </label>
-              {touched && !isValid && (
-                <p className="text-xs font-medium" style={{ color: '#e11d48' }}>Please fill all required fields and accept the consent to continue.</p>
-              )}
-              {payError && (
-                <div className="rounded-xl p-4 text-xs leading-relaxed" style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}>
-                  {payError}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Full name</label>
+                    <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      placeholder="Your name" className={inputClass} style={{ borderColor: touched && !form.fullName ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Work email</label>
+                    <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="you@institution.org" className={inputClass} style={{ borderColor: touched && !form.email ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
                 </div>
-              )}
 
-              <button type="submit" disabled={busy}
-                className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
-                {busy
-                  ? 'Opening secure checkout…'
-                  : payableSlug
-                    ? <>Pay securely & confirm seat <ArrowRight size={16} /></>
-                    : <>Continue to cohort confirmation <ArrowRight size={16} /></>}
-              </button>
-              {payableSlug && (
-                <p className="text-xs text-center" style={{ color: MUTED }}>
-                  Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Mobile number</label>
+                    <input required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+                      placeholder="+91 …" className={inputClass} style={{ borderColor: touched && !form.mobile ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Institution <span className="font-normal" style={{ color: MUTED }}>(optional)</span></label>
+                    <input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })}
+                      placeholder="Institution or company" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                  </div>
+                </div>
+
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })}
+                    className="mt-0.5 w-4 h-4 rounded shrink-0" style={{ accentColor: TEAL }} />
+                  <span className="text-[12.5px] leading-[1.55]" style={{ color: MUTED }}>
+                    I agree to be contacted about this cohort and understand that final schedule, fee, admission and
+                    payment details will be confirmed by DSeT Academy.
+                  </span>
+                </label>
+
+                {touched && !isValid && (
+                  <p className="text-xs font-medium" style={{ color: '#e11d48' }}>Please fill all required fields and accept the consent to continue.</p>
+                )}
+                {payError && (
+                  <div className="rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}>
+                    {payError}
+                  </div>
+                )}
+
+                <button type="submit" disabled={busy}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm
+                             transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
+                  style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
+                  {busy
+                    ? 'Opening secure checkout…'
+                    : payableSlug
+                      ? <>Pay securely &amp; confirm seat <ArrowRight size={15} /></>
+                      : <>Continue <ArrowRight size={15} /></>}
+                </button>
+                {payableSlug && (
+                  <p className="text-[11px] text-center leading-relaxed" style={{ color: MUTED }}>
+                    Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.
+                  </p>
+                )}
+              </form>
+            ) : (
+              <div>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: TEAL_TINT }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={TEAL_DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <h4 className="text-lg font-semibold mb-2.5" style={{ color: INK }}>Payment verified. Your seat is confirmed.</h4>
+                <p className={`${T.body} mb-4`} style={{ color: MUTED }}>
+                  You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. A receipt has been
+                  emailed to {form.email}. The Academy team will follow up with your cohort schedule.
                 </p>
-              )}
-            </form>
-          ) : step === 'paid' ? (
-            <div>
-              <div className="w-14 h-14 rounded-full flex items-center justify-center mb-5" style={{ backgroundColor: '#e6fbf7' }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0d7d6f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
+                <div className="rounded-lg p-3.5 text-xs leading-relaxed mb-5" style={{ backgroundColor: LIGHT_BG, color: INK }}>
+                  Registration ID<br />
+                  <span className="font-mono font-semibold">{receipt?.registrationId}</span>
+                </div>
+                <button type="button" onClick={handleClose}
+                  className="w-full py-3 rounded-full font-semibold text-sm text-white transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98]"
+                  style={{ backgroundColor: INK }}>
+                  Done
+                </button>
               </div>
-              <h4 className="text-xl font-bold mb-3" style={{ color: INK }}>Payment verified — your seat is confirmed.</h4>
-              <p className="text-sm leading-relaxed mb-5" style={{ color: MUTED }}>
-                You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. A receipt has been
-                emailed to {form.email}. The Academy team will follow up with your cohort schedule.
-              </p>
-              <div className="rounded-xl p-4 text-xs leading-relaxed mb-6" style={{ backgroundColor: LIGHT_BG, color: INK }}>
-                Registration ID<br />
-                <span className="font-mono font-semibold">{receipt?.registrationId}</span>
-              </div>
-              <button type="button" onClick={handleClose}
-                className="w-full py-3.5 rounded-full font-semibold text-sm text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: INK }}>
-                Done
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </motion.div>
-    </div>
+            )}
+          </div>
+        </DialogPanel>
+      </div>
+    </Dialog>
   );
 }
 
@@ -443,6 +534,9 @@ export default function AcademyPage() {
   };
 
   const visiblePrograms = filter === 'All' ? PROGRAMS : PROGRAMS.filter((p) => p.tags.includes(filter));
+  // Payable cohorts get the featured treatment; everything else drops to the compact row.
+  const featuredPrograms = visiblePrograms.filter((p) => 'slug' in p && p.slug);
+  const otherPrograms    = visiblePrograms.filter((p) => !('slug' in p && p.slug));
 
   return (
     <Layout
@@ -481,18 +575,17 @@ export default function AcademyPage() {
 
           <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 md:pt-16 pb-8 sm:pb-12 relative z-10 my-auto">
             <div className="max-w-2xl">
-              <motion.div initial="hidden" animate="show" variants={fadeUp} className="flex items-center gap-2.5 mb-5">
+              <motion.div initial="hidden" animate="show" variants={fadeUp} transition={step(0)}
+                className="flex items-center gap-2.5 mb-5">
                 <span className="w-5 h-[2px] rounded-full" style={{ backgroundColor: TEAL }} />
-                <span className="text-xs sm:text-sm font-semibold tracking-[0.14em]" style={{ color: TEAL }}>
+                <span className={T.meta} style={{ color: TEAL }}>
                   DSeT Academy · Founding Cohorts
                 </span>
               </motion.div>
 
               <motion.h1
-                initial="hidden"
-                animate="show"
-                variants={fadeUp}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold leading-[1.12] tracking-tight mb-5 text-white"
+                initial="hidden" animate="show" variants={fadeUp} transition={step(1)}
+                className={`${T.display} mb-5 text-white`}
               >
                 Domain expertise.<br />
                 <span style={{ color: TEAL }}>Applied AI.</span><br />
@@ -500,43 +593,40 @@ export default function AcademyPage() {
               </motion.h1>
 
               <motion.p
-                initial="hidden"
-                animate="show"
-                variants={fadeUp}
-                className="text-base sm:text-lg text-white/80 max-w-xl mb-8 leading-relaxed font-normal"
+                initial="hidden" animate="show" variants={fadeUp} transition={step(2)}
+                className="text-[15px] sm:text-base text-white/75 max-w-lg mb-8 leading-[1.7]"
               >
                 A practitioner-led capability platform where educators, trainers, students and entrepreneurs
                 learn to apply AI inside the industries they already understand.
               </motion.p>
 
-              <motion.div initial="hidden" animate="show" variants={fadeUp} className="flex flex-wrap items-center gap-4">
+              <motion.div initial="hidden" animate="show" variants={fadeUp} transition={step(3)}
+                className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   onClick={() => openApply()}
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:px-8 sm:py-4 rounded-full font-bold text-sm sm:text-base text-[#071224] transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_25px_rgba(32,196,173,0.45)] shadow-lg active:scale-[0.98] cursor-pointer"
-                  style={{ backgroundColor: TEAL }}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold text-sm transition-[transform,box-shadow] duration-200 ease-out hover:shadow-[0_0_28px_rgba(32,196,173,0.4)] shadow-lg active:scale-[0.98] cursor-pointer"
+                  style={{ backgroundColor: TEAL, color: NAVY_DEEP }}
                 >
                   <span>Reserve a cohort seat</span>
-                  <ArrowUpRight size={18} strokeWidth={2.5} />
+                  <ArrowUpRight size={17} strokeWidth={2.5} />
                 </button>
                 <a
                   href="#life-sciences"
-                  className="inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 rounded-full font-bold text-sm sm:text-base bg-white text-[#071224] transition-all duration-200 hover:bg-white/90 hover:scale-[1.03] shadow-lg active:scale-[0.98]"
+                  className="inline-flex items-center justify-center px-6 py-3.5 rounded-full font-semibold text-sm border border-white/25 text-white transition-colors duration-200 hover:bg-white/10 active:scale-[0.98]"
                 >
                   Explore Life Sciences
                 </a>
               </motion.div>
 
               <motion.a
-                initial="hidden"
-                animate="show"
-                variants={fadeUp}
+                initial="hidden" animate="show" variants={fadeUp} transition={step(4)}
                 href={ACADEMY_LINKEDIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm text-white/60 hover:text-white transition-colors mt-5"
+                className="inline-flex items-center gap-2 text-[12.5px] text-white/50 hover:text-white transition-colors mt-6"
               >
-                <IconLinkedin size={15} /> Follow DSeT Academy on LinkedIn
+                <IconLinkedin size={14} /> Follow DSeT Academy on LinkedIn
               </motion.a>
             </div>
           </div>
@@ -544,143 +634,142 @@ export default function AcademyPage() {
           {/* Stat strip — 4 columns with vertical dividers matching the screenshot */}
           <div className="border-t border-white/10 relative z-10 w-full" style={{ backgroundColor: '#030c1a' }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <motion.div
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                variants={stagger}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/10"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
                 {STAT_STRIP.map((s, i) => (
                   <motion.div
                     key={s.title}
-                    variants={fadeUp}
-                    className={`${i === 0 ? 'lg:pl-0 lg:pr-6' : i === STAT_STRIP.length - 1 ? 'lg:pl-6 lg:pr-0' : 'lg:px-6'} sm:px-6 py-6 sm:py-7 flex flex-col justify-start`}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className={`${i === 0 ? 'lg:pl-0 lg:pr-6' : i === STAT_STRIP.length - 1 ? 'lg:pl-6 lg:pr-0' : 'lg:px-6'} sm:px-6 py-6 flex flex-col justify-start`}
                   >
-                    <h4 className="text-white font-semibold text-base sm:text-[17px] mb-1.5 tracking-tight">
-                      {s.title}
-                    </h4>
-                    <p className="text-white/60 text-xs sm:text-sm leading-relaxed">
-                      {s.desc}
-                    </p>
+                    <h4 className={`${T.cardTitle} text-white mb-1.5`}>{s.title}</h4>
+                    <p className="text-white/55 text-[12.5px] leading-[1.6]">{s.desc}</p>
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* ═══════════ FOUR CAPABILITY PATHWAYS ═══════════ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
-              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="max-w-xl">
-                <Eyebrow>FOUR CAPABILITY PATHWAYS</Eyebrow>
-                <h2 className="text-3xl sm:text-4xl font-bold leading-tight" style={{ color: INK }}>
-                  One Academy. Four ways to create multiplier impact.
-                </h2>
-              </motion.div>
-              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-                className="max-w-sm text-sm leading-relaxed" style={{ color: MUTED }}>
-                DSeT Academy is not a catalogue of generic courses. Each pathway converts existing domain
-                knowledge into applied, ethical and deployable AI capability.
-              </motion.p>
-            </div>
+            <SectionHead
+              anchor={false}
+              title={<>One Academy. Four ways to create multiplier impact.</>}
+              lead="DSeT Academy is not a catalogue of generic courses. Each pathway converts existing domain knowledge into applied, ethical and deployable AI capability."
+              className="mb-12"
+            />
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="grid sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border overflow-hidden" style={{ borderColor: BORDER }}>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-y-9 gap-x-8">
               {PATHWAYS.map((p, i) => (
-                <motion.div key={p.n} variants={fadeUp}
-                  className={`p-7 ${i !== PATHWAYS.length - 1 ? 'sm:border-r' : ''} border-b sm:border-b-0`}
-                  style={{ borderColor: BORDER }}>
-                  <div className="text-3xl font-bold mb-5" style={{ color: '#c9cfdb' }}>{p.n}</div>
-                  <h3 className="font-bold mb-3">{p.title}</h3>
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: MUTED }}>{p.desc}</p>
-                  <a href="#programs" className="text-sm font-semibold inline-flex items-center gap-1" style={{ color: TEAL }}>
-                    {p.link} <ArrowRight size={14} />
+                <motion.div
+                  key={p.n}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="group border-t pt-5" style={{ borderColor: BORDER }}
+                >
+                  <Ordinal n={p.n} />
+                  <h3 className={`${T.cardTitle} mt-3 mb-2`}>{p.title}</h3>
+                  <p className={`${T.body} mb-4`} style={{ color: MUTED }}>{p.desc}</p>
+                  <a href="#programs"
+                    className="text-[13px] font-semibold inline-flex items-center gap-1.5 transition-[gap] duration-200 group-hover:gap-2.5"
+                    style={{ color: TEAL_DARK }}>
+                    {p.link} <ArrowRight size={13} />
                   </a>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════ SCHOOL OF LIFE SCIENCES ═══════════ */}
-        <section id="life-sciences" className="py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+        <section id="life-sciences" className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.82fr_1.18fr] gap-8 lg:gap-12 items-start">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-              className="relative rounded-3xl p-9 sm:p-11 overflow-hidden flex flex-col justify-between" style={{ backgroundColor: NAVY }}>
+              className="relative rounded-2xl p-8 sm:p-10 overflow-hidden flex flex-col justify-between lg:sticky lg:top-28"
+              style={{ backgroundColor: NAVY }}>
               <div className="absolute -bottom-24 -right-16 w-72 h-72 rounded-full border border-white/5" />
               <div className="absolute -bottom-8 -right-4 w-44 h-44 rounded-full border border-white/5" />
               <div className="relative">
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="w-4 h-px" style={{ backgroundColor: TEAL }} />
-                  <span className="text-xs font-semibold tracking-[0.12em] uppercase" style={{ color: TEAL }}>Pioneer School · Now Enrolling</span>
+                <div className="flex items-center gap-2.5 mb-5">
+                  <span className="w-5 h-px" style={{ backgroundColor: TEAL }} />
+                  <span className={T.meta} style={{ color: TEAL }}>Pioneer School</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight">School of Life Sciences</h2>
-                <p className="text-white/65 leading-relaxed mb-8">
+                <h2 className={`${T.h2} text-white mb-4`}>School of Life Sciences</h2>
+                <p className="text-white/60 text-[13.5px] sm:text-sm leading-[1.7] mb-8">
                   AI capability for professionals and institutions across pharmacy, healthcare, nursing, wellness
                   and life-sciences research — grounded in domain evidence, data responsibility and human oversight.
                 </p>
               </div>
-              <div className="relative inline-flex items-center gap-2 text-sm text-white/80 border border-white/15 rounded-full px-4 py-2.5 w-fit">
-                Developed in collaboration with <strong className="text-white">Imperical Consulting (Pvt.) Ltd.</strong>
+              <div className="relative inline-flex items-center gap-2 text-[12.5px] text-white/70 border border-white/15 rounded-lg px-3.5 py-2.5 w-fit leading-snug">
+                Developed in collaboration with <strong className="text-white font-semibold">Imperical Consulting (Pvt.) Ltd.</strong>
               </div>
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid gap-4">
-              {LIFE_SCIENCE_DOMAINS.map((d) => (
-                <motion.div key={d.title} variants={fadeUp}
-                  className="bg-white rounded-2xl border p-6 flex gap-4" style={{ borderColor: BORDER }}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm"
-                    style={{ backgroundColor: '#e6fbf7', color: '#0d7d6f' }}>
+            <div className="divide-y" style={{ borderColor: BORDER }}>
+              {LIFE_SCIENCE_DOMAINS.map((d, i) => (
+                <motion.div
+                  key={d.title}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="flex gap-5 py-6 first:pt-0"
+                  style={{ borderColor: BORDER }}
+                >
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 font-semibold text-[13px]"
+                    style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
                     {d.tag}
                   </div>
                   <div>
-                    <h4 className="font-bold mb-1.5">{d.title}</h4>
-                    <p className="text-sm leading-relaxed" style={{ color: MUTED }}>{d.desc}</p>
+                    <h4 className={`${T.cardTitle} mb-1.5`}>{d.title}</h4>
+                    <p className={T.body} style={{ color: MUTED }}>{d.desc}</p>
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════ THE DSeT LEARNING MODEL ═══════════ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16">
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
-              <Eyebrow>THE DSeT LEARNING MODEL</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold leading-tight mb-5">
+        {/* border-b keeps this from merging into the white section below. */}
+        <section className="py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white border-b" style={{ borderColor: BORDER }}>
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="lg:sticky lg:top-28 lg:self-start">
+              <h2 className={`${T.h2Support} mb-4`}>
                 From knowing AI to applying it responsibly.
               </h2>
-              <p className="text-sm leading-relaxed mb-8" style={{ color: MUTED }}>
+              <p className={`${T.body} mb-7`} style={{ color: MUTED }}>
                 Every cohort follows a six-stage learning journey adapted from DSeT ARC™ — the same execution
                 discipline used to move complex industry problems from discovery to value.
               </p>
               <a href="#programs"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-semibold text-sm text-white"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
                 style={{ backgroundColor: INK }}>
-                See founding programmes <ArrowRight size={15} />
+                See founding programmes <ArrowRight size={14} />
               </a>
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="relative pl-9">
-              <div className="absolute left-[9px] top-2 bottom-2 w-px" style={{ backgroundColor: BORDER }} />
-              <div className="space-y-10">
-                {LEARNING_MODEL.map((step) => (
-                  <motion.div key={step.tag} variants={fadeUp} className="relative">
-                    <span className="absolute -left-9 top-1 w-[18px] h-[18px] rounded-full border-2 bg-white flex items-center justify-center"
+            <div className="relative pl-8">
+              <div className="absolute left-[8px] top-2 bottom-2 w-px" style={{ backgroundColor: BORDER }} />
+              <div className="space-y-8">
+                {LEARNING_MODEL.map((s, i) => (
+                  <motion.div
+                    key={s.tag}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className="relative"
+                  >
+                    <span className="absolute -left-8 top-1 w-[17px] h-[17px] rounded-full border-2 bg-white flex items-center justify-center"
                       style={{ borderColor: TEAL }}>
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: TEAL }} />
+                      <span className="w-[7px] h-[7px] rounded-full" style={{ backgroundColor: TEAL }} />
                     </span>
-                    <span className="text-xs font-semibold tracking-[0.1em] uppercase" style={{ color: '#4a7fd6' }}>{step.tag}</span>
-                    <h4 className="font-bold text-lg mt-1.5 mb-1.5">{step.title}</h4>
-                    <p className="text-sm leading-relaxed mb-3" style={{ color: MUTED }}>{step.desc}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {step.pills.map((pill) => (
-                        <span key={pill} className="text-xs font-medium px-3 py-1.5 rounded-full border" style={{ borderColor: BORDER, color: INK }}>
+                    <span className={T.meta} style={{ color: TEAL_DARK }}>{s.tag}</span>
+                    <h4 className={`${T.cardTitle} mt-2 mb-1.5`}>{s.title}</h4>
+                    <p className={`${T.body} mb-3`} style={{ color: MUTED }}>{s.desc}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {s.pills.map((pill) => (
+                        <span key={pill} className="text-[11.5px] font-medium px-2.5 py-1 rounded-md border" style={{ borderColor: BORDER, color: MUTED }}>
                           {pill}
                         </span>
                       ))}
@@ -688,180 +777,227 @@ export default function AcademyPage() {
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════ FOUNDING PROGRAMMES ═══════════ */}
-        <section id="programs" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        {/* Payable cohorts are featured at double width; the rest drop to a compact 4-up. */}
+        <section id="programs" className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="max-w-xl">
-                <Eyebrow>FOUNDING PROGRAMMES</Eyebrow>
-                <h2 className="text-3xl sm:text-4xl font-bold leading-tight">Choose your starting point.</h2>
-              </motion.div>
-              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-                className="max-w-sm text-sm leading-relaxed" style={{ color: MUTED }}>
-                Programmes can run as open cohorts or as customised institutional cohorts. Final schedule and
-                fee are confirmed before secure payment.
-              </motion.p>
-            </div>
+            <SectionHead
+              eyebrow="FOUNDING PROGRAMMES"
+              title="Choose your starting point."
+              lead="Programmes can run as open cohorts or as customised institutional cohorts. Final schedule and fee are confirmed before secure payment."
+              className="mb-9"
+            />
 
-            <div className="flex flex-wrap gap-2 mb-10">
+            <div className="flex flex-wrap gap-1.5 mb-9">
               {FILTERS.map((f) => (
                 <button key={f} onClick={() => setFilter(f)}
-                  className="px-5 py-2 rounded-full text-sm font-semibold border transition-colors"
+                  className="px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors duration-200"
                   style={filter === f
                     ? { backgroundColor: INK, color: '#fff', borderColor: INK }
-                    : { backgroundColor: '#fff', color: INK, borderColor: BORDER }}>
+                    : { backgroundColor: '#fff', color: MUTED, borderColor: BORDER }}>
                   {f}
                 </button>
               ))}
             </div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visiblePrograms.map((p) => (
-                <motion.div key={p.title} variants={fadeUp}
-                  className="rounded-2xl border p-7 flex flex-col" style={{ borderColor: BORDER }}>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold tracking-[0.1em] uppercase" style={{ color: TEAL }}>{p.eyebrow}</span>
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: p.badgeLive ? '#e6fbf7' : '#f1f2f6', color: p.badgeLive ? '#0d7d6f' : MUTED }}>
+            {featuredPrograms.length > 0 && (
+              <div className="grid lg:grid-cols-2 gap-5 mb-5">
+                {featuredPrograms.map((p, i) => (
+                  <motion.div
+                    key={p.title}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className={`relative rounded-2xl border p-7 sm:p-8 flex flex-col ${HOVER_LIFT}`}
+                    style={{ borderColor: BORDER, backgroundColor: '#fff' }}
+                  >
+                    <span className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl"
+                      style={{ background: `linear-gradient(90deg, ${TEAL}, ${TEAL_DARK})` }} />
+
+                    <div className="flex items-center justify-between gap-3 mb-5">
+                      <span className={T.meta} style={{ color: TEAL_DARK }}>{p.eyebrow}</span>
+                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                        style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
+                        {p.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-[20px] sm:text-[22px] font-semibold leading-snug tracking-[-0.02em] mb-3">{p.title}</h3>
+                    <p className={`${T.body} mb-6 flex-grow`} style={{ color: MUTED }}>{p.desc}</p>
+
+                    <dl className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 py-5 border-y mb-5" style={{ borderColor: BORDER }}>
+                      {[['Format', p.format], ['Outcome', p.outcome], ['For', p.forWhom]].map(([k, v]) => (
+                        <div key={k}>
+                          <dt className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: '#aab3c2' }}>{k}</dt>
+                          <dd className="text-[12.5px] leading-[1.5]" style={{ color: INK }}>{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
+
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-[26px] font-semibold tracking-[-0.02em] leading-none">{p.fee}</p>
+                        <p className="text-[11px] mt-1.5" style={{ color: MUTED }}>incl. 18% GST</p>
+                      </div>
+                      <button type="button" onClick={() => openApply(p.title)}
+                        className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
+                        style={{ backgroundColor: INK }}>
+                        {p.cta} <ArrowRight size={14} />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            {otherPrograms.length > 0 && (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {otherPrograms.map((p, i) => (
+                  <motion.div
+                    key={p.title}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i, 0.1)}
+                    className={`group relative overflow-hidden rounded-xl border bg-white p-6 flex flex-col ${HOVER_LIFT}`}
+                    style={{ borderColor: BORDER }}
+                  >
+                    {/* Accent wipes in on hover, echoing the solid bar on the featured cards
+                        above without competing with them at rest. */}
+                    <span className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"
+                      style={{ background: `linear-gradient(90deg, ${TEAL}, ${TEAL_DARK})` }} />
+
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full w-fit mb-4"
+                      style={{ backgroundColor: LIGHT_BG, color: MUTED, border: `1px solid ${BORDER}` }}>
                       {p.badge}
                     </span>
-                  </div>
-                  <h3 className="font-bold text-lg mb-3 leading-snug">{p.title}</h3>
-                  <p className="text-sm leading-relaxed mb-5 flex-grow" style={{ color: MUTED }}>{p.desc}</p>
+                    <h3 className={`${T.cardTitle} mb-2.5`}>{p.title}</h3>
+                    <p className={`${T.body} mb-6 flex-grow`} style={{ color: MUTED }}>{p.desc}</p>
 
-                  <div className="text-xs space-y-1.5 mb-6" style={{ color: MUTED }}>
-                    <p><strong style={{ color: INK }}>Format:</strong> {p.format}</p>
-                    <p><strong style={{ color: INK }}>Outcome:</strong> {p.outcome}</p>
-                    <p><strong style={{ color: INK }}>For:</strong> {p.forWhom}</p>
-                  </div>
-
-                  {p.fee && <p className="text-xl font-bold mb-4">{p.fee} <span className="text-xs font-normal" style={{ color: MUTED }}>incl. GST</span></p>}
-
-                  {'slug' in p && p.slug ? (
-                    <button type="button" onClick={() => openApply(p.title)}
-                      className="inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm text-white transition-colors hover:opacity-90"
-                      style={{ backgroundColor: INK }}>
-                      {p.cta}
-                    </button>
-                  ) : (
-                    // No published fee — there is nothing to charge, so send these to the
-                    // contact form (which already persists to the contacts table).
+                    {/* One label for one destination: all four of these route to /contact,
+                        so they read as a single action rather than four different ones. */}
                     <Link href="/contact"
-                      className="inline-flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm transition-colors hover:opacity-90 border"
-                      style={{ borderColor: INK, color: INK }}>
-                      {p.cta}
+                      className="inline-flex items-center justify-center gap-2 py-2.5 rounded-full border text-[13px] font-semibold
+                                 border-[#0d7d6f]/35 text-[#0d7d6f]
+                                 transition-[background-color,color,border-color,transform] duration-200 ease-out
+                                 hover:bg-[#0d7d6f] hover:text-white hover:border-[#0d7d6f] active:scale-[0.98]">
+                      {p.cta} <ArrowRight size={14} />
                     </Link>
-                  )}
-                </motion.div>
-              ))}
-            </motion.div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            {visiblePrograms.length === 0 && (
+              <p className={T.body} style={{ color: MUTED }}>No programmes match this filter yet.</p>
+            )}
           </div>
         </section>
 
         {/* ═══════════ VERTICAL SCHOOL ARCHITECTURE ═══════════ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
-              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="max-w-xl">
-                <Eyebrow>VERTICAL SCHOOL ARCHITECTURE</Eyebrow>
-                <h2 className="text-3xl sm:text-4xl font-bold leading-tight">Start deep. Then scale across DSeT&apos;s industries.</h2>
-              </motion.div>
-              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-                className="max-w-sm text-sm leading-relaxed" style={{ color: MUTED }}>
-                Each school combines domain faculty, DSeT platform practitioners, institutional partners and applied research.
-              </motion.p>
-            </div>
+        <section className="py-16 lg:py-20 overflow-hidden" style={{ backgroundColor: LIGHT_BG }}>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHead
+              anchor={false}
+              title={<>Start deep. Then scale across DSeT&apos;s industries.</>}
+              lead="Each school combines domain faculty, DSeT platform practitioners, institutional partners and applied research."
+              className="mb-9"
+            />
+          </div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {VERTICAL_SCHOOLS.map((s) => (
-                <motion.div key={s.name} variants={fadeUp}
-                  className="rounded-2xl p-6 border"
-                  style={s.live
-                    ? { backgroundColor: NAVY, borderColor: NAVY }
-                    : { backgroundColor: '#fff', borderColor: BORDER }}>
-                  <span className="text-[11px] font-semibold tracking-[0.1em] uppercase"
-                    style={{ color: s.live ? TEAL : '#4a7fd6' }}>
-                    {s.status}
-                  </span>
-                  <h4 className="font-bold mt-3 mb-2" style={{ color: s.live ? '#fff' : INK }}>{s.name}</h4>
-                  <p className="text-sm leading-relaxed" style={{ color: s.live ? 'rgba(255,255,255,0.6)' : MUTED }}>{s.desc}</p>
-                </motion.div>
-              ))}
-            </motion.div>
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 sm:scroll-px-6 lg:scroll-px-8
+                          px-4 sm:px-6 lg:px-8 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* Spacer keeps the rail aligned to the container on wide screens */}
+            <div className="hidden xl:block shrink-0" style={{ width: 'max(0px, calc((100vw - 72rem) / 2 - 2rem))' }} />
+            {VERTICAL_SCHOOLS.map((s, i) => (
+              <motion.div
+                key={s.name}
+                initial="hidden" whileInView="show" viewport={{ once: true }}
+                variants={fadeUp} transition={step(i)}
+                className={`snap-start shrink-0 w-[270px] sm:w-[300px] rounded-xl p-5 border ${HOVER_LIFT}`}
+                style={s.live
+                  ? { backgroundColor: NAVY, borderColor: NAVY }
+                  : { backgroundColor: '#fff', borderColor: BORDER }}
+              >
+                <span className={T.meta} style={{ color: s.live ? TEAL : '#aab3c2' }}>
+                  {s.status}
+                </span>
+                <h4 className={`${T.cardTitle} mt-3 mb-2`} style={{ color: s.live ? '#fff' : INK }}>{s.name}</h4>
+                <p className="text-[12.5px] leading-[1.6]" style={{ color: s.live ? 'rgba(255,255,255,0.6)' : MUTED }}>{s.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </section>
 
         {/* ═══════════ RESEARCH & ACADEMIC RIGOUR (DAARC) ═══════════ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ backgroundColor: NAVY }}>
+        <section className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ backgroundColor: NAVY }}>
           <div className="pointer-events-none absolute top-0 left-0 w-1/2 h-full blur-3xl rounded-full" style={{ background: `${TEAL}0d` }} />
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-start relative">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.08fr_0.92fr] gap-10 lg:gap-16 items-start relative">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
               <Eyebrow dark>RESEARCH AND ACADEMIC RIGOUR</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold leading-tight mb-6 text-white">
+              <h2 className={`${T.h2} mb-5 text-white`}>
                 Practice informed by research.<br />Research tested in practice.
               </h2>
-              <p className="text-white/65 leading-relaxed mb-4">
+              <p className="text-white/60 text-[13.5px] sm:text-sm leading-[1.7] mb-4 max-w-lg">
                 The DSeT Applied AI &amp; Research Advisory Council (DAARC) is being constituted to guide academic
                 quality, responsible AI, research collaboration, publications, IP pathways and industry relevance
                 across Academy schools.
               </p>
-              <p className="text-sm text-white/40 leading-relaxed">
+              <p className="text-[12.5px] text-white/35 leading-relaxed max-w-lg">
                 DSeT ARC™ is the delivery and learning framework. DAARC is the proposed advisory and research council.
               </p>
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="grid sm:grid-cols-2 gap-4">
-              {RESEARCH_PILLARS.map((r) => (
-                <motion.div key={r.title} variants={fadeUp}
-                  className="rounded-2xl p-6 border" style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.04)' }}>
-                  <h4 className="font-bold mb-2" style={{ color: TEAL }}>{r.title}</h4>
-                  <p className="text-sm leading-relaxed text-white/60">{r.desc}</p>
+            <div className="grid sm:grid-cols-2 gap-px rounded-xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+              {RESEARCH_PILLARS.map((r, i) => (
+                <motion.div
+                  key={r.title}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="p-5 transition-colors duration-200 hover:bg-white/[0.06]"
+                  style={{ backgroundColor: NAVY }}
+                >
+                  <h4 className={`${T.cardTitle} mb-2`} style={{ color: TEAL }}>{r.title}</h4>
+                  <p className="text-[12.5px] leading-[1.6] text-white/55">{r.desc}</p>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════ GOVERNANCE MODEL ═══════════ */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
-              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="max-w-xl">
-                <Eyebrow>GOVERNANCE MODEL</Eyebrow>
-                <h2 className="text-3xl sm:text-4xl font-bold leading-tight">
-                  Built as an ecosystem, not a faculty list.
-                </h2>
-              </motion.div>
-              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-                className="max-w-sm text-sm leading-relaxed" style={{ color: MUTED }}>
-                Named appointments will be announced only after written consent and confirmation of scope.
-              </motion.p>
-            </div>
+        <section className="py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
+          <div className="max-w-5xl mx-auto">
+            <SectionHead
+              anchor={false}
+              title="Built as an ecosystem, not a faculty list."
+              lead="Named appointments will be announced only after written consent and confirmation of scope."
+              className="mb-10"
+            />
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}
-              className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-              {GOVERNANCE_ROLES.map((r) => (
-                <motion.div key={r.tag} variants={fadeUp}
-                  className="bg-white rounded-2xl border p-6" style={{ borderColor: BORDER }}>
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-xs text-white mb-5"
-                    style={{ background: `linear-gradient(135deg, ${TEAL}, #0d7d6f)` }}>
+            <div className="border-t" style={{ borderColor: BORDER }}>
+              {GOVERNANCE_ROLES.map((r, i) => (
+                <motion.div
+                  key={r.tag}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="grid grid-cols-[auto_1fr] sm:grid-cols-[auto_minmax(0,15rem)_1fr] gap-x-4 sm:gap-x-6 gap-y-1.5 items-start
+                             py-5 border-b transition-colors duration-200 hover:bg-white/70"
+                  style={{ borderColor: BORDER }}
+                >
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center font-semibold text-[11px] text-white row-span-2 sm:row-span-1"
+                    style={{ background: `linear-gradient(135deg, ${TEAL}, ${TEAL_DARK})` }}>
                     {r.tag}
                   </div>
-                  <h4 className="font-bold mb-2 leading-snug">{r.title}</h4>
-                  <p className="text-sm leading-relaxed" style={{ color: MUTED }}>{r.desc}</p>
+                  <h4 className={`${T.cardTitle} self-center`}>{r.title}</h4>
+                  <p className={`${T.body} col-start-2 sm:col-start-3 self-center`} style={{ color: MUTED }}>{r.desc}</p>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
 
             <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-              className="text-xs leading-relaxed" style={{ color: MUTED }}>
+              className="text-[11.5px] leading-relaxed mt-6 max-w-2xl" style={{ color: '#94a0b2' }}>
               Appointments are independent professional/advisory engagements governed by separate written terms;
               they are not represented as employment positions.
             </motion.p>
@@ -869,54 +1005,71 @@ export default function AcademyPage() {
         </section>
 
         {/* ═══════════ CTA BANNER ═══════════ */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-              className="rounded-3xl p-9 sm:p-11 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+              className="rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
               style={{ backgroundColor: TEAL }}>
               <div>
-                <h3 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: NAVY_DEEP }}>
+                <h3 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.025em] leading-tight mb-2" style={{ color: NAVY_DEEP }}>
                   Bring your domain. Leave with something deployable.
                 </h3>
-                <p className="text-sm" style={{ color: '#0d5c52' }}>
+                <p className="text-[13px]" style={{ color: '#0d5c52' }}>
                   Reserve a seat, propose an institutional cohort or join the trainer ecosystem.
                 </p>
               </div>
               <button type="button" onClick={() => openApply()}
-                className="shrink-0 inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-semibold text-sm text-white whitespace-nowrap"
+                className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] text-white whitespace-nowrap transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
                 style={{ backgroundColor: NAVY_DEEP }}>
-                Start your application <ArrowUpRight size={16} />
+                Start your application <ArrowUpRight size={15} />
               </button>
             </motion.div>
           </div>
         </section>
 
         {/* ═══════════ FAQ ═══════════ */}
-        <section id="enquiry" className="py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
+        <section id="enquiry" className="py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
           <div className="max-w-3xl mx-auto">
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mb-12">
-              <Eyebrow>FREQUENTLY ASKED</Eyebrow>
-              <h2 className="text-3xl sm:text-4xl font-bold leading-tight">Clear answers before you enrol.</h2>
-            </motion.div>
+            <SectionHead anchor={false} title="Clear answers before you enrol." className="mb-8" />
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="space-y-3">
-              {FAQS.map((f, i) => (
-                <motion.div key={f.q} variants={fadeUp} className="bg-white rounded-2xl border overflow-hidden" style={{ borderColor: BORDER }}>
-                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5">
-                    <span className="font-semibold text-sm">{f.q}</span>
-                    <ChevronDown size={18} className="shrink-0 transition-transform" style={{ color: MUTED, transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
-                  </button>
-                  {openFaq === i && (
-                    <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: MUTED }}>{f.a}</div>
-                  )}
-                </motion.div>
-              ))}
-            </motion.div>
+            <div className="border-t" style={{ borderColor: BORDER }}>
+              {FAQS.map((f, i) => {
+                const isOpen = openFaq === i;
+                return (
+                  <motion.div
+                    key={f.q}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className="border-b" style={{ borderColor: BORDER }}
+                  >
+                    <button onClick={() => setOpenFaq(isOpen ? null : i)}
+                      aria-expanded={isOpen}
+                      className="w-full flex items-center justify-between gap-4 text-left py-5 group">
+                      <span className="text-[14.5px] font-semibold leading-snug transition-opacity duration-200 group-hover:opacity-60">
+                        {f.q}
+                      </span>
+                      <ChevronDown size={17} className="shrink-0 transition-transform duration-200 ease-out"
+                        style={{ color: MUTED, transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+                    </button>
+                    {/* grid-rows 0fr -> 1fr animates height without measuring content. */}
+                    <div
+                      className="grid transition-[grid-template-rows] duration-[250ms] ease-out"
+                      style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                    >
+                      <div className="overflow-hidden">
+                        <p className={`${T.body} pb-5 pr-8`} style={{ color: MUTED }}>{f.a}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-10 text-center">
-              <Link href="/contact" className="inline-flex items-center gap-2 text-sm font-semibold" style={{ color: TEAL }}>
-                Still have questions — contact the Academy team <ArrowRight size={15} />
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-8">
+              <Link href="/contact"
+                className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-[gap] duration-200 hover:gap-2.5"
+                style={{ color: TEAL_DARK }}>
+                Still have questions? Contact the Academy team <ArrowRight size={14} />
               </Link>
             </motion.div>
           </div>
