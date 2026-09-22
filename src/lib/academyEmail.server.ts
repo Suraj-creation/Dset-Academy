@@ -76,9 +76,11 @@ export async function sendRegistrationEmails(reg: RegistrationRow): Promise<void
   });
 
   // 2) Internal notification
+  // `||` on purpose, not `??` — an env var left blank ("") in .env.local must still
+  // fall through, since `??` only catches null/undefined and would leave `to: ""`.
   const notifyTo = process.env.ACADEMY_NOTIFY_EMAIL
-    ?? process.env.CONTACT_EMAIL
-    ?? 'contact@dsetconsulting.com';
+    || process.env.CONTACT_EMAIL
+    || 'contact@dsetconsulting.com';
 
   await sendMail({
     to: notifyTo,
@@ -173,8 +175,8 @@ export async function sendRegistrationWhatsAppReceipt(reg: RegistrationRow): Pro
  */
 export async function sendInterestNotification(row_: InterestRow): Promise<void> {
   const notifyTo = process.env.ACADEMY_NOTIFY_EMAIL
-    ?? process.env.CONTACT_EMAIL
-    ?? 'contact@dsetconsulting.com';
+    || process.env.CONTACT_EMAIL
+    || 'contact@dsetconsulting.com';
 
   await sendMail({
     to: notifyTo,
