@@ -333,3 +333,76 @@ export const academyInterestRegistrations = pgTable('academy_interest_registrati
   contacted:      boolean('contacted').notNull().default(false),
   createdAt:      timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
+
+// Life Sciences (SLSSDTR) Program Enquiry table residing in Neon PostgreSQL
+export const programEnquiries = pgTable('program_enquiry', {
+  id:                    text('id').primaryKey(),
+  programId:             text('programId').notNull(),
+  name:                  text('name').notNull(),
+  email:                 text('email').notNull(),
+  phone:                 text('phone'),
+  organization:          text('organization'),
+  message:               text('message').notNull(),
+  status:                text('status').notNull().default('NEW'),
+  createdAt:             timestamp('createdAt', { mode: 'string' }).notNull().defaultNow(),
+  updatedAt:             timestamp('updatedAt', { mode: 'string' }),
+  userId:                text('userId'),
+  source:                text('source').default('DIRECT'),
+  externalSystem:        text('external_system'),
+  externalReference:     text('external_reference'),
+  location:              text('location'),
+  country:               text('country'),
+  role:                  text('role'),
+  department:            text('department'),
+  courseName:            text('course_name'),
+  currentYear:           text('current_year'),
+  subjectSpecialization: text('subject_specialization'),
+  companyName:           text('company_name'),
+  companyType:           text('company_type'),
+  metadata:              jsonb('metadata'),
+});
+
+// Normalized Commerce Orders table
+export const orders = pgTable('orders', {
+  id:              text('id').primaryKey(),
+  registrationId:  text('registration_id'),
+  userId:          text('user_id'),
+  programmeSlug:   text('programme_slug').notNull(),
+  programmeTitle:  text('programme_title').notNull(),
+  provider:        text('provider').notNull().default('RAZORPAY'),
+  providerAccount: text('provider_account').notNull().default('DSET'),
+  providerOrderId: text('provider_order_id').unique(),
+  amount:          integer('amount').notNull(),
+  currency:        text('currency').notNull().default('INR'),
+  receipt:         text('receipt'),
+  status:          text('status').notNull().default('created'),
+  attempts:        integer('attempts').notNull().default(0),
+  createdAt:       timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  updatedAt:       timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
+// Normalized Commerce Payments table
+export const payments = pgTable('payments', {
+  id:                 text('id').primaryKey(),
+  orderId:            text('order_id').notNull(),
+  registrationId:     text('registration_id'),
+  provider:           text('provider').notNull().default('RAZORPAY'),
+  providerAccount:    text('provider_account').notNull().default('DSET'),
+  providerPaymentId:  text('provider_payment_id').unique(),
+  amount:             integer('amount').notNull(),
+  currency:           text('currency').notNull().default('INR'),
+  status:             text('status').notNull(),
+  method:             text('method'),
+  captured:           boolean('captured').notNull().default(false),
+  fee:                integer('fee'),
+  tax:                integer('tax'),
+  netSettlement:      integer('net_settlement'),
+  payerEmail:         text('payer_email'),
+  payerContact:       text('payer_contact'),
+  errorCode:          text('error_code'),
+  errorDescription:   text('error_description'),
+  amountMismatch:     boolean('amount_mismatch').notNull().default(false),
+  createdAt:          timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  updatedAt:          timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -305,9 +305,29 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
   const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
-  // `paid` distinguishes the Razorpay success screen from the general-interest one —
-  // same shape, different copy, since neither involves money for the interest path.
   const [receipt, setReceipt] = useState<{ registrationId: string; programmeTitle: string; paid: boolean } | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Auto-redirect to SLSSDTR after interest registration submission
+  useEffect(() => {
+    if (step === 'done' && !receipt?.paid) {
+      setCountdown(5);
+    } else {
+      setCountdown(null);
+    }
+  }, [step, receipt]);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (countdown <= 0) {
+      window.location.href = 'https://slssdtr.vercel.app/';
+      return;
+    }
+    const timer = setTimeout(() => {
+      setCountdown(prev => (prev !== null && prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   // No early return: Headless UI's Dialog owns mount/unmount and needs to stay rendered
   // for its closing transition to play.
@@ -432,6 +452,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
   };
 
   const handleClose = () => {
+    setCountdown(null);
     onClose();
     setTimeout(() => {
       setStep('form');
@@ -439,6 +460,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
       setBusy(false);
       setPayError(null);
       setReceipt(null);
+      setCountdown(null);
       setForm({
         programme: '', fullName: '', email: '', mobile: '', location: '', country: '',
         role: '', institution: '', department: '',
@@ -720,10 +742,49 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                   Reference ID<br />
                   <span className="font-mono font-semibold">{receipt?.registrationId}</span>
                 </div>
+                {/* SLSSDTR Cross-Portal Redirect & Discovery Card */}
+                <div className="rounded-xl border p-4 mb-4" style={{ backgroundColor: '#f4fbf9', borderColor: '#a7f3d0' }}>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded" style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
+                      Next Step
+                    </span>
+                    {countdown !== null && countdown > 0 && (
+                      <span className="text-[11px] font-mono text-teal-800 bg-white px-2 py-0.5 rounded border border-teal-200">
+                        Redirecting in {countdown}s
+                      </span>
+                    )}
+                  </div>
+                  <h5 className="text-[14px] font-semibold mb-1" style={{ color: INK }}>
+                    Explore specialized programs on SLSSDTR
+                  </h5>
+                  <p className="text-[12.5px] leading-relaxed mb-3.5" style={{ color: MUTED }}>
+                    Your enquiry has been received. Continue to the official SLSSDTR platform to explore all specialized department modules, faculty tracks, and institutional offerings.
+                  </p>
+                  <a
+                    href="https://slssdtr.vercel.app/"
+                    onClick={() => setCountdown(null)}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold text-sm text-white transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98] shadow-sm mb-2.5"
+                    style={{ backgroundColor: TEAL_DARK }}
+                  >
+                    <span>Explore on SLSSDTR Website</span>
+                    <ArrowUpRight size={15} />
+                  </a>
+                  {countdown !== null && (
+                    <button
+                      type="button"
+                      onClick={() => setCountdown(null)}
+                      className="w-full text-center text-[12px] font-medium transition-colors hover:underline cursor-pointer"
+                      style={{ color: MUTED }}
+                    >
+                      Stay on this page (pause redirect)
+                    </button>
+                  )}
+                </div>
+
                 <button type="button" onClick={handleClose}
-                  className="w-full py-3 rounded-full font-semibold text-sm text-white transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98]"
-                  style={{ backgroundColor: INK }}>
-                  Done
+                  className="w-full py-2.5 rounded-full font-semibold text-xs transition-[transform,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.98] border cursor-pointer"
+                  style={{ borderColor: BORDER, color: INK, backgroundColor: '#fff' }}>
+                  Close
                 </button>
               </div>
             )}
