@@ -65,7 +65,7 @@ const Footer = () => {
             </p>
 
             <div className="flex items-center gap-2.5">
-              <a href="https://www.linkedin.com/company/dset-consulting" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+              <a href="https://www.linkedin.com/company/103688936/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white/45 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/10 transition-colors duration-200">
                 <IconLinkedin />
               </a>
