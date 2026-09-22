@@ -25,6 +25,7 @@ const navLinks = [
     ],
   },
   { name: 'Industries',    href: '/industries'    },
+  { name: 'Academy',       href: '/academy'       },
   { name: 'Case Studies',  href: '/case-studies'  },
   {
     name: 'Resources',

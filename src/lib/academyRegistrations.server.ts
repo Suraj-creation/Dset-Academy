@@ -25,6 +25,16 @@ export async function createRegistration(data: {
   mobile: string;
   role: string;
   institution?: string | null;
+  location?: string | null;
+  country?: string | null;
+  batch?: string | null;
+  department?: string | null;
+  courseName?: string | null;
+  currentYear?: string | null;
+  subjectSpecialization?: string | null;
+  companyName?: string | null;
+  companyType?: string | null;
+  otherProfessionDetail?: string | null;
   consent: boolean;
   baseAmount: number;
   gstAmount: number;
@@ -35,6 +45,16 @@ export async function createRegistration(data: {
   const [row] = await db.insert(academyRegistrations).values({
     ...data,
     institution: data.institution ?? null,
+    location: data.location ?? null,
+    country: data.country ?? null,
+    batch: data.batch ?? null,
+    department: data.department ?? null,
+    courseName: data.courseName ?? null,
+    currentYear: data.currentYear ?? null,
+    subjectSpecialization: data.subjectSpecialization ?? null,
+    companyName: data.companyName ?? null,
+    companyType: data.companyType ?? null,
+    otherProfessionDetail: data.otherProfessionDetail ?? null,
     paymentStatus: 'created',
     enrollmentStatus: 'pending',
   }).returning();

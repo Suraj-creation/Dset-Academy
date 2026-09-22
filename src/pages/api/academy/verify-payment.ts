@@ -6,7 +6,7 @@ import {
   markRegistrationPaid,
   logPaymentEvent,
 } from '@/lib/academyRegistrations.server';
-import { sendRegistrationEmails } from '@/lib/academyEmail.server';
+import { sendRegistrationEmails, sendWelcomeEmailWithBrochure, sendRegistrationWhatsAppReceipt } from '@/lib/academyEmail.server';
 
 /**
  * Step 2 of enrolment: the browser reports a completed Checkout.
@@ -163,6 +163,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     sendRegistrationEmails(row).catch(e =>
       console.error('[academy] confirmation email failed:', e.message));
+    sendWelcomeEmailWithBrochure(row).catch(e =>
+      console.error('[academy] welcome email failed:', e.message));
+    sendRegistrationWhatsAppReceipt(row).catch(e =>
+      console.error('[academy] WhatsApp receipt failed:', e.message));
   }
 
   return res.status(200).json({

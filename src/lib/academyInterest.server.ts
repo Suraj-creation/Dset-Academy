@@ -15,6 +15,15 @@ export async function createInterestRegistration(data: {
   mobile: string;
   role: string;
   institution?: string | null;
+  location?: string | null;
+  country?: string | null;
+  department?: string | null;
+  courseName?: string | null;
+  currentYear?: string | null;
+  subjectSpecialization?: string | null;
+  companyName?: string | null;
+  companyType?: string | null;
+  otherProfessionDetail?: string | null;
   consent: boolean;
 }): Promise<InterestRow> {
   const [row] = await db.insert(academyInterestRegistrations).values({
@@ -25,6 +34,15 @@ export async function createInterestRegistration(data: {
     mobile: data.mobile,
     role: data.role,
     institution: data.institution ?? null,
+    location: data.location ?? null,
+    country: data.country ?? null,
+    department: data.department ?? null,
+    courseName: data.courseName ?? null,
+    currentYear: data.currentYear ?? null,
+    subjectSpecialization: data.subjectSpecialization ?? null,
+    companyName: data.companyName ?? null,
+    companyType: data.companyType ?? null,
+    otherProfessionDetail: data.otherProfessionDetail ?? null,
     consent: data.consent,
   }).returning();
   return row;

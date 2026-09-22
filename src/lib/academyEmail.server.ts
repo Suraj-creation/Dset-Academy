@@ -1,5 +1,6 @@
+import path from 'path';
 import { sendMail } from './email';
-import { formatPaise } from './academyPrograms';
+import { formatPaise, getProgram } from './academyPrograms';
 import type { RegistrationRow } from './academyRegistrations.server';
 import type { InterestRow } from './academyInterest.server';
 
@@ -100,6 +101,68 @@ export async function sendRegistrationEmails(reg: RegistrationRow): Promise<void
        </p>`,
     ),
   });
+}
+
+/**
+ * Second, separate email after a confirmed paid enrolment — a welcome note with the
+ * programme brochure attached. Kept apart from the receipt email above so the receipt
+ * (transactional, must never be delayed by a large attachment) always lands first.
+ */
+export async function sendWelcomeEmailWithBrochure(reg: RegistrationRow): Promise<void> {
+  const program = getProgram(reg.programmeSlug);
+  if (!program) return; // no catalogue entry (e.g. slug retired) — nothing to attach
+
+  const brochurePath = path.join(process.cwd(), 'public', program.brochurePath);
+
+  await sendMail({
+    to: reg.email,
+    subject: `Welcome to DSeT Academy — ${reg.programmeTitle}`,
+    html: `
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;">
+<div style="max-width:640px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <div style="background:linear-gradient(135deg,#0a1830 0%,#071224 100%);padding:28px 32px;border-radius:12px 12px 0 0;">
+    <span style="color:#20c4ad;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">DSeT Academy</span>
+    <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:16px 0 6px;line-height:1.25;">Welcome aboard, ${esc(reg.fullName)}</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;margin:0;">${esc(reg.programmeTitle)}${reg.batch ? ` · ${esc(reg.batch)}` : ''}</p>
+  </div>
+  <div style="background:#ffffff;border:1px solid #e6e9f0;border-top:none;padding:24px 28px;border-radius:0 0 12px 12px;">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin:0 0 16px;">
+      You're officially part of DSeT Academy. We've attached the full programme brochure to this
+      email — it has the curriculum, session-by-session plan and everything else you'll need
+      before your first session.
+    </p>
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin:0;">
+      The Academy team will follow up separately with your batch schedule and joining link.
+    </p>
+  </div>
+  <p style="text-align:center;color:#94a3b8;font-size:12px;margin:18px 0 0;">
+    DSeT Consulting · This is an automated welcome email.
+  </p>
+</div></body></html>`,
+    attachments: [{ filename: path.basename(program.brochurePath), path: brochurePath }],
+  });
+}
+
+/**
+ * Best-effort WhatsApp payment receipt, sent alongside the email one. WhatsApp's
+ * Cloud API only allows a free-form message like this within the 24-hour customer
+ * service window (i.e. the applicant messaged this number recently) or via an
+ * approved message template outside it — so this can silently fail to deliver for
+ * a brand-new number, which is why the caller treats it as fire-and-forget.
+ */
+export async function sendRegistrationWhatsAppReceipt(reg: RegistrationRow): Promise<void> {
+  const { sendWhatsAppText } = await import('./whatsapp.server');
+  const to = reg.mobile.replace(/[^\d]/g, '');
+  const body =
+    `DSeT Academy — payment confirmed!\n\n` +
+    `Programme: ${reg.programmeTitle}\n` +
+    (reg.batch ? `Batch: ${reg.batch}\n` : '') +
+    `Registration ID: ${reg.id}\n` +
+    `Amount paid: ${formatPaise(reg.totalAmount)}\n\n` +
+    `Your seat is confirmed. Check your email for the full receipt and the welcome brochure.`;
+  await sendWhatsAppText(to, body);
 }
 
 /**

@@ -102,43 +102,61 @@ const PROGRAMS = [
     // slug resolves against the server-side price catalogue (src/lib/academyPrograms.ts).
     // The displayed fee is presentational only — the charged amount comes from the server.
     slug: 'ai-educator-mastery',
+    brochure: '/brochures/AI_Educator_Mastery_Program_Brochure.pdf',
   },
   {
     eyebrow: 'VENTURE PATHWAY', badge: 'Enrolment open', badgeLive: true,
-    title: 'Entrepreneur Mastery Program', tags: ['Entrepreneurs'],
+    title: 'Entrepreneur Mastery', tags: ['Entrepreneurs'],
     desc: 'Lead AI adoption across your organisation — or build your own AI-transformation practice — for Life Science & Healthcare, through 60+ AI tools mapped to 18 business departments.',
     format: '32-hour workshop cohort', outcome: 'Detailed certificate + paid assignments', forWhom: 'Founders and aspiring entrepreneurs',
     fee: '₹60,180', cta: 'Register for this cohort', href: '/academy/programs/entrepreneur-mastery',
     slug: 'entrepreneur-mastery',
+    brochure: '/brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
   },
   {
-    eyebrow: 'CAMPUS TO CAREER', badge: 'Institutional', badgeLive: false,
-    title: 'AI Foundations for Life Sciences Students', tags: ['Students'],
-    desc: 'Practical AI literacy, data thinking, safe tool use and a domain capstone designed for employability and research readiness.',
-    format: 'Live labs + project', outcome: 'Demonstrable capstone portfolio', forWhom: 'UG, PG and research students',
-    fee: null, cta: 'Talk to our experts', href: '#enquiry',
+    eyebrow: 'LIFE SCIENCES', badge: 'Enrolment open', badgeLive: true,
+    title: 'Professional AI Mastery', tags: ['Entrepreneurs', 'Trainers'],
+    desc: 'Put AI to work in your role — master 40+ AI tools, hands-on, across 24 hours of live weekend workshops mapped to the 18 departments that run Life Science and Healthcare organisations.',
+    format: '24-hour workshop · 12 weekend sessions', outcome: 'Detailed certificate listing every tool completed', forWhom: 'Regulatory, R&D, Medical Affairs, Sales, Ops and other professionals',
+    fee: '₹29,500', cta: 'Register for this cohort', href: '/academy/programs/ai-mastery-life-science-healthcare',
+    slug: 'ai-mastery-life-science-healthcare',
+    brochure: '/brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
   },
   {
-    eyebrow: 'MULTIPLIER', badge: 'Interest list', badgeLive: false,
-    title: 'DSeT Applied AI Train-the-Trainer', tags: ['Trainers'],
-    desc: 'Learn facilitation, lab design, evaluation and vertical adaptation to deliver rigorous DSeT Academy learning experiences.',
-    format: 'Guided certification pathway', outcome: 'Micro-teach + facilitator portfolio', forWhom: 'Trainers and domain practitioners',
-    fee: null, cta: 'Talk to our experts', href: '#enquiry',
+    eyebrow: 'PHARMACEUTICAL & LIFE SCIENCE FACULTY', badge: 'Enrolment open', badgeLive: true,
+    title: 'Faculty AI Mastery', tags: ['Faculty'],
+    desc: 'A 3-weekend hands-on faculty development program — build practical AI skills for the classroom and the lab in just 6 hours, from AI-powered teaching to your own research assistant.',
+    format: '6-hour workshop · 3 weekends', outcome: 'Certificate + faculty capstone solution', forWhom: 'Faculty teaching Pharmacy, Pharmaceutical Sciences & Life Science',
+    fee: '₹3,542', cta: 'Register for this cohort', href: '/academy/programs/ai-faculty-mastery',
+    slug: 'ai-faculty-mastery',
+    brochure: '/brochures/AI_Faculty_Mastery_Brochure.pdf',
   },
   {
-    eyebrow: 'INSTITUTIONAL', badge: 'Custom cohort', badgeLive: false,
-    title: 'AI Curriculum & Faculty Enablement Lab', tags: ['Faculty'],
-    desc: 'A working lab for departments that need curriculum mapping, faculty capacity, assessments and industry-linked student projects.',
-    format: 'Department workshop + advisory', outcome: 'Implementable curriculum blueprint', forWhom: 'Universities, colleges, councils',
-    fee: null, cta: 'Talk to our experts', href: '#enquiry',
+    eyebrow: 'CAMPUS TO CAREER', badge: 'Enrolment open', badgeLive: true,
+    title: 'Student AI Mastery', tags: ['Students'],
+    desc: 'A 3-weekend certification workshop — learn AI, apply it to real pharma problems, and build an AI-ready CV, LinkedIn profile and capstone solution.',
+    format: '6-hour workshop · 3 weekends', outcome: 'Certificate + capstone challenge portfolio', forWhom: 'Pharmacy, Pharmaceutical Sciences & Life Science students',
+    fee: '₹2,369', cta: 'Register for this cohort', href: '/academy/programs/pharmaai-student',
+    slug: 'pharmaai-student',
+    brochure: '/brochures/PharmaAI_Student_Brochure.pdf',
   },
   {
-    eyebrow: 'CROSS-VERTICAL', badge: 'Coming next', badgeLive: false,
-    title: 'Applied AI for Engineering & Management', tags: ['Students', 'Entrepreneurs'],
-    desc: 'Problem framing, agentic workflows, analytics and implementation thinking through industrial and enterprise casework.',
-    format: 'Modular live cohort', outcome: 'Industry problem portfolio', forWhom: 'Engineering and management learners',
+    eyebrow: 'CUSTOM COHORT', badge: 'Institutional', badgeLive: false,
+    title: 'Customized Department Training', tags: ['Faculty', 'Trainers', 'Students', 'Entrepreneurs'],
+    desc: 'Not every team needs the same AI training. Tell us your department’s day-to-day work — we scope and build a module around it.',
+    format: 'Custom scope & duration', outcome: 'Department-specific AI training plan', forWhom: 'Organisations and institutions',
     fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
+];
+
+// Departments DSeT can build a customised module around — organisations pick the ones
+// relevant to them rather than taking a one-size-fits-all course.
+const CUSTOM_DEPARTMENTS = [
+  'HR', 'Admin', 'Operations', 'Production', 'R&D', 'Marketing & Strategy',
+  'Business Development & Sales', 'Supply Chain', 'Regulatory',
+  'Market Research, BA, BI & Competitive Intelligence', 'SFE', 'Training',
+  'Medical Affairs', 'Digital Transformation', 'Consulting', 'Finance',
+  'Legal & Compliance', 'Project Management & Corporate Strategy',
 ];
 
 const VERTICAL_SCHOOLS = [
@@ -176,13 +194,27 @@ const FAQS = [
 // title resolves to a payable slug (PAYABLE_SLUG_BY_TITLE): payable ones go through
 // Razorpay, everything else submits as a general interest signup with no payment involved.
 const PROGRAMME_OPTIONS = PROGRAMS.map((p) => p.title);
-const ROLE_OPTIONS = [
-  'Faculty / academic leader',
-  'Trainer / facilitator',
-  'Student / researcher',
-  'Entrepreneur / founder',
-  'Institution / corporate representative',
+
+// Replaces the old free-text "role" list — per the Academy team's registration-form
+// spec, every applicant now picks one of these, which drives which extra fields show.
+const PROFESSION_OPTIONS = [
+  'Student',
+  'Faculty',
+  'Professional',
+  'Entrepreneur',
+  'Self Employed',
+  'Experienced but currently no regular engagement',
+  'Other',
+] as const;
+
+const COMPANY_TYPE_OPTIONS = [
+  'Pharmaceutical', 'Medical Device', 'Medical Equipment', 'Surgical Consumables',
+  'Hospital', 'Distributor', 'Consulting', 'Laboratory', 'Market Research', 'Training', 'Other',
 ];
+
+// Every payable cohort opens with the same three batches until the Academy team
+// schedules otherwise — kept as one list rather than per-programme for now.
+const BATCH_OPTIONS = ['Batch 1: November 2026', 'Batch 2: December 2026', 'Batch 3: January 2027'];
 
 /* ═══════ Small UI pieces ═══════ */
 /**
@@ -263,7 +295,13 @@ function loadRazorpayScript(): Promise<boolean> {
 
 function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; onClose: () => void; presetProgramme?: string }) {
   const [step, setStep] = useState<'form' | 'done'>('form');
-  const [form, setForm] = useState({ programme: '', fullName: '', email: '', mobile: '', role: '', institution: '', consent: false });
+  const [form, setForm] = useState({
+    programme: '', fullName: '', email: '', mobile: '', location: '', country: '',
+    role: '', institution: '', department: '',
+    courseName: '', currentYear: '', subjectSpecialization: '',
+    companyName: '', companyType: '', otherProfessionDetail: '',
+    batch: '', consent: false,
+  });
   const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
@@ -276,13 +314,39 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
 
   const programme = form.programme || presetProgramme || '';
   const payableSlug = PAYABLE_SLUG_BY_TITLE[programme];
-  const isValid = form.fullName.trim() && form.email.trim() && form.mobile.trim() && form.role && form.consent;
+  const isValid = Boolean(
+    form.fullName.trim() && form.email.trim() && form.mobile.trim() && form.location.trim() &&
+    form.country.trim() && form.role && form.consent && (!payableSlug || form.batch),
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
     setPayError(null);
     if (!isValid) return;
+
+    // Shared applicant fields for both the interest and paid-order endpoints —
+    // profession-conditional fields are sent as undefined when not applicable, so
+    // the server never persists stale data from a different profession's fields.
+    const applicant = {
+      fullName: form.fullName.trim(),
+      email: form.email.trim(),
+      mobile: form.mobile.trim(),
+      location: form.location.trim(),
+      country: form.country.trim(),
+      role: form.role,
+      institution: form.institution.trim() || undefined,
+      department: form.role === 'Professional' ? (form.department || undefined) : undefined,
+      courseName: form.role === 'Student' ? (form.courseName.trim() || undefined) : undefined,
+      currentYear: form.role === 'Student' ? (form.currentYear.trim() || undefined) : undefined,
+      subjectSpecialization: form.role === 'Faculty' ? (form.subjectSpecialization.trim() || undefined) : undefined,
+      companyName: ['Professional', 'Entrepreneur', 'Self Employed'].includes(form.role)
+        ? (form.companyName.trim() || undefined) : undefined,
+      companyType: ['Professional', 'Entrepreneur', 'Self Employed'].includes(form.role)
+        ? (form.companyType || undefined) : undefined,
+      otherProfessionDetail: form.role === 'Other' ? (form.otherProfessionDetail.trim() || undefined) : undefined,
+      consent: form.consent,
+    };
 
     // No fee published for this programme yet — general interest, no Razorpay at all.
     if (!payableSlug) {
@@ -291,15 +355,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
         const res = await fetch('/api/academy/interest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            programmeTitle: programme,
-            fullName: form.fullName.trim(),
-            email: form.email.trim(),
-            mobile: form.mobile.trim(),
-            role: form.role,
-            institution: form.institution.trim() || undefined,
-            consent: form.consent,
-          }),
+          body: JSON.stringify({ programmeTitle: programme, ...applicant }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? 'Could not submit your details.');
@@ -322,15 +378,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
       const orderRes = await fetch('/api/academy/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          programmeSlug: payableSlug,
-          fullName: form.fullName.trim(),
-          email: form.email.trim(),
-          mobile: form.mobile.trim(),
-          role: form.role,
-          institution: form.institution.trim() || undefined,
-          consent: form.consent,
-        }),
+        body: JSON.stringify({ programmeSlug: payableSlug, batch: form.batch, ...applicant }),
       });
       const order = await orderRes.json();
       if (!orderRes.ok) throw new Error(order.error ?? 'Could not start the payment.');
@@ -391,7 +439,13 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
       setBusy(false);
       setPayError(null);
       setReceipt(null);
-      setForm({ programme: '', fullName: '', email: '', mobile: '', role: '', institution: '', consent: false });
+      setForm({
+        programme: '', fullName: '', email: '', mobile: '', location: '', country: '',
+        role: '', institution: '', department: '',
+        courseName: '', currentYear: '', subjectSpecialization: '',
+        companyName: '', companyType: '', otherProfessionDetail: '',
+        batch: '', consent: false,
+      });
     }, 250);
   };
 
@@ -432,8 +486,137 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
           <div className="px-5 sm:px-7 py-5">
             {step === 'form' ? (
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Three paired rows rather than six stacked fields — this is what keeps the
-                    whole form above the fold on a 768px-tall laptop. */}
+                {/* Field order follows the Academy team's spec exactly: Name, Location,
+                    Country, Mobile, Email, Profession — then profession-conditional
+                    fields, then programme + batch right before consent/payment. */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Name</label>
+                    <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      placeholder="Your name" className={inputClass} style={{ borderColor: touched && !form.fullName ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Location</label>
+                    <input required value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
+                      placeholder="City" className={inputClass} style={{ borderColor: touched && !form.location ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Country</label>
+                    <input required value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}
+                      placeholder="Country" className={inputClass} style={{ borderColor: touched && !form.country ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Mobile no. <span className="font-normal" style={{ color: MUTED }}>(with country code)</span></label>
+                    <input required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+                      placeholder="+91 …" className={inputClass} style={{ borderColor: touched && !form.mobile ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Email ID</label>
+                    <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="you@institution.org" className={inputClass} style={{ borderColor: touched && !form.email ? '#e11d48' : BORDER, color: INK }} />
+                  </div>
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Profession</label>
+                    <div className="relative">
+                      <select required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        className={`${inputClass} appearance-none pr-9 truncate`}
+                        style={{ borderColor: touched && !form.role ? '#e11d48' : (form.role ? TEAL : BORDER), color: INK }}>
+                        <option value="">Select profession</option>
+                        {PROFESSION_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Profession-conditional fields — what's asked next depends on what
+                    the applicant just selected above, per the Academy team's form spec. */}
+                {form.role === 'Student' && (
+                  <>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={labelClass} style={{ color: INK }}>Course pursuing</label>
+                        <input value={form.courseName} onChange={(e) => setForm({ ...form, courseName: e.target.value })}
+                          placeholder="e.g. BSc Microbiology / B.Pharm / MBA" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                      </div>
+                      <div>
+                        <label className={labelClass} style={{ color: INK }}>Name of institution</label>
+                        <input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })}
+                          placeholder="Your institution" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Current year of the course</label>
+                      <input value={form.currentYear} onChange={(e) => setForm({ ...form, currentYear: e.target.value })}
+                        placeholder="e.g. 1st Year" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                    </div>
+                  </>
+                )}
+                {form.role === 'Faculty' && (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Name of institution</label>
+                      <input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })}
+                        placeholder="Your institution" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                    </div>
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Subject specialization</label>
+                      <input value={form.subjectSpecialization} onChange={(e) => setForm({ ...form, subjectSpecialization: e.target.value })}
+                        placeholder="Your subject area" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                    </div>
+                  </div>
+                )}
+                {(form.role === 'Professional' || form.role === 'Entrepreneur' || form.role === 'Self Employed') && (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Name of company</label>
+                      <input value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                        placeholder="Company name" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                    </div>
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Type of company</label>
+                      <div className="relative">
+                        <select value={form.companyType} onChange={(e) => setForm({ ...form, companyType: e.target.value })}
+                          className={`${inputClass} appearance-none pr-9 truncate`} style={{ borderColor: BORDER, color: INK }}>
+                          <option value="">Select type</option>
+                          {COMPANY_TYPE_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {form.role === 'Professional' && (
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>
+                      Department <span className="font-normal" style={{ color: MUTED }}>(which team is this for)</span>
+                    </label>
+                    <div className="relative">
+                      <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}
+                        className={`${inputClass} appearance-none pr-9 truncate`} style={{ borderColor: BORDER, color: INK }}>
+                        <option value="">Select department</option>
+                        {CUSTOM_DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                    </div>
+                  </div>
+                )}
+                {form.role === 'Other' && (
+                  <div>
+                    <label className={labelClass} style={{ color: INK }}>Please specify</label>
+                    <input value={form.otherProfessionDetail} onChange={(e) => setForm({ ...form, otherProfessionDetail: e.target.value })}
+                      placeholder="Tell us a bit about your background" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
+                  </div>
+                )}
+
+                {/* Course selection — shown last, right before payment, since the
+                    applicant needs to know their own details before picking a batch. */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass} style={{ color: INK }}>Programme</label>
@@ -446,44 +629,22 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                       <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
                     </div>
                   </div>
-                  <div>
-                    <label className={labelClass} style={{ color: INK }}>You are joining as</label>
-                    <div className="relative">
-                      <select required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
-                        className={`${inputClass} appearance-none pr-9 truncate`}
-                        style={{ borderColor: touched && !form.role ? '#e11d48' : (form.role ? TEAL : BORDER), color: INK }}>
-                        <option value="">Select role</option>
-                        {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                      </select>
-                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                  {/* Batch is only meaningful once fee/scheduling exists — general
+                      enquiries (institutional, custom department) skip it entirely. */}
+                  {payableSlug && (
+                    <div>
+                      <label className={labelClass} style={{ color: INK }}>Batch</label>
+                      <div className="relative">
+                        <select required value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })}
+                          className={`${inputClass} appearance-none pr-9 truncate`}
+                          style={{ borderColor: touched && !form.batch ? '#e11d48' : (form.batch ? TEAL : BORDER), color: INK }}>
+                          <option value="">Choose a batch</option>
+                          {BATCH_OPTIONS.map((b) => <option key={b} value={b}>{b}</option>)}
+                        </select>
+                        <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: MUTED }} />
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} style={{ color: INK }}>Full name</label>
-                    <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                      placeholder="Your name" className={inputClass} style={{ borderColor: touched && !form.fullName ? '#e11d48' : BORDER, color: INK }} />
-                  </div>
-                  <div>
-                    <label className={labelClass} style={{ color: INK }}>Work email</label>
-                    <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      placeholder="you@institution.org" className={inputClass} style={{ borderColor: touched && !form.email ? '#e11d48' : BORDER, color: INK }} />
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} style={{ color: INK }}>Mobile number</label>
-                    <input required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })}
-                      placeholder="+91 …" className={inputClass} style={{ borderColor: touched && !form.mobile ? '#e11d48' : BORDER, color: INK }} />
-                  </div>
-                  <div>
-                    <label className={labelClass} style={{ color: INK }}>Institution <span className="font-normal" style={{ color: MUTED }}>(optional)</span></label>
-                    <input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })}
-                      placeholder="Institution or company" className={inputClass} style={{ borderColor: BORDER, color: INK }} />
-                  </div>
+                  )}
                 </div>
 
                 <label className="flex items-start gap-2.5 cursor-pointer">
@@ -530,7 +691,8 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                 <h4 className="text-lg font-semibold mb-2.5" style={{ color: INK }}>Payment verified. Your seat is confirmed.</h4>
                 <p className={`${T.body} mb-4`} style={{ color: MUTED }}>
                   You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. A receipt has been
-                  emailed to {form.email}. The Academy team will follow up with your cohort schedule.
+                  emailed to {form.email} and sent to {form.mobile} on WhatsApp. A separate welcome email with the
+                  programme brochure is on its way. The Academy team will follow up with your cohort schedule.
                 </p>
                 <div className="rounded-lg p-3.5 text-xs leading-relaxed mb-5" style={{ backgroundColor: LIGHT_BG, color: INK }}>
                   Registration ID<br />
@@ -572,11 +734,46 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
   );
 }
 
+/** In-app viewer for a brochure PDF — embedded, not a download/new-tab link. */
+function BrochureModal({ url, onClose }: { url: string | null; onClose: () => void }) {
+  return (
+    <Dialog open={!!url} onClose={onClose} className="relative z-[100]" transition>
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-[closed]:opacity-0"
+      />
+      <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-8">
+        <DialogPanel
+          transition
+          className="relative w-full max-w-4xl h-[85vh] rounded-2xl bg-white shadow-2xl overflow-hidden transition-all duration-200 data-[closed]:opacity-0 data-[closed]:scale-95"
+        >
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-3.5 border-b bg-white shrink-0" style={{ borderColor: BORDER }}>
+            <DialogTitle className="text-[15px] font-semibold" style={{ color: INK }}>Programme brochure</DialogTitle>
+            <button type="button" onClick={onClose} className="p-1.5 rounded-full hover:bg-black/5" aria-label="Close">
+              <X size={18} />
+            </button>
+          </div>
+          {url && (
+            <iframe
+              key={url}
+              src={`${url}#toolbar=1&navpanes=0`}
+              title="Programme brochure"
+              className="absolute inset-0 top-[57px] w-full border-0 bg-[#f4f5f7]"
+              style={{ height: 'calc(100% - 57px)' }}
+            />
+          )}
+        </DialogPanel>
+      </div>
+    </Dialog>
+  );
+}
+
 export default function AcademyPage() {
   const [filter, setFilter] = useState('All');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
   const [applyProgramme, setApplyProgramme] = useState<string | undefined>(undefined);
+  const [brochureUrl, setBrochureUrl] = useState<string | null>(null);
 
   const openApply = (programme?: string) => {
     setApplyProgramme(programme);
@@ -628,8 +825,8 @@ export default function AcademyPage() {
               <motion.div initial="hidden" animate="show" variants={fadeUp} transition={step(0)}
                 className="flex items-center gap-2.5 mb-5">
                 <span className="w-5 h-[2px] rounded-full" style={{ backgroundColor: TEAL }} />
-                <span className={T.meta} style={{ color: TEAL }}>
-                  DSeT Academy · Founding Cohorts
+                <span className={`${T.meta} normal-case`} style={{ color: TEAL }}>
+                  DSeT Academy · FOUNDING COHORTS
                 </span>
               </motion.div>
 
@@ -892,11 +1089,20 @@ export default function AcademyPage() {
                         <p className="text-[26px] font-semibold tracking-[-0.02em] leading-none">{p.fee}</p>
                         <p className="text-[11px] mt-1.5" style={{ color: MUTED }}>incl. 18% GST</p>
                       </div>
-                      <button type="button" onClick={() => openApply(p.title)}
-                        className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
-                        style={{ backgroundColor: INK }}>
-                        {p.cta} <ArrowRight size={14} />
-                      </button>
+                      <div className="flex items-center gap-3">
+                        {'brochure' in p && p.brochure && (
+                          <button type="button" onClick={() => setBrochureUrl(p.brochure as string)}
+                            className="shrink-0 text-[12px] font-semibold underline underline-offset-2"
+                            style={{ color: TEAL_DARK }}>
+                            View brochure
+                          </button>
+                        )}
+                        <button type="button" onClick={() => openApply(p.title)}
+                          className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[12px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
+                          style={{ backgroundColor: INK }}>
+                          {p.cta} <ArrowRight size={14} />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -943,6 +1149,42 @@ export default function AcademyPage() {
             {visiblePrograms.length === 0 && (
               <p className={T.body} style={{ color: MUTED }}>No programmes match this filter yet.</p>
             )}
+
+            {/* Not a course catalogue entry — a standing offer that every programme above
+                can be re-scoped to one or more departments on request. */}
+            <motion.div
+              initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="mt-9 rounded-2xl border p-7 sm:p-8"
+              style={{ borderColor: BORDER, backgroundColor: LIGHT_BG }}
+            >
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
+                <div className="lg:max-w-sm shrink-0">
+                  <h3 className="text-[18px] sm:text-[19px] font-semibold tracking-[-0.02em] mb-2" style={{ color: INK }}>
+                    Need training built around your department?
+                  </h3>
+                  <p className={T.body} style={{ color: MUTED }}>
+                    Every team doesn&rsquo;t do the same work. Tell us your department and we tailor the modules to it,
+                    instead of one generic course for everyone.
+                  </p>
+                </div>
+                <div className="flex-grow">
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {CUSTOM_DEPARTMENTS.map((d) => (
+                      <span key={d} className="text-[12px] font-medium px-3 py-1.5 rounded-full border bg-white"
+                        style={{ borderColor: BORDER, color: INK }}>
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                  <button type="button" onClick={() => openApply('Customized Department Training')}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[12px] text-white
+                               transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
+                    style={{ backgroundColor: INK }}>
+                    Talk to our experts <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </section>
 
@@ -1129,6 +1371,7 @@ export default function AcademyPage() {
       </div>
 
       <ApplicationModal open={applyOpen} onClose={() => setApplyOpen(false)} presetProgramme={applyProgramme} />
+      <BrochureModal url={brochureUrl} onClose={() => setBrochureUrl(null)} />
     </Layout>
   );
 }

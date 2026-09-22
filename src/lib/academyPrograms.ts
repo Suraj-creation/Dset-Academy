@@ -21,11 +21,18 @@ export interface AcademyProgram {
   gstAmount: number;   // paise, 18% GST
   totalAmount: number; // paise, what Razorpay actually charges
   currency: 'INR';
+  /** Public path under /public used to attach the brochure to the welcome email. */
+  brochurePath: string;
+  /** Open batches an applicant can pick at checkout. Confirmed with the Academy team. */
+  batches: string[];
 }
 
 const RUPEE = 100; // paise per rupee
 
+const STANDARD_BATCHES = ['Batch 1: November 2026', 'Batch 2: December 2026', 'Batch 3: January 2027'];
+
 export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
+  // Title kept as-is on request — not renamed to "Train the Trainer".
   'ai-educator-mastery': {
     slug: 'ai-educator-mastery',
     title: 'AI Educator Mastery Program',
@@ -33,14 +40,48 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:    6_660 * RUPEE,
     totalAmount: 43_660 * RUPEE,
     currency: 'INR',
+    brochurePath: 'brochures/AI_Educator_Mastery_Program_Brochure.pdf',
+    batches: STANDARD_BATCHES,
   },
   'entrepreneur-mastery': {
     slug: 'entrepreneur-mastery',
-    title: 'Entrepreneur Mastery Program',
+    title: 'Entrepreneur Mastery',
     baseAmount:  51_000 * RUPEE,
     gstAmount:    9_180 * RUPEE,
     totalAmount: 60_180 * RUPEE,
     currency: 'INR',
+    brochurePath: 'brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
+    batches: STANDARD_BATCHES,
+  },
+  'ai-faculty-mastery': {
+    slug: 'ai-faculty-mastery',
+    title: 'Faculty AI Mastery',
+    baseAmount:  3_002 * RUPEE,
+    gstAmount:     540 * RUPEE,
+    totalAmount: 3_542 * RUPEE,
+    currency: 'INR',
+    brochurePath: 'brochures/AI_Faculty_Mastery_Brochure.pdf',
+    batches: STANDARD_BATCHES,
+  },
+  'ai-mastery-life-science-healthcare': {
+    slug: 'ai-mastery-life-science-healthcare',
+    title: 'Professional AI Mastery',
+    baseAmount:  25_000 * RUPEE,
+    gstAmount:    4_500 * RUPEE,
+    totalAmount: 29_500 * RUPEE,
+    currency: 'INR',
+    brochurePath: 'brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
+    batches: STANDARD_BATCHES,
+  },
+  'pharmaai-student': {
+    slug: 'pharmaai-student',
+    title: 'Student AI Mastery',
+    baseAmount:  2_008 * RUPEE,
+    gstAmount:     361 * RUPEE,
+    totalAmount: 2_369 * RUPEE,
+    currency: 'INR',
+    brochurePath: 'brochures/PharmaAI_Student_Brochure.pdf',
+    batches: STANDARD_BATCHES,
   },
 };
 

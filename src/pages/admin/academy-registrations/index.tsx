@@ -17,6 +17,16 @@ interface Registration {
   mobile: string;
   role: string;
   institution: string | null;
+  location: string | null;
+  country: string | null;
+  batch: string | null;
+  department: string | null;
+  courseName: string | null;
+  currentYear: string | null;
+  subjectSpecialization: string | null;
+  companyName: string | null;
+  companyType: string | null;
+  otherProfessionDetail: string | null;
   baseAmount: number;
   gstAmount: number;
   totalAmount: number;
@@ -48,6 +58,15 @@ interface Interest {
   mobile: string;
   role: string;
   institution: string | null;
+  location: string | null;
+  country: string | null;
+  department: string | null;
+  courseName: string | null;
+  currentYear: string | null;
+  subjectSpecialization: string | null;
+  companyName: string | null;
+  companyType: string | null;
+  otherProfessionDetail: string | null;
   contacted: boolean;
   createdAt: string;
 }
@@ -269,12 +288,46 @@ function AdminAcademyRegistrations() {
                                     <dt className="text-gray-500">Mobile</dt><dd className="text-gray-900">{r.mobile}</dd>
                                   </div>
                                   <div className="flex justify-between border-b border-gray-200 py-1">
-                                    <dt className="text-gray-500">Role</dt><dd className="text-gray-900">{r.role}</dd>
+                                    <dt className="text-gray-500">Profession</dt><dd className="text-gray-900">{r.role}</dd>
+                                  </div>
+                                  <div className="flex justify-between border-b border-gray-200 py-1">
+                                    <dt className="text-gray-500">Batch</dt><dd className="text-gray-900">{r.batch || '—'}</dd>
+                                  </div>
+                                  <div className="flex justify-between border-b border-gray-200 py-1">
+                                    <dt className="text-gray-500">Location / Country</dt>
+                                    <dd className="text-gray-900">{[r.location, r.country].filter(Boolean).join(', ') || '—'}</dd>
                                   </div>
                                   <div className="flex justify-between border-b border-gray-200 py-1">
                                     <dt className="text-gray-500">Institution</dt>
                                     <dd className="text-gray-900">{r.institution || '—'}</dd>
                                   </div>
+                                  {r.department && (
+                                    <div className="flex justify-between border-b border-gray-200 py-1">
+                                      <dt className="text-gray-500">Department</dt><dd className="text-gray-900">{r.department}</dd>
+                                    </div>
+                                  )}
+                                  {(r.courseName || r.currentYear) && (
+                                    <div className="flex justify-between border-b border-gray-200 py-1">
+                                      <dt className="text-gray-500">Course / Year</dt>
+                                      <dd className="text-gray-900">{[r.courseName, r.currentYear].filter(Boolean).join(' · ') || '—'}</dd>
+                                    </div>
+                                  )}
+                                  {r.subjectSpecialization && (
+                                    <div className="flex justify-between border-b border-gray-200 py-1">
+                                      <dt className="text-gray-500">Subject specialization</dt><dd className="text-gray-900">{r.subjectSpecialization}</dd>
+                                    </div>
+                                  )}
+                                  {(r.companyName || r.companyType) && (
+                                    <div className="flex justify-between border-b border-gray-200 py-1">
+                                      <dt className="text-gray-500">Company / Type</dt>
+                                      <dd className="text-gray-900">{[r.companyName, r.companyType].filter(Boolean).join(' · ') || '—'}</dd>
+                                    </div>
+                                  )}
+                                  {r.otherProfessionDetail && (
+                                    <div className="flex justify-between border-b border-gray-200 py-1">
+                                      <dt className="text-gray-500">Other (specify)</dt><dd className="text-gray-900">{r.otherProfessionDetail}</dd>
+                                    </div>
+                                  )}
                                   <div className="flex justify-between border-b border-gray-200 py-1">
                                     <dt className="text-gray-500">Programme fee</dt>
                                     <dd className="text-gray-900">{formatPaise(r.baseAmount)}</dd>
@@ -392,6 +445,7 @@ function AdminAcademyRegistrations() {
                             <div className="font-semibold text-gray-900">{r.fullName}</div>
                             <div className="text-xs text-gray-500">{r.email} · {r.mobile}</div>
                             {r.institution && <div className="text-xs text-gray-400">{r.institution}</div>}
+                            {r.department && <div className="text-xs text-gray-400">Dept: {r.department}</div>}
                           </td>
                           <td className="px-4 py-3 text-gray-700">{r.programmeTitle}</td>
                           <td className="px-4 py-3 text-gray-500">{r.role}</td>
