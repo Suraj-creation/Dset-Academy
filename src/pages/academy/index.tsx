@@ -115,7 +115,7 @@ const FILTERS = ['All', 'Faculty', 'Trainers', 'Students', 'Entrepreneurs'];
 const PROGRAMS = [
   {
     eyebrow: 'LIFE SCIENCES', badge: 'Enrolment open', badgeLive: true,
-    title: 'AI Educator Mastery Program', tags: ['Faculty', 'Trainers'],
+    title: 'AI Educator Mastery Program', tags: ['Trainers'],
     desc: 'Become a certified AI faculty-cum-trainer for Life Science & Healthcare — hand-held through 60+ AI tools mapped to 18 departments, then paid assignments to teach what you have mastered.',
     format: '32-hour workshop cohort', outcome: 'Certificate + paid-assignment eligibility', forWhom: 'Faculty, trainers, academic leaders',
     fee: '₹43,660', cta: 'Register for this cohort', href: '/academy/programs/ai-educator-mastery',
@@ -135,7 +135,7 @@ const PROGRAMS = [
   },
   {
     eyebrow: 'LIFE SCIENCES', badge: 'Enrolment open', badgeLive: true,
-    title: 'Professional AI Mastery', tags: ['Entrepreneurs', 'Trainers'],
+    title: 'Professional AI Mastery', tags: ['Entrepreneurs'],
     desc: 'Put AI to work in your role — master 40+ AI tools, hands-on, across 24 hours of live weekend workshops mapped to the 18 departments that run Life Science and Healthcare organisations.',
     format: '24-hour workshop · 12 weekend sessions', outcome: 'Detailed certificate listing every tool completed', forWhom: 'Regulatory, R&D, Medical Affairs, Sales, Ops and other professionals',
     fee: '₹29,500', cta: 'Register for this cohort', href: '/academy/programs/ai-mastery-life-science-healthcare',
@@ -162,7 +162,7 @@ const PROGRAMS = [
   },
   {
     eyebrow: 'CUSTOM COHORT', badge: 'Institutional', badgeLive: false,
-    title: 'Customized Department Training', tags: ['Faculty', 'Trainers', 'Students', 'Entrepreneurs'],
+    title: 'Customized Department Training', tags: [] as string[],
     desc: 'Not every team needs the same AI training. Tell us your department’s day-to-day work — we scope and build a module around it.',
     format: 'Custom scope & duration', outcome: 'Department-specific AI training plan', forWhom: 'Organisations and institutions',
     fee: null, cta: 'Talk to our experts', href: '#enquiry',
@@ -180,7 +180,7 @@ const CUSTOM_DEPARTMENTS = [
 ];
 
 const VERTICAL_SCHOOLS = [
-  { name: 'School of Life Science - Skill Development Training & Research (SLSSDTR)', desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
+  { name: 'School of Life Sciience - Skill Development Training & Research (SLSSDTR)', desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
   { name: 'School of Industrial & Edge AI',      desc: 'Manufacturing, OT/IT, predictive maintenance, safety and edge deployment.', status: 'PLANNED', live: false },
   { name: 'School of Mining & Resources',        desc: 'Mineral operations, logistics, revenue intelligence and responsible resources.', status: 'PLANNED', live: false },
   { name: 'School of Enterprise & Management AI',desc: 'Decision intelligence, RevOps, procurement, finance and AI-led transformation.', status: 'PLANNED', live: false },
@@ -1031,7 +1031,7 @@ export default function AcademyPage() {
   return (
     <Layout
       title="DSeT Academy | Applied Intelligence, Taught"
-      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Science - Skill Development Training & Research (SLSSDTR)."
+      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Sciience - Skill Development Training & Research (SLSSDTR)."
     >
       <div className={`${productPageFont.variable} font-[family-name:var(--font-product-page)]`} style={{ color: INK }}>
 
@@ -1186,7 +1186,7 @@ export default function AcademyPage() {
           </div>
         </section>
 
-        {/* ═══════════ SCHOOL OF LIFE SCIINCES, SKILL DEVELOPMENT, TRAINING AND RESEARCH (SLSSDTR) ═══════════ */}
+        {/* ═══════════ SCHOOL OF LIFE SCIIENCE - SKILL DEVELOPMENT TRAINING & RESEARCH (SLSSDTR) ═══════════ */}
         <section id="life-sciences" className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.82fr_1.18fr] gap-8 lg:gap-12 items-start">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
@@ -1199,7 +1199,7 @@ export default function AcademyPage() {
                   <span className="w-5 h-px" style={{ backgroundColor: TEAL }} />
                   <span className={T.meta} style={{ color: TEAL }}>Pioneer School</span>
                 </div>
-                <h2 className={`${T.h2} text-white mb-4 leading-tight`}>School of Life Science - Skill Development Training &amp; Research (SLSSDTR)</h2>
+                <h2 className={`${T.h2} text-white mb-4 leading-tight`}>School of Life Sciience - Skill Development Training &amp; Research (SLSSDTR)</h2>
                 <p className="text-white/60 text-[13.5px] sm:text-sm leading-[1.7] mb-8">
                   AI capability for professionals and institutions across pharmacy, healthcare, nursing, wellness
                   and life-sciences research — grounded in domain evidence, data responsibility and human oversight.
