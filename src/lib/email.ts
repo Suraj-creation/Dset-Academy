@@ -15,12 +15,14 @@ export async function sendMail({ to, subject, html, replyTo, attachments }: {
     },
   });
 
+  const fromEmail = process.env.CONTACT_EMAIL || 'contact@dsetconsulting.com';
+
   await transporter.sendMail({
-    from: `DSeT Consulting <${process.env.EMAIL_USER}>`,
+    from: `DSeT Consulting <${fromEmail}>`,
+    replyTo: replyTo || fromEmail,
     to,
     subject,
     html,
-    ...(replyTo ? { replyTo } : {}),
     ...(attachments ? { attachments } : {}),
   });
 }

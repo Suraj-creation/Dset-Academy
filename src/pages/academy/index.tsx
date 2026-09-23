@@ -13,6 +13,20 @@ const IconLinkedin = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const IconInstagram = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} className="inline-block flex-shrink-0">
+    <rect x="2" y="2" width="20" height="20" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const IconFacebook = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className="inline-block flex-shrink-0">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+
 /* ─── Brand tokens ─────────────────────────────────────────── */
 const NAVY      = '#0a1830';
 const NAVY_DEEP = '#071224';
@@ -23,7 +37,9 @@ const INK       = '#0f1b2d';
 const MUTED     = '#64748b';
 const LIGHT_BG  = '#f6f7fb';
 const BORDER    = '#e6e9f0';
-const ACADEMY_LINKEDIN_URL = 'https://www.linkedin.com/company/103688936/';
+const ACADEMY_LINKEDIN_URL  = 'https://www.linkedin.com/company/103688936/';
+const ACADEMY_INSTAGRAM_URL = 'https://www.instagram.com/dsetconsulting/';
+const ACADEMY_FACEBOOK_URL  = 'https://www.facebook.com/DSeTConsulting/';
 
 /**
  * Type scale. Sizes are explicit px because globals.css sets `html { font-size: 17px }`,
@@ -160,7 +176,7 @@ const CUSTOM_DEPARTMENTS = [
 ];
 
 const VERTICAL_SCHOOLS = [
-  { name: 'School of Life Sciences',            desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
+  { name: 'School of Life Science - Skill Development Training & Research (SLSSDTR)', desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
   { name: 'School of Industrial & Edge AI',      desc: 'Manufacturing, OT/IT, predictive maintenance, safety and edge deployment.', status: 'PLANNED', live: false },
   { name: 'School of Mining & Resources',        desc: 'Mineral operations, logistics, revenue intelligence and responsible resources.', status: 'PLANNED', live: false },
   { name: 'School of Enterprise & Management AI',desc: 'Decision intelligence, RevOps, procurement, finance and AI-led transformation.', status: 'PLANNED', live: false },
@@ -647,6 +663,22 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                   )}
                 </div>
 
+                {payableSlug && (
+                  <div className="rounded-xl p-3.5 flex items-center justify-between border" style={{ backgroundColor: LIGHT_BG, borderColor: BORDER }}>
+                    <div>
+                      <span className="text-[11px] uppercase tracking-wider font-semibold block" style={{ color: MUTED }}>Total Fee (incl. 18% GST)</span>
+                      <span className="text-[18px] font-bold" style={{ color: INK }}>
+                        {PROGRAMS.find((p) => p.title === programme)?.fee ?? '—'}
+                      </span>
+                    </div>
+                    {form.batch && (
+                      <span className="text-[12px] font-medium px-2.5 py-1 rounded-full border" style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK, borderColor: `${TEAL}40` }}>
+                        {form.batch.split(':')[0]} Selected
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <label className="flex items-start gap-2.5 cursor-pointer">
                   <input type="checkbox" checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })}
                     className="mt-0.5 w-4 h-4 rounded shrink-0" style={{ accentColor: TEAL }} />
@@ -788,7 +820,7 @@ export default function AcademyPage() {
   return (
     <Layout
       title="DSeT Academy | Applied Intelligence, Taught"
-      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Sciences."
+      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Science - Skill Development Training & Research (SLSSDTR)."
     >
       <div className={`${productPageFont.variable} font-[family-name:var(--font-product-page)]`} style={{ color: INK }}>
 
@@ -866,15 +898,47 @@ export default function AcademyPage() {
                 </a>
               </motion.div>
 
-              <motion.a
+              <motion.div
                 initial="hidden" animate="show" variants={fadeUp} transition={step(4)}
-                href={ACADEMY_LINKEDIN_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[12.5px] text-white/50 hover:text-white transition-colors mt-6"
+                className="flex items-center gap-3 mt-6 flex-wrap"
               >
-                <IconLinkedin size={14} /> Follow DSeT Academy on LinkedIn
-              </motion.a>
+                <span className="text-[12px] text-white/50 font-medium">Follow DSeT Academy:</span>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={ACADEMY_LINKEDIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow DSeT Academy on LinkedIn"
+                    aria-label="DSeT Academy on LinkedIn"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                  >
+                    <IconLinkedin size={13} />
+                    <span>LinkedIn</span>
+                  </a>
+                  <a
+                    href={ACADEMY_INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow DSeT on Instagram"
+                    aria-label="DSeT on Instagram"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                  >
+                    <IconInstagram size={13} />
+                    <span>Instagram</span>
+                  </a>
+                  <a
+                    href={ACADEMY_FACEBOOK_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow DSeT on Facebook"
+                    aria-label="DSeT on Facebook"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                  >
+                    <IconFacebook size={13} />
+                    <span>Facebook</span>
+                  </a>
+                </div>
+              </motion.div>
             </div>
           </div>
 
@@ -943,7 +1007,7 @@ export default function AcademyPage() {
                   <span className="w-5 h-px" style={{ backgroundColor: TEAL }} />
                   <span className={T.meta} style={{ color: TEAL }}>Pioneer School</span>
                 </div>
-                <h2 className={`${T.h2} text-white mb-4`}>School of Life Sciences</h2>
+                <h2 className={`${T.h2} text-white mb-4 leading-tight`}>School of Life Science - Skill Development Training &amp; Research (SLSSDTR)</h2>
                 <p className="text-white/60 text-[13.5px] sm:text-sm leading-[1.7] mb-8">
                   AI capability for professionals and institutions across pharmacy, healthcare, nursing, wellness
                   and life-sciences research — grounded in domain evidence, data responsibility and human oversight.
@@ -1358,12 +1422,47 @@ export default function AcademyPage() {
               })}
             </div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-8">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t" style={{ borderColor: BORDER }}>
               <Link href="/contact"
                 className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-[gap] duration-200 hover:gap-2.5"
                 style={{ color: TEAL_DARK }}>
                 Still have questions? Contact the Academy team <ArrowRight size={14} />
               </Link>
+              <div className="flex items-center gap-2 text-[12.5px]" style={{ color: MUTED }}>
+                <span className="font-medium text-slate-600">Connect with us:</span>
+                <div className="flex items-center gap-1.5">
+                  <a
+                    href={ACADEMY_LINKEDIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow DSeT Academy on LinkedIn"
+                    aria-label="LinkedIn"
+                    className="w-7 h-7 rounded-full flex items-center justify-center border border-slate-200 hover:border-slate-400 hover:text-[#0a66c2] transition-colors"
+                  >
+                    <IconLinkedin size={13} />
+                  </a>
+                  <a
+                    href={ACADEMY_INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow on Instagram"
+                    aria-label="Instagram"
+                    className="w-7 h-7 rounded-full flex items-center justify-center border border-slate-200 hover:border-slate-400 hover:text-[#e4405f] transition-colors"
+                  >
+                    <IconInstagram size={13} />
+                  </a>
+                  <a
+                    href={ACADEMY_FACEBOOK_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Follow on Facebook"
+                    aria-label="Facebook"
+                    className="w-7 h-7 rounded-full flex items-center justify-center border border-slate-200 hover:border-slate-400 hover:text-[#1877f2] transition-colors"
+                  >
+                    <IconFacebook size={13} />
+                  </a>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
