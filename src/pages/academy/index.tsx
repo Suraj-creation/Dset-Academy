@@ -5,11 +5,26 @@ import Link from 'next/link';
 import Layout from '@/components/layout/Layout';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { productPageFont } from '@/lib/productPageTypography';
-import { ArrowRight, ArrowUpRight, ChevronDown, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronDown, Download, ExternalLink, FileText, Lock, Maximize2, Minimize2, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { ACADEMY_PROGRAMS, formatPaise } from '@/lib/academyPrograms';
 
 const IconLinkedin = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className="inline-block flex-shrink-0">
     <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+  </svg>
+);
+
+const IconInstagram = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} className="inline-block flex-shrink-0">
+    <rect x="2" y="2" width="20" height="20" rx="5"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+  </svg>
+);
+
+const IconFacebook = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width={size} height={size} className="inline-block flex-shrink-0">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
   </svg>
 );
 
@@ -23,7 +38,12 @@ const INK       = '#0f1b2d';
 const MUTED     = '#64748b';
 const LIGHT_BG  = '#f6f7fb';
 const BORDER    = '#e6e9f0';
-const ACADEMY_LINKEDIN_URL = 'https://www.linkedin.com/company/103688936/';
+
+const ACADEMY_SOCIALS = [
+  { name: 'LinkedIn',  href: 'https://www.linkedin.com/company/103688936/', icon: IconLinkedin },
+  { name: 'Instagram', href: 'https://www.instagram.com/dsetconsulting/',   icon: IconInstagram },
+  { name: 'Facebook',  href: 'https://www.facebook.com/DSeTConsulting',      icon: IconFacebook },
+];
 
 /**
  * Type scale. Sizes are explicit px because globals.css sets `html { font-size: 17px }`,
@@ -160,7 +180,7 @@ const CUSTOM_DEPARTMENTS = [
 ];
 
 const VERTICAL_SCHOOLS = [
-  { name: 'School of Life Sciences',            desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
+  { name: 'School of Life Sciiences, Skill Development, Training and Research (SLSSDTR)', desc: 'Pharma, healthcare, nursing, wellness and life-sciences research.', status: 'NOW LAUNCHING', live: true },
   { name: 'School of Industrial & Edge AI',      desc: 'Manufacturing, OT/IT, predictive maintenance, safety and edge deployment.', status: 'PLANNED', live: false },
   { name: 'School of Mining & Resources',        desc: 'Mineral operations, logistics, revenue intelligence and responsible resources.', status: 'PLANNED', live: false },
   { name: 'School of Enterprise & Management AI',desc: 'Decision intelligence, RevOps, procurement, finance and AI-led transformation.', status: 'PLANNED', live: false },
@@ -334,6 +354,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
 
   const programme = form.programme || presetProgramme || '';
   const payableSlug = PAYABLE_SLUG_BY_TITLE[programme];
+  const selectedProgramDetails = payableSlug ? ACADEMY_PROGRAMS[payableSlug] : null;
   const isValid = Boolean(
     form.fullName.trim() && form.email.trim() && form.mobile.trim() && form.location.trim() &&
     form.country.trim() && form.role && form.consent && (!payableSlug || form.batch),
@@ -678,6 +699,23 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                   </span>
                 </label>
 
+                {selectedProgramDetails && (
+                  <div className="rounded-xl border p-3.5 space-y-2" style={{ borderColor: '#e2e8f0', backgroundColor: '#f8fafc' }}>
+                    <div className="flex items-center justify-between text-xs" style={{ color: MUTED }}>
+                      <span>Base Tuition Fee</span>
+                      <span className="font-medium" style={{ color: INK }}>{formatPaise(selectedProgramDetails.baseAmount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs" style={{ color: MUTED }}>
+                      <span>GST (18% Goods &amp; Services Tax)</span>
+                      <span className="font-medium" style={{ color: INK }}>{formatPaise(selectedProgramDetails.gstAmount)}</span>
+                    </div>
+                    <div className="pt-2 border-t flex items-center justify-between text-sm font-semibold" style={{ borderColor: '#e2e8f0', color: INK }}>
+                      <span>Total Enrolment Fee</span>
+                      <span className="text-[15px]" style={{ color: TEAL_DARK }}>{formatPaise(selectedProgramDetails.totalAmount)}</span>
+                    </div>
+                  </div>
+                )}
+
                 {touched && !isValid && (
                   <p className="text-xs font-medium" style={{ color: '#e11d48' }}>Please fill all required fields and accept the consent to continue.</p>
                 )}
@@ -699,9 +737,23 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                 </button>
                 <p className="text-[11px] text-center leading-relaxed" style={{ color: MUTED }}>
                   {payableSlug
-                    ? 'Secure payment via Razorpay. Card and bank details are never stored on DSeT servers.'
+                    ? 'Secure checkout via Razorpay. Card, UPI, and NetBanking accepted.'
                     : 'No payment required. Our Academy team will reach out with next steps.'}
                 </p>
+
+                {payableSlug && (
+                  <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1 text-[11px]" style={{ color: MUTED }}>
+                    <span className="inline-flex items-center gap-1">
+                      <Lock size={12} className="text-emerald-600" /> 256-bit SSL
+                    </span>
+                    <span>•</span>
+                    <span className="inline-flex items-center gap-1">
+                      <ShieldCheck size={12} className="text-teal-600" /> Razorpay Verified
+                    </span>
+                    <span>•</span>
+                    <span>Instant GST Invoice &amp; Brochure</span>
+                  </div>
+                )}
               </form>
             ) : receipt?.paid ? (
               <div>
@@ -712,9 +764,7 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
                 </div>
                 <h4 className="text-lg font-semibold mb-2.5" style={{ color: INK }}>Payment verified. Your seat is confirmed.</h4>
                 <p className={`${T.body} mb-4`} style={{ color: MUTED }}>
-                  You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. A receipt has been
-                  emailed to {form.email} and sent to {form.mobile} on WhatsApp. A separate welcome email with the
-                  programme brochure is on its way. The Academy team will follow up with your cohort schedule.
+                  You are enrolled in <strong style={{ color: INK }}>{receipt?.programmeTitle}</strong>. Your official GST Tax Invoice and Programme Brochure PDF have been emailed to {form.email} and a confirmation sent to {form.mobile} on WhatsApp. The Academy team will follow up with your private cohort schedule and onboarding details.
                 </p>
                 <div className="rounded-lg p-3.5 text-xs leading-relaxed mb-5" style={{ backgroundColor: LIGHT_BG, color: INK }}>
                   Registration ID<br />
@@ -795,34 +845,150 @@ function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; o
   );
 }
 
-/** In-app viewer for a brochure PDF — embedded, not a download/new-tab link. */
-function BrochureModal({ url, onClose }: { url: string | null; onClose: () => void }) {
+interface ActiveBrochure {
+  url: string;
+  title: string;
+  eyebrow?: string;
+  fee?: string | null;
+  slug?: string;
+}
+
+/** In-app aesthetic viewer for a brochure PDF — minimalist outer boundaries, collapsible/expandable custom toolbar. */
+function BrochureModal({
+  brochure,
+  onClose,
+  onApply,
+}: {
+  brochure: ActiveBrochure | null;
+  onClose: () => void;
+  onApply: (programmeTitle: string) => void;
+}) {
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  useEffect(() => {
+    if (!brochure) setIsMaximized(false);
+  }, [brochure]);
+
   return (
-    <Dialog open={!!url} onClose={onClose} className="relative z-[100]" transition>
+    <Dialog open={!!brochure} onClose={onClose} className="relative z-[100]" transition>
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-[closed]:opacity-0"
+        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md transition-opacity duration-200 data-[closed]:opacity-0"
       />
-      <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-8">
+      <div className={`fixed inset-0 flex items-center justify-center transition-all duration-300 ${
+        isMaximized ? 'p-1 sm:p-2' : 'p-3 sm:p-6'
+      }`}>
         <DialogPanel
           transition
-          className="relative w-full max-w-4xl h-[85vh] rounded-2xl bg-white shadow-2xl overflow-hidden transition-all duration-200 data-[closed]:opacity-0 data-[closed]:scale-95"
+          className={`relative w-full flex flex-col bg-[#090d16] border border-white/10 ring-1 ring-white/5 shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden transition-all duration-300 data-[closed]:opacity-0 data-[closed]:scale-95 ${
+            isMaximized
+              ? 'h-full max-w-none rounded-xl'
+              : 'max-w-5xl h-[88vh] rounded-2xl'
+          }`}
         >
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-3.5 border-b bg-white shrink-0" style={{ borderColor: BORDER }}>
-            <DialogTitle className="text-[15px] font-semibold" style={{ color: INK }}>Programme brochure</DialogTitle>
-            <button type="button" onClick={onClose} className="p-1.5 rounded-full hover:bg-black/5" aria-label="Close">
-              <X size={18} />
-            </button>
+          {/* Top Bar — Sleek Dark Header */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/[0.08] bg-[#090d16]/95 backdrop-blur-sm shrink-0 gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="flex h-2 w-2 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+              </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-400">Curriculum Syllabus</span>
+                  <span className="hidden sm:inline-block text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/60 font-mono">PDF</span>
+                </div>
+                <DialogTitle className="text-sm sm:text-[15px] font-semibold text-white truncate max-w-[260px] sm:max-w-md">
+                  {brochure?.title ?? 'Programme Brochure'}
+                </DialogTitle>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {brochure && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onApply(brochure.title);
+                  }}
+                  className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-500 hover:bg-teal-400 text-slate-950 transition-all shadow-sm active:scale-95 cursor-pointer"
+                >
+                  <span>Enrol for Cohort</span>
+                  <ArrowRight size={13} />
+                </button>
+              )}
+
+              {brochure?.url && (
+                <a
+                  href={brochure.url}
+                  download
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 transition-colors cursor-pointer"
+                  title="Download brochure PDF"
+                >
+                  <Download size={13} />
+                  <span className="hidden sm:inline">Download</span>
+                </a>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setIsMaximized(!isMaximized)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+                title={isMaximized ? 'Minimize window' : 'Maximize window'}
+                aria-label={isMaximized ? 'Minimize window' : 'Maximize window'}
+              >
+                {isMaximized ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+                aria-label="Close brochure viewer"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
-          {url && (
-            <iframe
-              key={url}
-              src={`${url}#toolbar=1&navpanes=0`}
-              title="Programme brochure"
-              className="absolute inset-0 top-[57px] w-full border-0 bg-[#f4f5f7]"
-              style={{ height: 'calc(100% - 57px)' }}
-            />
-          )}
+
+          {/* PDF Viewer Body — Suppress Browser Controls & Side Nav */}
+          <div className="flex-1 w-full bg-[#0d121c] relative overflow-hidden">
+            {brochure?.url && (
+              <iframe
+                key={brochure.url}
+                src={`${brochure.url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                title={`${brochure.title} Brochure`}
+                className="w-full h-full border-0 bg-[#0d121c]"
+              />
+            )}
+          </div>
+
+          {/* Minimalist Bottom Footer Bar */}
+          <div className="px-4 sm:px-6 py-2.5 bg-[#070a12] border-t border-white/[0.06] flex items-center justify-between text-[11px] text-slate-400 shrink-0">
+            <span className="truncate max-w-sm hidden sm:inline">
+              Official curriculum document published by DSeT Academy. Hand-held instruction with 60+ applied AI tools.
+            </span>
+            <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
+              {brochure?.fee && (
+                <span className="font-semibold text-slate-200">
+                  {brochure.fee} <span className="text-slate-500 font-normal">(incl. 18% GST)</span>
+                </span>
+              )}
+              {brochure && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onApply(brochure.title);
+                  }}
+                  className="md:hidden text-teal-400 hover:text-teal-300 font-semibold cursor-pointer"
+                >
+                  Enrol →
+                </button>
+              )}
+            </div>
+          </div>
         </DialogPanel>
       </div>
     </Dialog>
@@ -834,7 +1000,7 @@ export default function AcademyPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
   const [applyProgramme, setApplyProgramme] = useState<string | undefined>(undefined);
-  const [brochureUrl, setBrochureUrl] = useState<string | null>(null);
+  const [activeBrochure, setActiveBrochure] = useState<ActiveBrochure | null>(null);
 
   const openApply = (programme?: string) => {
     setApplyProgramme(programme);
@@ -849,7 +1015,7 @@ export default function AcademyPage() {
   return (
     <Layout
       title="DSeT Academy | Applied Intelligence, Taught"
-      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Sciences."
+      description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Sciiences, Skill Development, Training and Research (SLSSDTR)."
     >
       <div className={`${productPageFont.variable} font-[family-name:var(--font-product-page)]`} style={{ color: INK }}>
 
@@ -927,15 +1093,28 @@ export default function AcademyPage() {
                 </a>
               </motion.div>
 
-              <motion.a
+              <motion.div
                 initial="hidden" animate="show" variants={fadeUp} transition={step(4)}
-                href={ACADEMY_LINKEDIN_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[12.5px] text-white/50 hover:text-white transition-colors mt-6"
+                className="flex flex-wrap items-center gap-2 sm:gap-2.5 mt-6"
               >
-                <IconLinkedin size={14} /> Follow DSeT Academy on LinkedIn
-              </motion.a>
+                <span className="text-[12px] text-white/50 font-medium">Follow DSeT Academy:</span>
+                {ACADEMY_SOCIALS.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <a
+                      key={s.name}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium text-white/75 hover:text-white bg-white/[0.06] hover:bg-white/[0.14] border border-white/10 hover:border-white/25 transition-all duration-200 cursor-pointer"
+                      title={`Follow DSeT Academy on ${s.name}`}
+                    >
+                      <Icon size={13} />
+                      <span>{s.name}</span>
+                    </a>
+                  );
+                })}
+              </motion.div>
             </div>
           </div>
 
@@ -991,7 +1170,7 @@ export default function AcademyPage() {
           </div>
         </section>
 
-        {/* ═══════════ SCHOOL OF LIFE SCIENCES ═══════════ */}
+        {/* ═══════════ SCHOOL OF LIFE SCIINCES, SKILL DEVELOPMENT, TRAINING AND RESEARCH (SLSSDTR) ═══════════ */}
         <section id="life-sciences" className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.82fr_1.18fr] gap-8 lg:gap-12 items-start">
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
@@ -1004,14 +1183,27 @@ export default function AcademyPage() {
                   <span className="w-5 h-px" style={{ backgroundColor: TEAL }} />
                   <span className={T.meta} style={{ color: TEAL }}>Pioneer School</span>
                 </div>
-                <h2 className={`${T.h2} text-white mb-4`}>School of Life Sciences</h2>
+                <h2 className={`${T.h2} text-white mb-4`}>
+                  School of Life Sciiences, Skill Development, Training and Research (SLSSDTR)
+                </h2>
                 <p className="text-white/60 text-[13.5px] sm:text-sm leading-[1.7] mb-8">
                   AI capability for professionals and institutions across pharmacy, healthcare, nursing, wellness
                   and life-sciences research — grounded in domain evidence, data responsibility and human oversight.
                 </p>
               </div>
-              <div className="relative inline-flex items-center gap-2 text-[12.5px] text-white/70 border border-white/15 rounded-lg px-3.5 py-2.5 w-fit leading-snug">
-                Developed in collaboration with <strong className="text-white font-semibold">Imperical Consulting (Pvt.) Ltd.</strong>
+              <div className="relative flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="inline-flex items-center gap-2 text-[12.5px] text-white/70 border border-white/15 rounded-lg px-3.5 py-2.5 w-fit leading-snug">
+                  Developed in collaboration with <strong className="text-white font-semibold">Imperical Consulting (Pvt.) Ltd.</strong>
+                </div>
+                <a
+                  href="https://slssdtr.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-teal-400 hover:text-teal-300 transition-colors w-fit"
+                >
+                  <span>Visit SLSSDTR Portal</span>
+                  <ArrowUpRight size={13} />
+                </a>
               </div>
             </motion.div>
 
@@ -1150,16 +1342,39 @@ export default function AcademyPage() {
                         <p className="text-[26px] font-semibold tracking-[-0.02em] leading-none">{p.fee}</p>
                         <p className="text-[11px] mt-1.5" style={{ color: MUTED }}>incl. 18% GST</p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                         {'brochure' in p && p.brochure && (
-                          <button type="button" onClick={() => setBrochureUrl(p.brochure as string)}
-                            className="shrink-0 text-[12px] font-semibold underline underline-offset-2"
-                            style={{ color: TEAL_DARK }}>
-                            View brochure
-                          </button>
+                          <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50/90 p-0.5 shadow-sm hover:border-teal-500/40 transition-colors">
+                            <button
+                              type="button"
+                              onClick={() => setActiveBrochure({
+                                url: p.brochure as string,
+                                title: p.title,
+                                eyebrow: p.eyebrow,
+                                fee: p.fee,
+                                slug: p.slug,
+                              })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11.5px] font-semibold text-slate-700 hover:text-teal-800 hover:bg-white transition-all cursor-pointer"
+                              title={`View ${p.title} curriculum brochure`}
+                            >
+                              <FileText size={12.5} className="text-teal-600" />
+                              <span>View brochure</span>
+                            </button>
+                            <span className="w-px h-3.5 bg-slate-200" />
+                            <a
+                              href={p.brochure as string}
+                              download
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-white transition-all cursor-pointer"
+                              title={`Download ${p.title} brochure PDF directly`}
+                              aria-label={`Download ${p.title} brochure PDF`}
+                            >
+                              <Download size={12} className="text-slate-500" />
+                              <span>PDF</span>
+                            </a>
+                          </div>
                         )}
                         <button type="button" onClick={() => openApply(p.title)}
-                          className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[12px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
+                          className="shrink-0 inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold text-[12px] text-white transition-[transform,opacity] duration-200 ease-out hover:opacity-90 active:scale-[0.98] cursor-pointer"
                           style={{ backgroundColor: INK }}>
                           {p.cta} <ArrowRight size={14} />
                         </button>
@@ -1419,12 +1634,32 @@ export default function AcademyPage() {
               })}
             </div>
 
-            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-8">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t" style={{ borderColor: BORDER }}>
               <Link href="/contact"
                 className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-[gap] duration-200 hover:gap-2.5"
                 style={{ color: TEAL_DARK }}>
                 Still have questions? Contact the Academy team <ArrowRight size={14} />
               </Link>
+
+              <div className="flex items-center gap-2 text-xs" style={{ color: MUTED }}>
+                <span className="font-medium text-slate-600">Connect:</span>
+                {ACADEMY_SOCIALS.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <a
+                      key={s.name}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
+                      title={`Follow DSeT Academy on ${s.name}`}
+                    >
+                      <Icon size={12.5} />
+                      <span>{s.name}</span>
+                    </a>
+                  );
+                })}
+              </div>
             </motion.div>
           </div>
         </section>
@@ -1432,7 +1667,7 @@ export default function AcademyPage() {
       </div>
 
       <ApplicationModal open={applyOpen} onClose={() => setApplyOpen(false)} presetProgramme={applyProgramme} />
-      <BrochureModal url={brochureUrl} onClose={() => setBrochureUrl(null)} />
+      <BrochureModal brochure={activeBrochure} onClose={() => setActiveBrochure(null)} onApply={openApply} />
     </Layout>
   );
 }
