@@ -1,7 +1,7 @@
 import { pool } from './db';
 import ExcelJS from 'exceljs';
 
-export type ExportType = 'registrations' | 'payments' | 'lifesciences' | 'unified';
+export type ExportType = 'registrations' | 'payments' | 'lifesciences' | 'brochures' | 'unified';
 export type ExportFormat = 'xlsx' | 'csv';
 
 export interface Dataset {
@@ -24,6 +24,11 @@ const DATASETS: Record<ExportType, { filename: string; sheetName: string; query:
     filename: 'lifesciences_program_inquiries',
     sheetName: 'Life Sciences Inquiries',
     query: 'SELECT * FROM view_export_lifesciences;',
+  },
+  brochures: {
+    filename: 'academy_brochure_downloads',
+    sheetName: 'Brochure Downloads',
+    query: 'SELECT * FROM view_export_brochure_downloads;',
   },
   unified: {
     filename: 'dset_unified_admissions_report',
@@ -160,11 +165,12 @@ export async function generateExcelBuffer(type: ExportType): Promise<{ buffer: B
 
   if (type === 'unified') {
     // Multi-tab comprehensive workbook
-    const [unifiedRes, regRes, payRes, lifeRes] = await Promise.all([
+    const [unifiedRes, regRes, payRes, lifeRes, brochureRes] = await Promise.all([
       pool.query('SELECT * FROM view_export_unified;'),
       pool.query('SELECT * FROM view_export_registrations;'),
       pool.query('SELECT * FROM view_export_payments;'),
       pool.query('SELECT * FROM view_export_lifesciences;'),
+      pool.query('SELECT * FROM view_export_brochure_downloads;'),
     ]);
 
     const sUnified = workbook.addWorksheet('Unified Overview');
@@ -178,6 +184,9 @@ export async function generateExcelBuffer(type: ExportType): Promise<{ buffer: B
 
     const sLife = workbook.addWorksheet('Life Sciences Inquiries');
     formatWorksheet(sLife, lifeRes.rows);
+
+    const sBrochures = workbook.addWorksheet('Brochure Downloads');
+    formatWorksheet(sBrochures, brochureRes.rows);
 
     const arrayBuffer = await workbook.xlsx.writeBuffer();
     return {

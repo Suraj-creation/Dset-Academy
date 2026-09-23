@@ -21,7 +21,10 @@ export interface AcademyProgram {
   gstAmount: number;   // paise, 18% GST
   totalAmount: number; // paise, what Razorpay actually charges
   currency: 'INR';
-  /** Public path under /public used to attach the brochure to the welcome email. */
+  /**
+   * Repo-relative path. Deliberately outside /public: brochures are gated behind Google
+   * sign-in and served only by /api/academy/brochure/[slug]. Also attached to the welcome email.
+   */
   brochurePath: string;
   /** Open batches an applicant can pick at checkout. Confirmed with the Academy team. */
   batches: string[];
@@ -40,7 +43,7 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:    6_660 * RUPEE,
     totalAmount: 43_660 * RUPEE,
     currency: 'INR',
-    brochurePath: 'brochures/AI_Educator_Mastery_Program_Brochure.pdf',
+    brochurePath: 'private/brochures/AI_Educator_Mastery_Program_Brochure.pdf',
     batches: STANDARD_BATCHES,
   },
   'entrepreneur-mastery': {
@@ -50,7 +53,7 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:    9_180 * RUPEE,
     totalAmount: 60_180 * RUPEE,
     currency: 'INR',
-    brochurePath: 'brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
+    brochurePath: 'private/brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
     batches: STANDARD_BATCHES,
   },
   'ai-faculty-mastery': {
@@ -60,7 +63,7 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:     540 * RUPEE,
     totalAmount: 3_542 * RUPEE,
     currency: 'INR',
-    brochurePath: 'brochures/AI_Faculty_Mastery_Brochure.pdf',
+    brochurePath: 'private/brochures/AI_Faculty_Mastery_Brochure.pdf',
     batches: STANDARD_BATCHES,
   },
   'ai-mastery-life-science-healthcare': {
@@ -70,7 +73,7 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:    4_500 * RUPEE,
     totalAmount: 29_500 * RUPEE,
     currency: 'INR',
-    brochurePath: 'brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
+    brochurePath: 'private/brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
     batches: STANDARD_BATCHES,
   },
   'pharmaai-student': {
@@ -80,7 +83,7 @@ export const ACADEMY_PROGRAMS: Record<string, AcademyProgram> = {
     gstAmount:     361 * RUPEE,
     totalAmount: 2_369 * RUPEE,
     currency: 'INR',
-    brochurePath: 'brochures/PharmaAI_Student_Brochure.pdf',
+    brochurePath: 'private/brochures/PharmaAI_Student_Brochure.pdf',
     batches: STANDARD_BATCHES,
   },
 };

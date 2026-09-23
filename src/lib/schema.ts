@@ -334,6 +334,37 @@ export const academyInterestRegistrations = pgTable('academy_interest_registrati
   createdAt:      timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
 });
 
+// Visitors who signed in on /academy with Google. Created by
+// migrations/add_academy_google_auth.sql — apply that file, never `drizzle-kit push`.
+export const academyUsers = pgTable('academy_users', {
+  id:            text('id').primaryKey(),
+  googleSub:     text('google_sub').notNull().unique(),
+  email:         text('email').notNull(),
+  emailVerified: boolean('email_verified').notNull().default(false),
+  fullName:      text('full_name'),
+  givenName:     text('given_name'),
+  familyName:    text('family_name'),
+  pictureUrl:    text('picture_url'),
+  locale:        text('locale'),
+  hostedDomain:  text('hosted_domain'),
+  loginCount:    integer('login_count').notNull().default(1),
+  firstSeenAt:   timestamp('first_seen_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+  lastSeenAt:    timestamp('last_seen_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
+// Append-only brochure activity. action: 'view' | 'download'.
+export const academyBrochureEvents = pgTable('academy_brochure_events', {
+  id:             text('id').primaryKey(),
+  userId:         text('user_id').notNull(),
+  programmeSlug:  text('programme_slug').notNull(),
+  programmeTitle: text('programme_title').notNull(),
+  action:         text('action').notNull(),
+  ip:             text('ip'),
+  userAgent:      text('user_agent'),
+  referrer:       text('referrer'),
+  createdAt:      timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
+});
+
 // Life Sciences (SLSSDTR) Program Enquiry table residing in Neon PostgreSQL
 export const programEnquiries = pgTable('program_enquiry', {
   id:                    text('id').primaryKey(),

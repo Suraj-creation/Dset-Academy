@@ -23,7 +23,7 @@ function istDate(iso: string | null): string {
 function resolveBrochureAttachment(slug: string): { filename: string; path: string } | null {
   const program = getProgram(slug);
   if (!program || !program.brochurePath) return null;
-  const fullPath = path.join(process.cwd(), 'public', program.brochurePath);
+  const fullPath = path.join(process.cwd(), program.brochurePath);
   if (fs.existsSync(fullPath)) {
     return {
       filename: path.basename(program.brochurePath),

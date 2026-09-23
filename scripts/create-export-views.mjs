@@ -173,6 +173,25 @@ async function createViews() {
     `);
     console.log('✅ view_export_unified created.');
 
+    // 5. Brochure View/Download Activity Export View — who opened or downloaded which
+    // programme brochure and when. Requires migrations/add_academy_google_auth.sql applied.
+    await client.query(`
+      CREATE OR REPLACE VIEW view_export_brochure_downloads AS
+      SELECT
+        e.id AS "Event ID",
+        u.full_name AS "Name",
+        u.email AS "Email",
+        e.programme_title AS "Brochure / Programme",
+        initcap(e.action) AS "Action",
+        COALESCE(u.hosted_domain, '') AS "Organization Domain",
+        COALESCE(e.ip, '') AS "IP Address",
+        e.created_at AS "Date & Time"
+      FROM academy_brochure_events e
+      JOIN academy_users u ON u.id = e.user_id
+      ORDER BY e.created_at DESC;
+    `);
+    console.log('✅ view_export_brochure_downloads created.');
+
     console.log('All views created successfully in Neon PostgreSQL!');
   } finally {
     client.release();

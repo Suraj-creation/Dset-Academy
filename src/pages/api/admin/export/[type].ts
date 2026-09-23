@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { isAdminRequest } from '@/lib/auth';
 import { generateExcelBuffer, generateCsvData, ExportType } from '@/lib/export.server';
 
-const VALID_TYPES: ExportType[] = ['registrations', 'payments', 'lifesciences', 'unified'];
+const VALID_TYPES: ExportType[] = ['registrations', 'payments', 'lifesciences', 'brochures', 'unified'];
 
 /**
  * Admin-only Data Export API

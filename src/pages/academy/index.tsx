@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -90,10 +90,36 @@ const STAT_STRIP = [
 ];
 
 const PATHWAYS = [
-  { n: '01', title: 'Train the Trainer', desc: 'Prepare a growing ecosystem of certified facilitators who can teach applied AI with domain context, practical labs and responsible-use guardrails.', link: 'Build teaching capacity' },
+  { n: '01', title: 'Train the Trainer', desc: 'Prepare a growing ecosystem of certified facilitators who can teach applied AI with domain context, practical labs and responsible-use guardrails.', link: 'Build teaching capacity', anchor: '#train-the-trainer' },
   { n: '02', title: 'Entrepreneurship & Ikigai', desc: 'Help founders convert passion, experience and lived problems into a validated venture, a minimum viable offer and a responsible AI-enabled operating model.', link: 'Move from purpose to pilot' },
   { n: '03', title: 'Faculty Development', desc: 'Enable life-sciences, engineering and management faculty to integrate AI into teaching, assessment, research and student projects without losing disciplinary rigour.', link: 'Make curriculum practice-ready' },
   { n: '04', title: 'Student Skill Development', desc: 'Give learners hands-on exposure to industry problems, data literacy, AI tools, capstone work and the communication skills needed to move from campus to career.', link: 'Learn by solving' },
+];
+
+// Strategic narrative. Every claim below is sourced from the Academy's Strategic Brief —
+// do not add figures or regulatory claims that are not in it.
+const WHY_NOW_STAGES = [
+  { stage: 'Early semesters',       items: ['Foundational programming', 'A dedicated machine-learning course'] },
+  { stage: 'Through the programme', items: ['AI applications in pharmaceutical sciences', 'Computer-aided drug design'] },
+  { stage: 'Final year',            items: ['AI in clinical applications', 'Pharmaceutical automation'] },
+];
+
+const CAPABILITY_GAP = [
+  { tag: 'TOOL FLUENCY',   title: 'Knowing what the tools do',        desc: 'What 60+ AI tools do and how to operate them. Necessary — and the only half most AI training covers.' },
+  { tag: 'DOMAIN FLUENCY', title: 'Knowing which problem they solve', desc: 'Enough pharmacy, life-science and healthcare context to pick the right tool for a real problem — and teach it credibly.' },
+];
+
+const MARKET_SCALE = [
+  { value: '~1,700', label: 'Pharmaceutical colleges', sub: 'B.Pharm / D.Pharm / Pharm.D' },
+  { value: '3,000+', label: 'Other life-science institutions' },
+  { value: '5,000+', label: 'Pharmaceutical companies' },
+  { value: '70,000+', label: 'Hospitals' },
+];
+
+const MULTIPLIER_POINTS = [
+  { title: 'Local context, local delivery', desc: 'Each certified AI Educator trains their own institution’s faculty, students or staff — the person who knows the context delivers the training.' },
+  { title: 'Reach beyond one campus',       desc: 'Trainers are equipped to take on paid assignments at other institutions, corporates and hospitals that have the mandate but not the internal capability.' },
+  { title: 'The scarce combination scales', desc: 'Domain and AI competence are screened for and certified together — so what multiplies is exactly what the market is short of.' },
 ];
 
 const LEARNING_MODEL = [
@@ -122,7 +148,8 @@ const PROGRAMS = [
     // slug resolves against the server-side price catalogue (src/lib/academyPrograms.ts).
     // The displayed fee is presentational only — the charged amount comes from the server.
     slug: 'ai-educator-mastery',
-    brochure: '/brochures/AI_Educator_Mastery_Program_Brochure.pdf',
+    brochure: '/api/academy/brochure/ai-educator-mastery',
+    flagship: true,
   },
   {
     eyebrow: 'VENTURE PATHWAY', badge: 'Enrolment open', badgeLive: true,
@@ -131,7 +158,7 @@ const PROGRAMS = [
     format: '32-hour workshop cohort', outcome: 'Detailed certificate + paid assignments', forWhom: 'Founders and aspiring entrepreneurs',
     fee: '₹60,180', cta: 'Register for this cohort', href: '/academy/programs/entrepreneur-mastery',
     slug: 'entrepreneur-mastery',
-    brochure: '/brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
+    brochure: '/api/academy/brochure/entrepreneur-mastery',
   },
   {
     eyebrow: 'LIFE SCIENCES', badge: 'Enrolment open', badgeLive: true,
@@ -140,7 +167,7 @@ const PROGRAMS = [
     format: '24-hour workshop · 12 weekend sessions', outcome: 'Detailed certificate listing every tool completed', forWhom: 'Regulatory, R&D, Medical Affairs, Sales, Ops and other professionals',
     fee: '₹29,500', cta: 'Register for this cohort', href: '/academy/programs/ai-mastery-life-science-healthcare',
     slug: 'ai-mastery-life-science-healthcare',
-    brochure: '/brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
+    brochure: '/api/academy/brochure/ai-mastery-life-science-healthcare',
   },
   {
     eyebrow: 'PHARMACEUTICAL & LIFE SCIENCE FACULTY', badge: 'Enrolment open', badgeLive: true,
@@ -149,7 +176,7 @@ const PROGRAMS = [
     format: '6-hour workshop · 3 weekends', outcome: 'Certificate + faculty capstone solution', forWhom: 'Faculty teaching Pharmacy, Pharmaceutical Sciences & Life Science',
     fee: '₹3,542', cta: 'Register for this cohort', href: '/academy/programs/ai-faculty-mastery',
     slug: 'ai-faculty-mastery',
-    brochure: '/brochures/AI_Faculty_Mastery_Brochure.pdf',
+    brochure: '/api/academy/brochure/ai-faculty-mastery',
   },
   {
     eyebrow: 'CAMPUS TO CAREER', badge: 'Enrolment open', badgeLive: true,
@@ -158,7 +185,7 @@ const PROGRAMS = [
     format: '6-hour workshop · 3 weekends', outcome: 'Certificate + capstone challenge portfolio', forWhom: 'Pharmacy, Pharmaceutical Sciences & Life Science students',
     fee: '₹2,369', cta: 'Register for this cohort', href: '/academy/programs/pharmaai-student',
     slug: 'pharmaai-student',
-    brochure: '/brochures/PharmaAI_Student_Brochure.pdf',
+    brochure: '/api/academy/brochure/pharmaai-student',
   },
   {
     eyebrow: 'CUSTOM COHORT', badge: 'Institutional', badgeLive: false,
@@ -168,6 +195,9 @@ const PROGRAMS = [
     fee: null, cta: 'Talk to our experts', href: '#enquiry',
   },
 ];
+
+// Spotlighted in the Train-the-Trainer section; read from PROGRAMS so fee/format never drift.
+const FLAGSHIP = PROGRAMS.find((p) => p.slug === 'ai-educator-mastery')!;
 
 // Departments DSeT can build a customised module around — organisations pick the ones
 // relevant to them rather than taking a one-size-fits-all course.
@@ -208,6 +238,8 @@ const FAQS = [
   { q: 'How does secure payment work?', a: 'Enrolment is completed through a secure Razorpay checkout. Your payment is verified server-side before a registration is confirmed, and no card or bank details are ever stored on DSeT servers.' },
   { q: 'Can a college or university run a private cohort?', a: 'Yes. Institutional cohorts can be customised for a department, campus or university — including curriculum mapping and faculty enablement. Reach out to the Academy team to plan one.' },
   { q: 'What makes the programmes "verticalised"?', a: 'Every programme is built around a specific industry — starting with Life Sciences — using real DSeT platform use cases and department workflows, instead of generic, one-size-fits-all AI training content.' },
+  { q: 'Why is AI training urgent for pharmacy and life-science institutions now?', a: 'The Pharmacy Council of India has directed that its revised, NEP 2020-aligned B.Pharm syllabus — with AI, data analytics and automation running across all eight semesters — be implemented from the 2026–27 academic session at every approved pharmacy institution. Most institutions do not yet have faculty who are both AI-capable and domain-credible.' },
+  { q: 'Does the AI Educator Mastery Program teach me to use AI, or to teach it?', a: 'Both — it is a Train-the-Trainer programme. You build hands-on fluency across 60+ AI tools mapped to 18 departments, grounded in life-science context, and are certified to train your own institution’s faculty, students or staff. Certification also brings eligibility for paid training assignments.' },
 ];
 
 // Every programme is offered in the dropdown. The modal branches on whether the selected
@@ -296,21 +328,91 @@ const PAYABLE_SLUG_BY_TITLE: Record<string, string> = Object.fromEntries(
   PROGRAMS.flatMap((p) => ('slug' in p && p.slug ? [[p.title, p.slug as string]] : [])),
 );
 
-declare global {
-  interface Window { Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void } }
+interface GoogleIdentity {
+  initialize(o: Record<string, unknown>): void;
+  prompt(): void;
+  renderButton(el: HTMLElement, o: Record<string, unknown>): void;
+  disableAutoSelect(): void;
 }
 
-/** Inject Razorpay Checkout once, on demand. Resolves false if it cannot load. */
-function loadRazorpayScript(): Promise<boolean> {
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void };
+    google?: { accounts: { id: GoogleIdentity } };
+  }
+}
+
+/** Inject a third-party script once, on demand. Resolves false if it cannot load. */
+function loadScript(src: string, isReady: () => boolean): Promise<boolean> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined') return resolve(false);
-    if (window.Razorpay) return resolve(true);
+    if (isReady()) return resolve(true);
     const s = document.createElement('script');
-    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    s.onload = () => resolve(true);
+    s.src = src;
+    s.async = true;
+    s.onload = () => resolve(isReady());
     s.onerror = () => resolve(false);
     document.body.appendChild(s);
   });
+}
+
+const loadRazorpayScript = () => loadScript('https://checkout.razorpay.com/v1/checkout.js', () => !!window.Razorpay);
+const loadGoogleIdentity = () => loadScript('https://accounts.google.com/gsi/client', () => !!window.google?.accounts?.id);
+
+interface AcademyUser { name: string | null; email: string; picture: string | null }
+
+/** Google's own "Continue with Google" button, rendered by Identity Services into this div. */
+function GoogleButton({ ready, dark = false }: { ready: boolean; dark?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ready || !ref.current || !window.google) return;
+    window.google.accounts.id.renderButton(ref.current, {
+      type: 'standard', theme: dark ? 'filled_black' : 'outline', size: 'large',
+      text: 'continue_with', shape: 'pill', logo_alignment: 'left',
+    });
+  }, [ready, dark]);
+  return <div ref={ref} className="min-h-[40px] flex items-center" />;
+}
+
+/** Shown when a signed-out visitor tries to view or download a brochure. */
+function SignInDialog({ open, onClose, gisReady, available, error }: {
+  open: boolean; onClose: () => void; gisReady: boolean; available: boolean; error: string | null;
+}) {
+  return (
+    <Dialog open={open} onClose={onClose} className="relative z-[110]" transition>
+      <DialogBackdrop transition className="fixed inset-0 bg-black/60 backdrop-blur-sm transition duration-200 ease-out data-[closed]:opacity-0" />
+      <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <DialogPanel transition
+          className="relative bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl p-6 sm:p-7
+                     transition duration-200 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-2 data-[closed]:scale-[0.97]">
+          <button onClick={onClose} aria-label="Close"
+            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-black/5">
+            <X size={17} style={{ color: MUTED }} />
+          </button>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: TEAL_TINT }}>
+            <FileText size={19} style={{ color: TEAL_DARK }} />
+          </div>
+          <DialogTitle className="text-[19px] font-semibold tracking-[-0.02em] mb-2" style={{ color: INK }}>
+            Sign in to open the brochure
+          </DialogTitle>
+          <p className={`${T.body} mb-5`} style={{ color: MUTED }}>
+            Programme brochures are available to signed-in visitors. Continue with Google — DSeT Academy
+            receives only your name, email address and profile photo.
+          </p>
+          {!available ? (
+            <p className="text-[13px]" style={{ color: MUTED }}>Sign-in is temporarily unavailable. Please try again shortly.</p>
+          ) : gisReady ? (
+            <GoogleButton ready />
+          ) : (
+            <p className="text-[13px]" style={{ color: MUTED }}>Loading Google sign-in…</p>
+          )}
+          {error && (
+            <p className="mt-4 rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}>{error}</p>
+          )}
+        </DialogPanel>
+      </div>
+    </Dialog>
+  );
 }
 
 function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; onClose: () => void; presetProgramme?: string }) {
@@ -937,7 +1039,7 @@ function BrochureModal({
 
               {brochure?.url && (
                 <a
-                  href={brochure.url}
+                  href={`${brochure.url}?download=1`}
                   download
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 transition-colors cursor-pointer"
                   title="Download brochure PDF"
@@ -1018,6 +1120,88 @@ export default function AcademyPage() {
   const [applyProgramme, setApplyProgramme] = useState<string | undefined>(undefined);
   const [activeBrochure, setActiveBrochure] = useState<ActiveBrochure | null>(null);
 
+  // Google sign-in. The session cookie is HttpOnly, so the server tells us who is signed in.
+  const [account, setAccount] = useState<{ user: AcademyUser | null; clientId: string | null } | null>(null);
+  const [gisReady, setGisReady] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
+  const pendingAction = useRef<(() => void) | null>(null);
+  const signedOutThisVisit = useRef(false);
+  const user = account?.user ?? null;
+  const clientId = account?.clientId ?? null;
+
+  useEffect(() => {
+    fetch('/api/academy/auth')
+      .then((r) => r.json())
+      .then(setAccount)
+      .catch(() => setAccount({ user: null, clientId: null }));
+  }, []);
+
+  // Google calls this with an ID token; the server verifies it and sets the session cookie.
+  const onCredential = useRef<(r: { credential: string }) => void>(() => {});
+  onCredential.current = async ({ credential }) => {
+    setSignInError(null);
+    try {
+      const r = await fetch('/api/academy/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? 'Sign-in failed. Please try again.');
+      setAccount((a) => ({ clientId: a?.clientId ?? null, user: d.user }));
+      setSignInOpen(false);
+      const next = pendingAction.current;
+      pendingAction.current = null;
+      next?.();
+    } catch (err) {
+      setSignInError((err as Error).message);
+      setSignInOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!clientId) return;
+    let cancelled = false;
+    loadGoogleIdentity().then((ok) => {
+      if (!ok || cancelled || !window.google) return;
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: (r: { credential: string }) => onCredential.current(r),
+        cancel_on_tap_outside: false,
+        itp_support: true,
+        use_fedcm_for_prompt: true,
+        context: 'signin',
+      });
+      setGisReady(true);
+    });
+    return () => { cancelled = true; };
+  }, [clientId]);
+
+  // One Tap "Continue with Google" at the top of the page, on arrival, for signed-out visitors.
+  const accountLoaded = account !== null;
+  useEffect(() => {
+    if (gisReady && accountLoaded && !user && !signedOutThisVisit.current) window.google?.accounts.id.prompt();
+  }, [gisReady, accountLoaded, user]);
+
+  /** Run `action` now if signed in; otherwise ask for Google sign-in and run it right after. */
+  const requireSignIn = (action: () => void) => {
+    if (user) return action();
+    pendingAction.current = action;
+    setSignInError(null);
+    setSignInOpen(true);
+  };
+
+  const signOut = async () => {
+    signedOutThisVisit.current = true;
+    await fetch('/api/academy/auth', { method: 'DELETE' }).catch(() => {});
+    window.google?.accounts.id.disableAutoSelect();
+    setActiveBrochure(null);
+    setAccount((a) => a && { ...a, user: null });
+  };
+
+  const openBrochure = (b: ActiveBrochure) => requireSignIn(() => setActiveBrochure(b));
+
   const openApply = (programme?: string) => {
     setApplyProgramme(programme);
     setApplyOpen(true);
@@ -1034,6 +1218,38 @@ export default function AcademyPage() {
       description="DSeT Academy — a practitioner-led capability platform where educators, trainers, students and entrepreneurs learn to apply AI inside the industries they already understand. Starting with the School of Life Sciience - Skill Development Training & Research (SLSSDTR)."
     >
       <div className={`${productPageFont.variable} font-[family-name:var(--font-product-page)]`} style={{ color: INK }}>
+
+        {/* ═══════════ ACCOUNT BAR — Continue with Google ═══════════ */}
+        {/* Fixed min-height so the bar never shifts the hero while the session loads. */}
+        <div className="relative z-20 border-b border-white/10" style={{ backgroundColor: '#030c1a' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 min-h-[58px] flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            {!accountLoaded ? null : user ? (
+              <>
+                <span className="text-[12.5px] text-white/55">Signed in · programme brochures are unlocked</span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span aria-hidden="true" className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-semibold shrink-0"
+                    style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
+                    {(user.name ?? user.email).charAt(0).toUpperCase()}
+                  </span>
+                  <span className="text-[13px] font-medium text-white truncate max-w-[160px] sm:max-w-[240px]" title={user.email}>
+                    {user.name ?? user.email}
+                  </span>
+                  <button type="button" onClick={signOut}
+                    className="text-[12px] font-medium text-white/55 hover:text-white transition-colors cursor-pointer">
+                    Sign out
+                  </button>
+                </div>
+              </>
+            ) : clientId ? (
+              <>
+                <span className="text-[12.5px] text-white/65 inline-flex items-center gap-2">
+                  <Lock size={13} style={{ color: TEAL }} /> Sign in to view and download programme brochures.
+                </span>
+                <GoogleButton ready={gisReady} dark />
+              </>
+            ) : null}
+          </div>
+        </div>
 
         {/* ═══════════ HERO ═══════════ */}
         <section className="relative overflow-hidden min-h-[85vh] lg:min-h-[88vh] flex flex-col justify-between" style={{ backgroundColor: '#040d1a' }}>
@@ -1154,6 +1370,278 @@ export default function AcademyPage() {
           </div>
         </section>
 
+        {/* ═══════════ WHY NOW — the regulatory shift ═══════════ */}
+        <section id="why-now" className="py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <SectionHead
+              eyebrow="WHY NOW"
+              title="AI in life-science education is no longer optional."
+              lead={<>
+                The Pharmacy Council of India has directed that its revised B.Pharm syllabus, aligned with NEP 2020,
+                be implemented from the <strong style={{ color: INK }}>2026–27 academic session</strong> across every
+                approved pharmacy institution — with AI, data analytics and automation running through all eight semesters.
+              </>}
+              className="mb-10"
+            />
+
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="rounded-2xl border overflow-hidden" style={{ borderColor: BORDER }}>
+              {/* The bar reads as the eight-semester span the three stages sit on. */}
+              <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-3 border-b" style={{ borderColor: BORDER, backgroundColor: LIGHT_BG }}>
+                <span className={T.meta} style={{ color: MUTED }}>Revised B.Pharm · Semester 1 → 8</span>
+                <span className="hidden sm:block h-[3px] flex-1 max-w-md rounded-full"
+                  style={{ background: `linear-gradient(90deg, ${TEAL_TINT}, ${TEAL}, ${TEAL_DARK})` }} />
+              </div>
+              <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: BORDER }}>
+                {WHY_NOW_STAGES.map((s, i) => (
+                  <motion.div key={s.stage}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className="p-5 sm:p-6" style={{ borderColor: BORDER }}>
+                    <Ordinal n={i + 1} />
+                    <h3 className={`${T.cardTitle} mt-2 mb-3`}>{s.stage}</h3>
+                    <ul className="space-y-2">
+                      {s.items.map((item) => (
+                        <li key={item} className={`${T.body} flex items-start gap-2`} style={{ color: MUTED }}>
+                          <span className="mt-[7px] w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: TEAL }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 mt-10 items-start">
+              <motion.blockquote initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+                className="border-l-[3px] pl-5" style={{ borderColor: TEAL }}>
+                <p className="text-[19px] sm:text-[22px] font-semibold tracking-[-0.02em] leading-[1.3]" style={{ color: INK }}>
+                  &ldquo;A paradigm shift for the profession.&rdquo;
+                </p>
+                <footer className="text-[12.5px] mt-2" style={{ color: MUTED }}>
+                  — Association of Pharmaceutical Teachers of India, on integrating AI into the curriculum
+                </footer>
+              </motion.blockquote>
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} transition={step(1)}>
+                <p className={T.body} style={{ color: INK }}>
+                  The regulator has set the requirement first — and expects institutions to find the capability to
+                  deliver it. Curriculum mandates like this rarely arrive with a ready supply of qualified faculty
+                  attached. <strong>This one is no exception.</strong>
+                </p>
+                <p className="text-[11.5px] mt-3 leading-relaxed" style={{ color: '#94a0b2' }}>
+                  Curriculum mandate and 2026–27 implementation timeline as per PCI&rsquo;s official notification.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════ THE CAPABILITY GAP ═══════════ */}
+        <section id="capability-gap" className="py-20 lg:py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: LIGHT_BG }}>
+          <div className="max-w-6xl mx-auto">
+            <SectionHead
+              eyebrow="THE CAPABILITY GAP"
+              title={<>The gap isn&rsquo;t AI tools. It&rsquo;s AI tools <span style={{ color: TEAL_DARK }}>plus</span> domain.</>}
+              lead="This is not a “how do I use ChatGPT” problem. Institutions need two independent capabilities together — and most people addressing the gap only see one."
+              className="mb-10"
+            />
+
+            <div className="relative grid md:grid-cols-2 gap-4 md:gap-10">
+              {CAPABILITY_GAP.map((c, i) => (
+                <motion.div key={c.tag}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="rounded-2xl border bg-white p-6 sm:p-7" style={{ borderColor: BORDER }}>
+                  <span className={T.meta} style={{ color: TEAL_DARK }}>{c.tag}</span>
+                  <h3 className={`${T.cardTitle} mt-3 mb-2`}>{c.title}</h3>
+                  <p className={T.body} style={{ color: MUTED }}>{c.desc}</p>
+                </motion.div>
+              ))}
+              {/* Sits in the gutter between the two cards; the gutter is exactly its width. */}
+              <span aria-hidden="true"
+                className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full items-center justify-center text-[20px] font-semibold text-white shadow-md"
+                style={{ backgroundColor: TEAL_DARK }}>
+                +
+              </span>
+            </div>
+
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="mt-4 rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: TEAL_TINT, borderColor: `${TEAL}55` }}>
+              <span className={T.meta} style={{ color: TEAL_DARK }}>Where they meet</span>
+              <h3 className="text-[19px] sm:text-[21px] font-semibold tracking-[-0.02em] leading-snug mt-3 mb-3" style={{ color: INK }}>
+                AI capability with pharmaceutical and life-science grounding is genuinely scarce in India today.
+              </h3>
+              <p className={`${T.body} max-w-3xl`} style={{ color: '#35505a' }}>
+                A generic AI trainer can demo Gemini or Claude. They cannot tell a Regulatory Affairs team which tool
+                is right for a submission checklist versus a QbD summary — or show a B.Pharm faculty member how to map
+                an AI module to PCI&rsquo;s own learning outcomes. Most AI upskilling in India has been built for, and by,
+                the engineering and IT ecosystem — not for life-science professionals.
+              </p>
+            </motion.div>
+
+            <div className="mt-14">
+              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+                className={`${T.h2Support} max-w-2xl mb-8`} style={{ color: INK }}>
+                Every one of these institutions now needs — or will shortly need — someone who can run AI training credibly.
+              </motion.p>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-xl overflow-hidden border" style={{ backgroundColor: BORDER, borderColor: BORDER }}>
+                {MARKET_SCALE.map((m, i) => (
+                  <motion.div key={m.label}
+                    initial="hidden" whileInView="show" viewport={{ once: true }}
+                    variants={fadeUp} transition={step(i)}
+                    className="bg-white p-5 sm:p-6">
+                    <p className="text-[28px] sm:text-[34px] font-semibold tracking-[-0.03em] leading-none" style={{ color: INK }}>{m.value}</p>
+                    <p className="text-[13px] font-semibold mt-2.5 leading-snug" style={{ color: INK }}>{m.label}</p>
+                    {m.sub && <p className="text-[11.5px] mt-1" style={{ color: MUTED }}>{m.sub}</p>}
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-[11.5px] mt-3 leading-relaxed" style={{ color: '#94a0b2' }}>
+                Industry estimates, provided for scale illustration. Even one trained AI-and-domain educator per
+                institution implies thousands of trainers — for pharmacy colleges alone.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════ WHY TRAIN-THE-TRAINER + FLAGSHIP SPOTLIGHT ═══════════ */}
+        <section id="train-the-trainer" className="py-24 lg:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ backgroundColor: NAVY }}>
+          <div className="pointer-events-none absolute -top-32 right-0 w-1/2 h-2/3 blur-3xl rounded-full" style={{ background: `${TEAL}10` }} />
+          <div className="max-w-6xl mx-auto relative">
+            <SectionHead
+              dark
+              eyebrow="WHY TRAIN-THE-TRAINER"
+              title="One cohort at a time never catches up. Trainers multiply."
+              lead="Training end learners directly, cohort by cohort, can never reach 1,700+ colleges and 70,000+ hospitals. Certifying trainers who carry the capability into their own institutions changes the multiplier."
+              className="mb-12"
+            />
+
+            <div className="grid lg:grid-cols-2 gap-5">
+              {/* Direct delivery: one source, a single line of cohorts. */}
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+                className="rounded-2xl border p-6 sm:p-7 flex flex-col" style={{ borderColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                <span className={T.meta} style={{ color: 'rgba(255,255,255,0.4)' }}>Direct delivery</span>
+                <div className="flex-1 flex flex-col items-center justify-center py-8" aria-hidden="true">
+                  <span className="px-3 py-1.5 rounded-full text-[11.5px] font-semibold border text-white/70" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>Academy</span>
+                  <span className="w-px h-6 bg-white/15" />
+                  <div className="flex items-center gap-2">
+                    {[0, 1, 2, 3, 4].map((d) => (
+                      <span key={d} className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d === 0 ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.12)' }} />
+                    ))}
+                  </div>
+                  <span className="text-[11px] mt-2 text-white/40">one cohort, then the next…</span>
+                </div>
+                <p className="text-[13px] leading-[1.6] text-white/55">
+                  Linear. The arithmetic never catches up with the size of the mandate.
+                </p>
+              </motion.div>
+
+              {/* Train-the-Trainer: each certified educator fans out into their own institution. */}
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} transition={step(1)}
+                className="rounded-2xl border p-6 sm:p-7 flex flex-col" style={{ borderColor: `${TEAL}66`, backgroundColor: `${TEAL}0d` }}>
+                <span className={T.meta} style={{ color: TEAL }}>Train-the-Trainer</span>
+                <div className="flex-1 flex flex-col items-center justify-center py-8" aria-hidden="true">
+                  <span className="px-3 py-1.5 rounded-full text-[11.5px] font-semibold" style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>DSeT Academy</span>
+                  <span className="w-px h-5" style={{ backgroundColor: `${TEAL}80` }} />
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-sm">
+                    {[0, 1, 2].map((e) => (
+                      <div key={e} className="flex flex-col items-center">
+                        <span className="px-2 py-1 rounded-full text-[10.5px] font-semibold border text-white whitespace-nowrap" style={{ borderColor: `${TEAL}99` }}>AI Educator</span>
+                        <span className="w-px h-3" style={{ backgroundColor: `${TEAL}66` }} />
+                        <div className="flex gap-1">
+                          {[0, 1, 2].map((d) => (
+                            <span key={d} className="w-2 h-2 rounded-full" style={{ backgroundColor: `${TEAL}b3` }} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-[11px] mt-2.5 text-white/55">own institution · faculty, students, staff</span>
+                </div>
+                <p className="text-[13px] leading-[1.6] text-white/75">
+                  Multiplied. Every certified educator trains locally — and can take paid assignments at other
+                  institutions, corporates and hospitals.
+                </p>
+              </motion.div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-y-8 gap-x-8 mt-12">
+              {MULTIPLIER_POINTS.map((m, i) => (
+                <motion.div key={m.title}
+                  initial="hidden" whileInView="show" viewport={{ once: true }}
+                  variants={fadeUp} transition={step(i)}
+                  className="border-t pt-5" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
+                  <Ordinal n={i + 1} dark />
+                  <h3 className={`${T.cardTitle} mt-3 mb-2 text-white`}>{m.title}</h3>
+                  <p className="text-[13px] leading-[1.65] text-white/55">{m.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Flagship spotlight — every value comes from the PROGRAMS entry. */}
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+              className="mt-14 rounded-2xl bg-white p-6 sm:p-8 relative overflow-hidden">
+              <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: `linear-gradient(90deg, ${TEAL}, ${TEAL_DARK})` }} />
+              <div className="flex flex-col lg:flex-row lg:items-end gap-7 lg:gap-10">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: NAVY }}>
+                      Flagship programme
+                    </span>
+                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
+                      {FLAGSHIP.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] leading-snug mb-2.5" style={{ color: INK }}>
+                    {FLAGSHIP.title}
+                  </h3>
+                  <p className={`${T.body} max-w-2xl mb-5`} style={{ color: MUTED }}>{FLAGSHIP.desc}</p>
+                  <dl className="grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-3 pt-5 border-t" style={{ borderColor: BORDER }}>
+                    {[['Format', FLAGSHIP.format], ['Outcome', FLAGSHIP.outcome], ['For', FLAGSHIP.forWhom]].map(([k, v]) => (
+                      <div key={k}>
+                        <dt className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: '#aab3c2' }}>{k}</dt>
+                        <dd className="text-[12.5px] leading-[1.5]" style={{ color: INK }}>{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                <div className="lg:w-64 shrink-0">
+                  <p className="text-[28px] font-semibold tracking-[-0.02em] leading-none" style={{ color: INK }}>{FLAGSHIP.fee}</p>
+                  <p className="text-[11px] mt-1.5 mb-5" style={{ color: MUTED }}>incl. 18% GST</p>
+                  <div className="flex flex-col gap-2.5">
+                    <button type="button" onClick={() => openApply(FLAGSHIP.title)}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] transition-[transform,box-shadow] duration-200 ease-out hover:shadow-[0_0_24px_rgba(32,196,173,0.35)] active:scale-[0.98] cursor-pointer"
+                      style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
+                      {FLAGSHIP.cta} <ArrowRight size={14} />
+                    </button>
+                    {FLAGSHIP.brochure && (
+                      <button type="button"
+                        onClick={() => openBrochure({
+                          url: FLAGSHIP.brochure as string,
+                          title: FLAGSHIP.title,
+                          eyebrow: FLAGSHIP.eyebrow,
+                          fee: FLAGSHIP.fee,
+                          slug: FLAGSHIP.slug,
+                        })}
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border font-semibold text-[13px] transition-colors duration-200 hover:bg-slate-50 cursor-pointer"
+                        style={{ borderColor: BORDER, color: INK }}>
+                        <FileText size={14} className="text-teal-600" /> View brochure
+                      </button>
+                    )}
+                    <a href="#programs"
+                      className="text-center text-[12.5px] font-semibold pt-1 transition-opacity hover:opacity-70"
+                      style={{ color: TEAL_DARK }}>
+                      Compare all programmes →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ═══════════ FOUR CAPABILITY PATHWAYS ═══════════ */}
         <section className="py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
@@ -1175,7 +1663,7 @@ export default function AcademyPage() {
                   <Ordinal n={p.n} />
                   <h3 className={`${T.cardTitle} mt-3 mb-2`}>{p.title}</h3>
                   <p className={`${T.body} mb-4`} style={{ color: MUTED }}>{p.desc}</p>
-                  <a href="#programs"
+                  <a href={p.anchor ?? '#programs'}
                     className="text-[13px] font-semibold inline-flex items-center gap-1.5 transition-[gap] duration-200 group-hover:gap-2.5"
                     style={{ color: TEAL_DARK }}>
                     {p.link} <ArrowRight size={13} />
@@ -1333,10 +1821,18 @@ export default function AcademyPage() {
 
                     <div className="flex items-center justify-between gap-3 mb-5">
                       <span className={T.meta} style={{ color: TEAL_DARK }}>{p.eyebrow}</span>
-                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                        style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
-                        {p.badge}
-                      </span>
+                      <div className="flex flex-wrap items-center justify-end gap-1.5">
+                        {p.flagship && (
+                          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full text-white"
+                            style={{ backgroundColor: NAVY }}>
+                            Flagship · Train-the-Trainer
+                          </span>
+                        )}
+                        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                          style={{ backgroundColor: TEAL_TINT, color: TEAL_DARK }}>
+                          {p.badge}
+                        </span>
+                      </div>
                     </div>
 
                     <h3 className="text-[20px] sm:text-[22px] font-semibold leading-snug tracking-[-0.02em] mb-3">{p.title}</h3>
@@ -1361,7 +1857,7 @@ export default function AcademyPage() {
                           <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50/90 p-0.5 shadow-sm hover:border-teal-500/40 transition-colors">
                             <button
                               type="button"
-                              onClick={() => setActiveBrochure({
+                              onClick={() => openBrochure({
                                 url: p.brochure as string,
                                 title: p.title,
                                 eyebrow: p.eyebrow,
@@ -1376,8 +1872,13 @@ export default function AcademyPage() {
                             </button>
                             <span className="w-px h-3.5 bg-slate-200" />
                             <a
-                              href={p.brochure as string}
+                              href={`${p.brochure}?download=1`}
                               download
+                              onClick={(e) => {
+                                if (user) return;
+                                e.preventDefault();
+                                requireSignIn(() => window.location.assign(`${p.brochure}?download=1`));
+                              }}
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-white transition-all cursor-pointer"
                               title={`Download ${p.title} brochure PDF directly`}
                               aria-label={`Download ${p.title} brochure PDF`}
@@ -1682,6 +2183,13 @@ export default function AcademyPage() {
 
       <ApplicationModal open={applyOpen} onClose={() => setApplyOpen(false)} presetProgramme={applyProgramme} />
       <BrochureModal brochure={activeBrochure} onClose={() => setActiveBrochure(null)} onApply={openApply} />
+      <SignInDialog
+        open={signInOpen}
+        onClose={() => { setSignInOpen(false); pendingAction.current = null; }}
+        gisReady={gisReady}
+        available={!!clientId}
+        error={signInError}
+      />
     </Layout>
   );
 }

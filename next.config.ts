@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   compress: true,
   productionBrowserSourceMaps: false,
   devIndicators: false,
+  // Brochures live outside /public (they are gated), and they're read with a dynamic path
+  // the file tracer cannot follow — without this they would not exist inside the Vercel
+  // functions that stream them (/api/academy/brochure) or attach them to emails.
+  outputFileTracingIncludes: {
+    '/api/academy/**': ['./private/brochures/**'],
+  },
   experimental: {
     optimizePackageImports: ['react-icons', 'lucide-react', 'date-fns'],
   },
@@ -55,6 +61,8 @@ const nextConfig: NextConfig = {
       ...(process.env.REDIRECT_ROOT_TO_ACADEMY === 'true'
         ? [{ source: '/', destination: '/academy', permanent: false }]
         : []),
+      // Brochures used to be public PDFs; old shared links land on the page where they can sign in.
+      { source: '/brochures/:path*', destination: '/academy', permanent: false },
       // Gallery → Events (legacy)
       { source: '/gallery',              destination: '/events',        permanent: true },
       { source: '/gallery/:path*',       destination: '/events/:path*', permanent: true },

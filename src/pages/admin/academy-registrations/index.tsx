@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { withAuth } from '@/components/auth/withAuth';
 import { formatPaise } from '@/lib/academyPrograms';
-import { Download, FileSpreadsheet, GraduationCap, CreditCard, Activity, Loader2 } from 'lucide-react';
+import { Download, FileSpreadsheet, GraduationCap, CreditCard, Activity, Loader2, FileText, Eye } from 'lucide-react';
 
 type PaymentStatus = 'created' | 'paid' | 'failed' | 'refunded';
 
@@ -72,6 +72,19 @@ interface Interest {
   createdAt: string;
 }
 
+// Google-signed-in visitors who viewed or downloaded a programme brochure — the
+// lead-capture list for people who showed interest but have not registered yet.
+interface BrochureEvent {
+  id: string;
+  action: string;
+  programmeSlug: string;
+  programmeTitle: string;
+  createdAt: string;
+  name: string | null;
+  email: string;
+  hostedDomain: string | null;
+}
+
 const STATUS_META: Record<PaymentStatus, { label: string; cls: string }> = {
   paid:     { label: 'Paid',     cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
   created:  { label: 'Pending',  cls: 'bg-amber-100 text-amber-700 border-amber-200'       },
@@ -101,6 +114,9 @@ function AdminAcademyRegistrations() {
   const [interestLoading, setInterestLoading] = useState(true);
   const [interestBusyId, setInterestBusyId]   = useState<string | null>(null);
   const [exporting, setExporting]             = useState<string | null>(null);
+
+  const [brochureEvents, setBrochureEvents]   = useState<BrochureEvent[]>([]);
+  const [brochureLoading, setBrochureLoading] = useState(true);
 
   const handleExport = async (type: string, format: 'xlsx' | 'csv') => {
     const key = `${type}-${format}`;
@@ -155,6 +171,17 @@ function AdminAcademyRegistrations() {
         setInterestLoading(false);
       }
     })();
+
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/brochure-events');
+        if (!res.ok) return;
+        const data = await res.json();
+        setBrochureEvents(data.events ?? []);
+      } finally {
+        setBrochureLoading(false);
+      }
+    })();
   }, [router]);
 
   const handleMarkContacted = async (id: string) => {
@@ -192,12 +219,12 @@ function AdminAcademyRegistrations() {
 
       <div className="min-h-screen bg-gray-50">
         <div className="border-b border-gray-200 bg-white px-6 py-4">
-          <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <div>
               <h1 className="text-lg font-bold text-gray-900">Academy Registrations</h1>
               <p className="text-sm text-gray-500">Cohort enrolments, Razorpay payments and general interest</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 shrink-0">
               <Link href="/admin" className="text-sm text-gray-600 hover:text-gray-900">← Dashboard</Link>
               <button onClick={handleLogout} className="text-sm text-gray-600 hover:text-gray-900">Logout</button>
             </div>
@@ -270,14 +297,15 @@ function AdminAcademyRegistrations() {
                   )}
                 </button>
                 <p className="text-[11px] text-indigo-200/80 font-normal text-right">
-                  Includes all 3 sheets: Academic Registrations, Razorpay Payments, and Life Sciences Inquiries
+                  Includes all 4 sheets: Academic Registrations, Razorpay Payments, Life Sciences Inquiries, and Brochure Downloads
                 </p>
               </div>
             </div>
 
-            {/* 3 Individual Download Cards */}
-            <div className="mt-5">
-              <div className="flex items-center justify-between mb-3">
+            {/* 4 Individual Datasets — one panel, divided into columns rather than
+                nested cards-within-a-card. */}
+            <div className="mt-5 rounded-xl border border-white/10 overflow-hidden">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-3 bg-white/[0.03] border-b border-white/10">
                 <p className="text-xs font-semibold uppercase tracking-wider text-indigo-200/90">
                   Individual Datasets &amp; Downloads
                 </p>
@@ -286,120 +314,72 @@ function AdminAcademyRegistrations() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* 1. Academic Registration */}
-                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-1.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500/20 text-indigo-300">
-                        <GraduationCap className="h-4 w-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y divide-white/10 sm:divide-y-0 sm:divide-x">
+                {[
+                  {
+                    type: 'registrations', icon: GraduationCap, iconCls: 'bg-indigo-500/20 text-indigo-300',
+                    title: 'Academic Registrations',
+                    desc: 'Complete participant records, cohorts, demographics, department, and institution details.',
+                    btnCls: 'bg-indigo-500/30 hover:bg-indigo-500/40 text-indigo-200 border-indigo-400/30',
+                    dlIconCls: 'text-indigo-300',
+                  },
+                  {
+                    type: 'payments', icon: CreditCard, iconCls: 'bg-emerald-500/20 text-emerald-300',
+                    title: 'Razorpay Payments',
+                    desc: 'Transaction IDs, captured amounts, gateway fees, GST tax breakdown, and net settlements.',
+                    btnCls: 'bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border-emerald-400/30',
+                    dlIconCls: 'text-emerald-300',
+                  },
+                  {
+                    type: 'lifesciences', icon: Activity, iconCls: 'bg-teal-500/20 text-teal-300',
+                    title: 'Life Sciences Inquiries',
+                    desc: 'SLSSDTR portal leads, cross-referrals from DSeT, subject specializations, and applicant requests.',
+                    btnCls: 'bg-teal-500/30 hover:bg-teal-500/40 text-teal-200 border-teal-400/30',
+                    dlIconCls: 'text-teal-300',
+                  },
+                  {
+                    type: 'brochures', icon: FileText, iconCls: 'bg-amber-500/20 text-amber-300',
+                    title: 'Brochure Downloads',
+                    desc: 'Google-verified visitors who viewed or downloaded a programme brochure, with name, email and timestamp.',
+                    btnCls: 'bg-amber-500/30 hover:bg-amber-500/40 text-amber-200 border-amber-400/30',
+                    dlIconCls: 'text-amber-300',
+                  },
+                ].map((d) => (
+                  <div key={d.type} className="flex flex-col justify-between p-4 hover:bg-white/[0.03] transition-colors">
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-1.5">
+                        <div className={`flex h-7 w-7 items-center justify-center rounded-md ${d.iconCls}`}>
+                          <d.icon className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-sm font-semibold text-white">{d.title}</h3>
                       </div>
-                      <h3 className="text-sm font-semibold text-white">Academic Registrations</h3>
+                      <p className="text-xs text-slate-300 leading-relaxed mb-4">{d.desc}</p>
                     </div>
-                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                      Complete participant records, cohorts, demographics, department, and institution details.
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
-                    <button
-                      onClick={() => handleExport('registrations', 'xlsx')}
-                      disabled={!!exporting}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-500/30 hover:bg-indigo-500/40 text-indigo-200 border border-indigo-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'registrations-xlsx' ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Download className="h-3.5 w-3.5 text-indigo-300" />
-                      )}
-                      <span>Download Excel</span>
-                    </button>
-                    <button
-                      onClick={() => handleExport('registrations', 'csv')}
-                      disabled={!!exporting}
-                      title="Download as CSV"
-                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'registrations-csv' ? '...' : 'CSV'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. Razorpay Payments */}
-                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-1.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/20 text-emerald-300">
-                        <CreditCard className="h-4 w-4" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-white">Razorpay Payments</h3>
+                    <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+                      <button
+                        onClick={() => handleExport(d.type, 'xlsx')}
+                        disabled={!!exporting}
+                        className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer ${d.btnCls}`}
+                      >
+                        {exporting === `${d.type}-xlsx` ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Download className={`h-3.5 w-3.5 ${d.dlIconCls}`} />
+                        )}
+                        <span>Download Excel</span>
+                      </button>
+                      <button
+                        onClick={() => handleExport(d.type, 'csv')}
+                        disabled={!!exporting}
+                        title="Download as CSV"
+                        className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                      >
+                        {exporting === `${d.type}-csv` ? '...' : 'CSV'}
+                      </button>
                     </div>
-                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                      Transaction IDs, captured amounts, gateway fees, GST tax breakdown, and net settlements.
-                    </p>
                   </div>
-
-                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
-                    <button
-                      onClick={() => handleExport('payments', 'xlsx')}
-                      disabled={!!exporting}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border border-emerald-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'payments-xlsx' ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Download className="h-3.5 w-3.5 text-emerald-300" />
-                      )}
-                      <span>Download Excel</span>
-                    </button>
-                    <button
-                      onClick={() => handleExport('payments', 'csv')}
-                      disabled={!!exporting}
-                      title="Download as CSV"
-                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'payments-csv' ? '...' : 'CSV'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* 3. Life Sciences Inquiries */}
-                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-1.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-500/20 text-teal-300">
-                        <Activity className="h-4 w-4" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-white">Life Sciences Inquiries</h3>
-                    </div>
-                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                      SLSSDTR portal leads, cross-referrals from DSeT, subject specializations, and applicant requests.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
-                    <button
-                      onClick={() => handleExport('lifesciences', 'xlsx')}
-                      disabled={!!exporting}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-teal-500/30 hover:bg-teal-500/40 text-teal-200 border border-teal-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'lifesciences-xlsx' ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Download className="h-3.5 w-3.5 text-teal-300" />
-                      )}
-                      <span>Download Excel</span>
-                    </button>
-                    <button
-                      onClick={() => handleExport('lifesciences', 'csv')}
-                      disabled={!!exporting}
-                      title="Download as CSV"
-                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      {exporting === 'lifesciences-csv' ? '...' : 'CSV'}
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -668,6 +648,70 @@ function AdminAcademyRegistrations() {
                               </button>
                             )}
                           </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Brochure activity ── */}
+          {/* Google-verified visitors who viewed or downloaded a brochure but have not
+              necessarily registered — the earliest, widest-funnel signal on this page. */}
+          <div className="mt-10">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">Brochure Activity</h2>
+                <p className="text-sm text-gray-500">Google sign-ins captured on brochure view or download</p>
+              </div>
+              {!brochureLoading && (
+                <span className="rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-semibold text-gray-600">
+                  {brochureEvents.length} events
+                </span>
+              )}
+            </div>
+
+            {brochureLoading ? (
+              <div className="py-10 text-center text-gray-500">Loading…</div>
+            ) : brochureEvents.length === 0 ? (
+              <div className="rounded-xl border border-gray-200 bg-white py-10 text-center text-gray-500">
+                No brochure activity yet.
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="border-b border-gray-200 bg-gray-50 text-left">
+                      <tr className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        <th className="px-4 py-3">Visitor</th>
+                        <th className="px-4 py-3">Brochure</th>
+                        <th className="px-4 py-3">Action</th>
+                        <th className="px-4 py-3">When</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {brochureEvents.map((e) => (
+                        <tr key={e.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-gray-900">{e.name ?? e.email}</div>
+                            <div className="text-xs text-gray-500">{e.email}</div>
+                            {e.hostedDomain && <div className="text-xs text-gray-400">{e.hostedDomain}</div>}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700">{e.programmeTitle}</td>
+                          <td className="px-4 py-3">
+                            {e.action === 'download' ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                <Download className="h-3 w-3" /> Downloaded
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
+                                <Eye className="h-3 w-3" /> Viewed
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-500">{formatDateTime(e.createdAt)}</td>
                         </tr>
                       ))}
                     </tbody>

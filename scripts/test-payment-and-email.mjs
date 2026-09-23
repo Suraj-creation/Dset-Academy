@@ -39,7 +39,7 @@ async function testAll() {
           baseAmount: 200800,
           gstAmount: 36100,
           totalAmount: 236900,
-          brochurePath: 'brochures/PharmaAI_Student_Brochure.pdf',
+          brochurePath: 'private/brochures/PharmaAI_Student_Brochure.pdf',
         },
         'ai-educator-mastery': {
           slug: 'ai-educator-mastery',
@@ -47,7 +47,7 @@ async function testAll() {
           baseAmount: 3700000,
           gstAmount: 666000,
           totalAmount: 4366000,
-          brochurePath: 'brochures/AI_Educator_Mastery_Program_Brochure.pdf',
+          brochurePath: 'private/brochures/AI_Educator_Mastery_Program_Brochure.pdf',
         },
         'entrepreneur-mastery': {
           slug: 'entrepreneur-mastery',
@@ -55,7 +55,7 @@ async function testAll() {
           baseAmount: 5100000,
           gstAmount: 918000,
           totalAmount: 6018000,
-          brochurePath: 'brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
+          brochurePath: 'private/brochures/Entrepreneur_Mastery_Program_Brochure.pdf',
         },
         'ai-faculty-mastery': {
           slug: 'ai-faculty-mastery',
@@ -63,7 +63,7 @@ async function testAll() {
           baseAmount: 300200,
           gstAmount: 54000,
           totalAmount: 354200,
-          brochurePath: 'brochures/AI_Faculty_Mastery_Brochure.pdf',
+          brochurePath: 'private/brochures/AI_Faculty_Mastery_Brochure.pdf',
         },
         'ai-mastery-life-science-healthcare': {
           slug: 'ai-mastery-life-science-healthcare',
@@ -71,7 +71,7 @@ async function testAll() {
           baseAmount: 2500000,
           gstAmount: 450000,
           totalAmount: 2950000,
-          brochurePath: 'brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
+          brochurePath: 'private/brochures/AI_Mastery_Life_Science_Healthcare_Brochure.pdf',
         },
       }
     };
@@ -82,7 +82,7 @@ async function testAll() {
   const slugs = Object.keys(ACADEMY_PROGRAMS);
   for (const slug of slugs) {
     const prog = ACADEMY_PROGRAMS[slug];
-    const absPath = path.join(ROOT, 'public', prog.brochurePath);
+    const absPath = path.join(ROOT, prog.brochurePath);
     const exists = fs.existsSync(absPath);
     const size = exists ? (fs.statSync(absPath).size / 1024).toFixed(1) + ' KB' : 'MISSING';
     console.log(`   [${exists ? '✔' : '✖'}] ${prog.title} -> ${prog.brochurePath} (${size})`);
@@ -92,7 +92,7 @@ async function testAll() {
   // 2. Test sendMail directly with nodemailer
   console.log('\n2. Testing email delivery module (with attachment):');
   const nodemailer = (await import('nodemailer')).default;
-  const testBrochure = path.join(ROOT, 'public', ACADEMY_PROGRAMS['pharmaai-student'].brochurePath);
+  const testBrochure = path.join(ROOT, ACADEMY_PROGRAMS['pharmaai-student'].brochurePath);
 
   const sampleReg = {
     id: `aint_${Date.now()}_test`,
