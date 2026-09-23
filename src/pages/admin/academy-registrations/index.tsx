@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { withAuth } from '@/components/auth/withAuth';
 import { formatPaise } from '@/lib/academyPrograms';
+import { Download, FileSpreadsheet, GraduationCap, CreditCard, Activity, Loader2 } from 'lucide-react';
 
 type PaymentStatus = 'created' | 'paid' | 'failed' | 'refunded';
 
@@ -99,6 +100,35 @@ function AdminAcademyRegistrations() {
   const [interest, setInterest]             = useState<Interest[]>([]);
   const [interestLoading, setInterestLoading] = useState(true);
   const [interestBusyId, setInterestBusyId]   = useState<string | null>(null);
+  const [exporting, setExporting]             = useState<string | null>(null);
+
+  const handleExport = async (type: string, format: 'xlsx' | 'csv') => {
+    const key = `${type}-${format}`;
+    setExporting(key);
+    try {
+      const res = await fetch(`/api/admin/export/${type}?format=${format}`);
+      if (!res.ok) throw new Error('Export request failed');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const disposition = res.headers.get('content-disposition');
+      let filename = `${type}_export.${format}`;
+      if (disposition && disposition.includes('filename=')) {
+        const match = disposition.match(/filename="?([^";]+)"?/);
+        if (match && match[1]) filename = match[1];
+      }
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to generate export file. Please try again.');
+    } finally {
+      setExporting(null);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -196,6 +226,181 @@ function AdminAcademyRegistrations() {
               <p className="mt-1 text-2xl font-bold text-red-500">
                 {rows.filter(r => r.paymentStatus === 'failed').length}
               </p>
+            </div>
+          </div>
+
+          {/* Admissions & Payments Export Center */}
+          <div className="mb-6 rounded-2xl border border-indigo-100 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 p-6 text-white shadow-md">
+            {/* Header & All-in-One Master Download */}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pb-5 border-b border-indigo-800/60">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-400/30">
+                    <FileSpreadsheet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-semibold tracking-tight text-white">Admissions &amp; Payments Export Center</h2>
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-300 border border-emerald-400/30">Live Neon DB</span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-slate-300 leading-relaxed">
+                      Instant multi-entity reporting for cohort enrolments, Razorpay settlements, and Life Sciences (SLSSDTR) cross-portal referrals.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Master All-in-One Link/Button */}
+              <div className="flex flex-col sm:items-end gap-1.5 shrink-0">
+                <button
+                  onClick={() => handleExport('unified', 'xlsx')}
+                  disabled={!!exporting}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                >
+                  {exporting === 'unified-xlsx' ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" />
+                      <span>Generating Master Workbook...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 text-white" />
+                      <span>All-in-One Executive Workbook (.xlsx)</span>
+                    </>
+                  )}
+                </button>
+                <p className="text-[11px] text-indigo-200/80 font-normal text-right">
+                  Includes all 3 sheets: Academic Registrations, Razorpay Payments, and Life Sciences Inquiries
+                </p>
+              </div>
+            </div>
+
+            {/* 3 Individual Download Cards */}
+            <div className="mt-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-indigo-200/90">
+                  Individual Datasets &amp; Downloads
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Export each section independently in Excel (.xlsx) or CSV format
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* 1. Academic Registration */}
+                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2.5 mb-1.5">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500/20 text-indigo-300">
+                        <GraduationCap className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-sm font-semibold text-white">Academic Registrations</h3>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                      Complete participant records, cohorts, demographics, department, and institution details.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+                    <button
+                      onClick={() => handleExport('registrations', 'xlsx')}
+                      disabled={!!exporting}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-500/30 hover:bg-indigo-500/40 text-indigo-200 border border-indigo-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'registrations-xlsx' ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5 text-indigo-300" />
+                      )}
+                      <span>Download Excel</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport('registrations', 'csv')}
+                      disabled={!!exporting}
+                      title="Download as CSV"
+                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'registrations-csv' ? '...' : 'CSV'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Razorpay Payments */}
+                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2.5 mb-1.5">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/20 text-emerald-300">
+                        <CreditCard className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-sm font-semibold text-white">Razorpay Payments</h3>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                      Transaction IDs, captured amounts, gateway fees, GST tax breakdown, and net settlements.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+                    <button
+                      onClick={() => handleExport('payments', 'xlsx')}
+                      disabled={!!exporting}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border border-emerald-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'payments-xlsx' ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5 text-emerald-300" />
+                      )}
+                      <span>Download Excel</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport('payments', 'csv')}
+                      disabled={!!exporting}
+                      title="Download as CSV"
+                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'payments-csv' ? '...' : 'CSV'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Life Sciences Inquiries */}
+                <div className="flex flex-col justify-between rounded-xl bg-white/[0.06] p-4 border border-white/10 hover:border-indigo-400/30 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2.5 mb-1.5">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal-500/20 text-teal-300">
+                        <Activity className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-sm font-semibold text-white">Life Sciences Inquiries</h3>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                      SLSSDTR portal leads, cross-referrals from DSeT, subject specializations, and applicant requests.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+                    <button
+                      onClick={() => handleExport('lifesciences', 'xlsx')}
+                      disabled={!!exporting}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-teal-500/30 hover:bg-teal-500/40 text-teal-200 border border-teal-400/30 px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'lifesciences-xlsx' ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5 text-teal-300" />
+                      )}
+                      <span>Download Excel</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport('lifesciences', 'csv')}
+                      disabled={!!exporting}
+                      title="Download as CSV"
+                      className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 px-2.5 py-2 text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {exporting === 'lifesciences-csv' ? '...' : 'CSV'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

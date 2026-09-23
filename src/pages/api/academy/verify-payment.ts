@@ -7,6 +7,7 @@ import {
   logPaymentEvent,
 } from '@/lib/academyRegistrations.server';
 import { sendRegistrationEmails, sendWelcomeEmailWithBrochure, sendRegistrationWhatsAppReceipt } from '@/lib/academyEmail.server';
+import { recordLifeSciencesEnquiry, isLifeSciencesAffiliated } from '@/lib/lifeSciences.server';
 
 /**
  * Step 2 of enrolment: the browser reports a completed Checkout.
@@ -167,6 +168,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('[academy] welcome email failed:', e.message));
     sendRegistrationWhatsAppReceipt(row).catch(e =>
       console.error('[academy] WhatsApp receipt failed:', e.message));
+
+    if (isLifeSciencesAffiliated(row.programmeSlug) || isLifeSciencesAffiliated(row.programmeTitle)) {
+      recordLifeSciencesEnquiry({
+        programId: row.programmeSlug,
+        name: row.fullName,
+        email: row.email,
+        phone: row.mobile,
+        organization: row.institution || row.companyName,
+        message: `Enrolled & Paid in DSeT Academy: ${row.programmeTitle}`,
+        source: 'DSET_ACADEMY',
+        externalSystem: 'DSET_ACADEMY',
+        externalReference: row.id,
+        location: row.location,
+        country: row.country,
+        role: row.role,
+        department: row.department,
+        courseName: row.courseName,
+        currentYear: row.currentYear,
+        subjectSpecialization: row.subjectSpecialization,
+        companyName: row.companyName,
+        companyType: row.companyType,
+        metadata: {
+          razorpayOrderId: row.razorpayOrderId,
+          razorpayPaymentId: row.razorpayPaymentId,
+          totalAmount: row.totalAmount,
+          paymentStatus: row.paymentStatus,
+        },
+      }).catch(e => console.error('[academy] Life Sciences sync failed:', e.message));
+    }
   }
 
   return res.status(200).json({

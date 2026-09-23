@@ -7,6 +7,7 @@ import {
   markInterestContacted,
 } from '@/lib/academyInterest.server';
 import { sendInterestNotification } from '@/lib/academyEmail.server';
+import { recordLifeSciencesEnquiry, isLifeSciencesAffiliated } from '@/lib/lifeSciences.server';
 
 /**
  * General interest signups for programmes with no published fee (institutional,
@@ -114,6 +115,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // which is already safely in the database.
     sendInterestNotification(registration).catch(e =>
       console.error('[academy/interest] notification email failed:', e.message));
+
+    // If enquiry is related to Life Sciences / Healthcare / Pharma, cross-sync to Life Sciences program_enquiry
+    if (isLifeSciencesAffiliated(registration.programmeTitle)) {
+      recordLifeSciencesEnquiry({
+        programId: registration.programmeTitle,
+        name: registration.fullName,
+        email: registration.email,
+        phone: registration.mobile,
+        organization: registration.institution || registration.companyName,
+        message: `DSeT Academy Interest Registration: ${registration.programmeTitle}`,
+        source: 'DSET_ACADEMY',
+        externalSystem: 'DSET_ACADEMY',
+        externalReference: registration.id,
+        location: registration.location,
+        country: registration.country,
+        role: registration.role,
+        department: registration.department,
+        courseName: registration.courseName,
+        currentYear: registration.currentYear,
+        subjectSpecialization: registration.subjectSpecialization,
+        companyName: registration.companyName,
+        companyType: registration.companyType,
+      }).catch(e => console.error('[academy/interest] Life Sciences referral sync failed:', e.message));
+    }
 
     return res.status(200).json({
       success: true,

@@ -24,6 +24,7 @@
     "@types/ws": "^8.18.1",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
+    "exceljs": "^4.4.0",
     "formidable": "^3.5.4",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
