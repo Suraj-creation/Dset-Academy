@@ -335,10 +335,17 @@ interface GoogleIdentity {
   disableAutoSelect(): void;
 }
 
+interface GoogleCodeClient { requestCode(): void }
+
 declare global {
   interface Window {
     Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void };
-    google?: { accounts: { id: GoogleIdentity } };
+    google?: {
+      accounts: {
+        id: GoogleIdentity;
+        oauth2: { initCodeClient(o: Record<string, unknown>): GoogleCodeClient };
+      };
+    };
   }
 }
 
@@ -372,47 +379,6 @@ function GoogleButton({ ready, dark = false }: { ready: boolean; dark?: boolean 
     });
   }, [ready, dark]);
   return <div ref={ref} className="min-h-[40px] flex items-center" />;
-}
-
-/** Shown when a signed-out visitor tries to view or download a brochure. */
-function SignInDialog({ open, onClose, gisReady, available, error }: {
-  open: boolean; onClose: () => void; gisReady: boolean; available: boolean; error: string | null;
-}) {
-  return (
-    <Dialog open={open} onClose={onClose} className="relative z-[110]" transition>
-      <DialogBackdrop transition className="fixed inset-0 bg-black/60 backdrop-blur-sm transition duration-200 ease-out data-[closed]:opacity-0" />
-      <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <DialogPanel transition
-          className="relative bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl p-6 sm:p-7
-                     transition duration-200 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-2 data-[closed]:scale-[0.97]">
-          <button onClick={onClose} aria-label="Close"
-            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-black/5">
-            <X size={17} style={{ color: MUTED }} />
-          </button>
-          <div className="w-11 h-11 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: TEAL_TINT }}>
-            <FileText size={19} style={{ color: TEAL_DARK }} />
-          </div>
-          <DialogTitle className="text-[19px] font-semibold tracking-[-0.02em] mb-2" style={{ color: INK }}>
-            Sign in to open the brochure
-          </DialogTitle>
-          <p className={`${T.body} mb-5`} style={{ color: MUTED }}>
-            Programme brochures are available to signed-in visitors. Continue with Google — DSeT Academy
-            receives only your name, email address and profile photo.
-          </p>
-          {!available ? (
-            <p className="text-[13px]" style={{ color: MUTED }}>Sign-in is temporarily unavailable. Please try again shortly.</p>
-          ) : gisReady ? (
-            <GoogleButton ready />
-          ) : (
-            <p className="text-[13px]" style={{ color: MUTED }}>Loading Google sign-in…</p>
-          )}
-          {error && (
-            <p className="mt-4 rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: '#fef2f2', color: '#991b1b' }}>{error}</p>
-          )}
-        </DialogPanel>
-      </div>
-    </Dialog>
-  );
 }
 
 function ApplicationModal({ open, onClose, presetProgramme }: { open: boolean; onClose: () => void; presetProgramme?: string }) {
@@ -976,10 +942,15 @@ function BrochureModal({
   brochure,
   onClose,
   onApply,
+  signedIn,
+  onDownload,
 }: {
   brochure: ActiveBrochure | null;
   onClose: () => void;
   onApply: (programmeTitle: string) => void;
+  signedIn: boolean;
+  /** Signed-out downloads go through Google sign-in first. */
+  onDownload: (url: string) => void;
 }) {
   const [isMaximized, setIsMaximized] = useState(false);
 
@@ -1041,6 +1012,11 @@ function BrochureModal({
                 <a
                   href={`${brochure.url}?download=1`}
                   download
+                  onClick={(e) => {
+                    if (signedIn) return;
+                    e.preventDefault();
+                    onDownload(brochure.url);
+                  }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 transition-colors cursor-pointer"
                   title="Download brochure PDF"
                 >
@@ -1123,9 +1099,9 @@ export default function AcademyPage() {
   // Google sign-in. The session cookie is HttpOnly, so the server tells us who is signed in.
   const [account, setAccount] = useState<{ user: AcademyUser | null; clientId: string | null } | null>(null);
   const [gisReady, setGisReady] = useState(false);
-  const [signInOpen, setSignInOpen] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
   const pendingAction = useRef<(() => void) | null>(null);
+  const codeClient = useRef<GoogleCodeClient | null>(null);
   const signedOutThisVisit = useRef(false);
   const user = account?.user ?? null;
   const clientId = account?.clientId ?? null;
@@ -1137,26 +1113,26 @@ export default function AcademyPage() {
       .catch(() => setAccount({ user: null, clientId: null }));
   }, []);
 
-  // Google calls this with an ID token; the server verifies it and sets the session cookie.
-  const onCredential = useRef<(r: { credential: string }) => void>(() => {});
-  onCredential.current = async ({ credential }) => {
+  // Google hands us either an ID token (One Tap / the Continue button) or an authorization
+  // code (the popup a download opens); the server verifies either and sets the session cookie.
+  const completeSignIn = useRef<(body: { credential: string } | { code: string }) => void>(() => {});
+  completeSignIn.current = async (body) => {
     setSignInError(null);
     try {
       const r = await fetch('/api/academy/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify(body),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Sign-in failed. Please try again.');
       setAccount((a) => ({ clientId: a?.clientId ?? null, user: d.user }));
-      setSignInOpen(false);
       const next = pendingAction.current;
       pendingAction.current = null;
       next?.();
     } catch (err) {
+      pendingAction.current = null;
       setSignInError((err as Error).message);
-      setSignInOpen(true);
     }
   };
 
@@ -1167,11 +1143,20 @@ export default function AcademyPage() {
       if (!ok || cancelled || !window.google) return;
       window.google.accounts.id.initialize({
         client_id: clientId,
-        callback: (r: { credential: string }) => onCredential.current(r),
+        callback: (r: { credential: string }) => completeSignIn.current({ credential: r.credential }),
         cancel_on_tap_outside: false,
         itp_support: true,
         use_fedcm_for_prompt: true,
         context: 'signin',
+      });
+      // Built up front so a click can open Google's account picker synchronously —
+      // browsers only allow the popup inside the click itself.
+      codeClient.current = window.google.accounts.oauth2.initCodeClient({
+        client_id: clientId,
+        scope: 'openid email profile',
+        ux_mode: 'popup',
+        callback: (r: { code?: string }) => { if (r.code) completeSignIn.current({ code: r.code }); },
+        error_callback: () => { pendingAction.current = null; }, // popup closed or blocked
       });
       setGisReady(true);
     });
@@ -1184,23 +1169,25 @@ export default function AcademyPage() {
     if (gisReady && accountLoaded && !user && !signedOutThisVisit.current) window.google?.accounts.id.prompt();
   }, [gisReady, accountLoaded, user]);
 
-  /** Run `action` now if signed in; otherwise ask for Google sign-in and run it right after. */
+  /** Run `action` now if signed in; otherwise open Google sign-in directly and run it right after. */
   const requireSignIn = (action: () => void) => {
     if (user) return action();
     pendingAction.current = action;
     setSignInError(null);
-    setSignInOpen(true);
+    if (codeClient.current) codeClient.current.requestCode();
+    else window.google?.accounts.id.prompt();
   };
+
+  const downloadBrochure = (url: string) => requireSignIn(() => window.location.assign(`${url}?download=1`));
 
   const signOut = async () => {
     signedOutThisVisit.current = true;
     await fetch('/api/academy/auth', { method: 'DELETE' }).catch(() => {});
     window.google?.accounts.id.disableAutoSelect();
-    setActiveBrochure(null);
     setAccount((a) => a && { ...a, user: null });
   };
 
-  const openBrochure = (b: ActiveBrochure) => requireSignIn(() => setActiveBrochure(b));
+  const openBrochure = setActiveBrochure;
 
   const openApply = (programme?: string) => {
     setApplyProgramme(programme);
@@ -1222,10 +1209,12 @@ export default function AcademyPage() {
         {/* ═══════════ ACCOUNT BAR — Continue with Google ═══════════ */}
         {/* Fixed min-height so the bar never shifts the hero while the session loads. */}
         <div className="relative z-20 border-b border-white/10" style={{ backgroundColor: '#030c1a' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 min-h-[58px] flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 min-h-[58px] flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+            {signInError && (
+              <span role="alert" className="text-[12px] text-rose-300 mr-auto">{signInError}</span>
+            )}
             {!accountLoaded ? null : user ? (
               <>
-                <span className="text-[12.5px] text-white/55">Signed in · programme brochures are unlocked</span>
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span aria-hidden="true" className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-semibold shrink-0"
                     style={{ backgroundColor: TEAL, color: NAVY_DEEP }}>
@@ -1241,12 +1230,7 @@ export default function AcademyPage() {
                 </div>
               </>
             ) : clientId ? (
-              <>
-                <span className="text-[12.5px] text-white/65 inline-flex items-center gap-2">
-                  <Lock size={13} style={{ color: TEAL }} /> Sign in to view and download programme brochures.
-                </span>
-                <GoogleButton ready={gisReady} dark />
-              </>
+              <GoogleButton ready={gisReady} dark />
             ) : null}
           </div>
         </div>
@@ -1877,7 +1861,7 @@ export default function AcademyPage() {
                               onClick={(e) => {
                                 if (user) return;
                                 e.preventDefault();
-                                requireSignIn(() => window.location.assign(`${p.brochure}?download=1`));
+                                downloadBrochure(p.brochure as string);
                               }}
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-white transition-all cursor-pointer"
                               title={`Download ${p.title} brochure PDF directly`}
@@ -2182,14 +2166,8 @@ export default function AcademyPage() {
       </div>
 
       <ApplicationModal open={applyOpen} onClose={() => setApplyOpen(false)} presetProgramme={applyProgramme} />
-      <BrochureModal brochure={activeBrochure} onClose={() => setActiveBrochure(null)} onApply={openApply} />
-      <SignInDialog
-        open={signInOpen}
-        onClose={() => { setSignInOpen(false); pendingAction.current = null; }}
-        gisReady={gisReady}
-        available={!!clientId}
-        error={signInError}
-      />
+      <BrochureModal brochure={activeBrochure} onClose={() => setActiveBrochure(null)} onApply={openApply}
+        signedIn={!!user} onDownload={downloadBrochure} />
     </Layout>
   );
 }

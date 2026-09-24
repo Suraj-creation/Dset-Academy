@@ -8,10 +8,10 @@ import { getProgram } from '@/lib/academyPrograms';
 import { getAcademyUser } from '@/lib/academyAuth.server';
 
 /**
- * The only way to read a brochure. Requires a Google-signed-in academy visitor, records
- * who viewed/downloaded what, then streams the PDF.
- *   GET /api/academy/brochure/<slug>             -> inline (the in-page viewer)
- *   GET /api/academy/brochure/<slug>?download=1  -> attachment
+ * The only way to read a brochure.
+ *   GET /api/academy/brochure/<slug>             -> inline (the in-page viewer), open to everyone
+ *   GET /api/academy/brochure/<slug>?download=1  -> attachment, Google sign-in required
+ * Every download, and every view by a signed-in visitor, is recorded against their account.
  * The slug is looked up in the programme catalogue, so a request can never name a path.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -21,8 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const program = getProgram(String(req.query.slug ?? ''));
   if (!program) return res.status(404).json({ error: 'Brochure not found' });
 
+  const download = req.query.download === '1';
   const user = await getAcademyUser(req.cookies);
-  if (!user) return res.status(401).json({ error: 'Sign in with Google to view this brochure.' });
+  if (download && !user) return res.status(401).json({ error: 'Sign in with Google to download this brochure.' });
 
   const filePath = path.join(process.cwd(), program.brochurePath);
   if (!fs.existsSync(filePath)) {
@@ -30,10 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ error: 'Brochure not found' });
   }
 
-  const download = req.query.download === '1';
-
-  // Logged before streaming, and awaited: a brochure that was served is a brochure that was recorded.
-  await db.insert(academyBrochureEvents).values({
+  // Logged before streaming, and awaited: a download that was served is a download that was recorded.
+  // Anonymous views have no identity to record, so they are served without a row.
+  if (user) await db.insert(academyBrochureEvents).values({
     id: `abev_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`,
     userId: user.id,
     programmeSlug: program.slug,

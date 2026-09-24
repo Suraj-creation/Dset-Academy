@@ -80,6 +80,32 @@ export async function verifyGoogleIdToken(idToken: string): Promise<GoogleClaims
   };
 }
 
+/**
+ * The download button opens Google's account picker as a popup (OAuth code flow), which
+ * hands the browser a one-time code rather than an ID token. Swap it for the ID token here.
+ * `postmessage` is Google's fixed redirect_uri for popup mode — no redirect URI to register.
+ */
+export async function exchangeGoogleCode(code: string): Promise<string | null> {
+  const clientId = googleClientId();
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET ?? '';
+  if (!clientId || !clientSecret || !code) return null;
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      code, client_id: clientId, client_secret: clientSecret,
+      redirect_uri: 'postmessage', grant_type: 'authorization_code',
+    }),
+  });
+  if (!res.ok) {
+    console.error('[academy/auth] code exchange failed', res.status, (await res.text()).slice(0, 200));
+    return null;
+  }
+  const t = await res.json() as { id_token?: string };
+  return typeof t.id_token === 'string' ? t.id_token : null;
+}
+
 /** Insert on first sign-in; refresh profile, bump login_count and last_seen_at after that. */
 export async function upsertAcademyUser(g: GoogleClaims): Promise<AcademyUserRow> {
   const profile = {

@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-  verifyGoogleIdToken, upsertAcademyUser, createAcademyToken, getAcademyUser, toPublicUser,
+  verifyGoogleIdToken, exchangeGoogleCode, upsertAcademyUser, createAcademyToken, getAcademyUser, toPublicUser,
   academyCookieHeader, clearAcademyCookieHeader, googleClientId,
 } from '@/lib/academyAuth.server';
 
 /**
  * Academy visitor session.
  *   GET    -> { user | null, clientId } — the page asks this on load (the cookie is HttpOnly).
- *   POST   -> { credential } Google ID token -> verified, stored, session cookie set.
+ *   POST   -> { credential } Google ID token, or { code } from the popup -> verified, stored, session cookie set.
  *   DELETE -> sign out.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -31,9 +31,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(415).json({ error: 'Unsupported content type' });
   }
 
-  const credential = typeof req.body?.credential === 'string' ? req.body.credential : '';
   try {
-    const claims = await verifyGoogleIdToken(credential);
+    // An ID token (One Tap / Continue button), or a popup authorization code to exchange for one.
+    const idToken = typeof req.body?.credential === 'string'
+      ? req.body.credential
+      : typeof req.body?.code === 'string' ? await exchangeGoogleCode(req.body.code) : null;
+    const claims = idToken ? await verifyGoogleIdToken(idToken) : null;
     if (!claims) return res.status(401).json({ error: 'Google sign-in could not be verified. Please try again.' });
 
     const user = await upsertAcademyUser(claims);
